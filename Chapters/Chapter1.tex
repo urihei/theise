@@ -14,7 +14,7 @@
 \newcommand{\option}[1]{\texttt{\itshape#1}}
 
 %----------------------------------------------------------------------------------------
-\section{}
+\section{Different models}
 \subsection{Graphical Models}
 \subsubsection{What is graphical models?}
 Probability is the chance that a certain event will take place.
@@ -25,7 +25,7 @@ We will denote such a space by $x \in \cX$, and we will restrict it to be discre
 An event can be a composite of simpler $p \in \naturalNumbers$ variables having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
 After defining the event the probability is  a function from the space of events to a number between zero one $\pr:\cX^{p} \to (0,1]$ with an important restriction that $\sum_{\xx \in \cX^{p}} \pr(\xx) = 1$\footnote{Note that we exclude zero since we require positive distribution.}\footnote{Without loss of generality for ease of notation we assumed that all variables have the same domain. This assumption can be easily removed.}.
 Note that having $P(\xx)$ we defined probability for all subsets of the event.
-More specifically let $ \cI \subseteq [1, \ldots,p]$ some subset of variable's indexes. Denote by $\xx_{\cI} = \{x_i : i \in \cI\}$ the subset of $\xx$ that its indexes are in $\cI$.  
+More specifically let $ \cI \subseteq \{1, \ldots,p\}$ some subset of variable's indexes. Denote by $\xx_{\cI} = \{x_i : i \in \cI\}$ the subset of $\xx$ that its indexes are in $\cI$.  
 The marginal probability of this sub-event is 
 \be
 \label{eq:MAR}
@@ -34,11 +34,11 @@ P(\xx_{\cI}) = \sum_{x_i \in \cX, \forall\ i \in [1,\ldots p] \setminus \cI} P(x
 
 
 We claimed before that in many cases each variable is directly influenced by only a small subset of the $p$ variables that describe the event.
-In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i})$ where $\cI \subset [1,\ldots,p]$  is a small set of variable's indexes.
-We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation $\nei{i} = \arg\min \{|\cI| : \cI \subseteq [1,\ldots,p], P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
-Now this dependency relation can be describe by a graph $G(V,E)$ where $V = [v_1,\ldots, v_p]$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
+In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i})$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
+We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
+Now this dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
 Each variable $x_i$ will be assign a vertex $v_i$. 
-An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$ or $ i \in \nei{j}$.
+An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$\footnote{if $i \in \nei{j}$ than $j \in \nei{i}$ otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which result in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ in contradiction to $j \in \nei{i}$}.
 Now by the Hammersley–Clifford theorem\cite{hammersley1971markov}\footnote{We defined the probability as positive}, we can write out the probability as
 \be
 P(\xx) = \frac{1}{Z} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}
@@ -47,8 +47,8 @@ Where $\theta_{c}(\xx_{c}): \cX^{|c|} \to \reals$  is a function, $\cC$ is the s
 Even from the ability to describe the probability in this compact form\footnote{the naive description length is $O(|\cX|^p)$ while with this representation it is $O(\sum_{c \in \cC} |\cX|^{|c|})$}the merit of connecting probability and graph is clear, in other words the potential of graphical models \cite{koller2009probabilistic}.
 
 
-In this thesis we will assume that $|c| = 2$, this in itself does not restrict the probability function that we can describe but it can increase the cardinality of $\cX$\footnote{Basically each clique is assigned a variable and an edge exist with cliques sharing some variables.}.
-With this restriction the probability can be write as
+In this thesis we will assume that $|c| = 2$, this in itself does not restrict the probability function that but it can increase the cardinality of $\cX$\footnote{Basically each clique is assigned to a variable and an edge exist with cliques sharing some variables. Note that new cardinality of the variable is the product the cardinalities of the clique variables }.
+With this restriction the probability can be written as
 \be
 \label{eq:basic_model}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
@@ -56,7 +56,6 @@ P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j)
 were we define $\thetav$ as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$.
 
 \subsubsection{What can we do with it?}
-%Describing probability as in \eqref{eq:basic_model} is very compact and can give us some intuition about the probability function.
 There are two basic questions that are of interest.
 First, what is the assignment that is most probable (MAP - maximum a posteriori).
 \be
@@ -64,20 +63,28 @@ First, what is the assignment that is most probable (MAP - maximum a posteriori)
 \xx_{MAP} = \arg \max_{\xx \in \cX^p} P(\xx) 
 \ee
 Second, what is the marginal probability of a sub event \eqref{eq:MAR}(MAR - finding the marginal probability).
-Note that these two problems can be asked when part of the variables was seen.
+Note that these two problems can be asked when part of the variables was seen creating exponential different queries on the same model. 
 Both inference tasks can easily be infer by going over all the possible event.
 This however is too expensive since it is exponential in the number of variables.
-And indeed in the general case both MAP\cite{shimony1994finding} and MAR\cite{cooper1990computational} probelms are NP hard.
+And indeed in the general case MAP\cite{shimony1994finding} is NP complete problem while MAR\cite{cooper1990computational} is \#P complete (MAR is even hard to approximate \cite{roth1996hardness}).
 
-  
+The situation is not as hopeless as was described.
+First the hardness result apply only on the general case, if we restrict the structure of the dependency graph to a tree both problems can be solved in polynomial time \footnote{In fact any the hardness result parameters can be changed from the number of variables in the graph to the graph tree width \cite{robertson1983graph,robertson1994quickly} }.
+Other model restriction is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate}, fast mixing models\cite{jerrum1993polynomial}.
+\subsection{Support Vector Machine}
+One basic problem in machine learning is classification.
+Given features of an instance we want the ability to classify - give it a label out of to small discrete group.
+Formally, given $\xx \in \Re^p$ we are looking for a function $f: \Re^p \to \cL$ where $|\cL|\in \naturalNumbers$.
+Learning such a function mean that: given a samples $D = \{(\xx_i,y_i)\}_{i=1}^M$  where $\xx_i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
+We want to find classifier $f$ that minimize $\expect{(\xx,y) \sim P}{l(f(\xx),y)}$ where $l : \cL \times \cL \to \Re^{+}$ is the loss function - the cost of returning label $f(\xx)$ where the true label is $y$.
 
-%The problem in this description is that it tell us close to nothing on the characteristic of this probability.
-%As was claimed before in many cases each variables is dependent only on a small number of other variables.
+Since we have only a finite data sample we will minimize $\sum_{i=1}^M l(f(\xx_i),y_i)$ 
+assuming that $l=\max(0,1-\max_{t \noteq y}$
 
 
 
 
-
+\subsection{Neural Networks}
 \section{Learning Graphical Models}
 Learning graphical models (GM) can be divided into two main stages.
 The first is learning the dependency graph - the different dependency between features.
