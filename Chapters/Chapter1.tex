@@ -16,26 +16,18 @@
 %----------------------------------------------------------------------------------------
 \section{Different models}
 \subsection{Graphical Models}
-\subsubsection{What is graphical models?}
+\subsubsection{Notations and Definitions}
 Probability is the chance that a certain event will take place.
-If we want to describe this probability we first need to know all the possible events.
-In other words we need to define the space in which all possible events belongs too.
-We will denote such a space by $x \in \cX$, and we will restrict it to be discrete $ |\cX| \in \naturalNumbers$
-\footnote{Through out this thesis I will deal only in a discrete features, while in general one can define a continuous Graphical Models}.
-An event can be a composite of simpler $p \in \naturalNumbers$ variables having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
+Hence we need to define all the possible.
+We will denote an event by $x \in \cX$, and we will restrict it to be discrete $ |\cX| \in \naturalNumbers$
+\footnote{Through out this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models is very useful model}.
+An event can be a composite of simpler $p \in \naturalNumbers$ sub events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
 After defining the event the probability is  a function from the space of events to a number between zero and one $\pr:\cX^{p} \to (0,1]$ with an important restriction that $\sum_{\xx \in \cX^{p}} \pr(\xx) = 1$\footnote{Note that we exclude zero since we require positive distribution.}\footnote{Without loss of generality for ease of notation we assumed that all variables have the same domain. This assumption can be easily removed.}.
-Note that having $P(\xx)$ we defined probability for all subsets of the event.
-More specifically let $ \cI \subseteq \{1, \ldots,p\}$ some subset of variable's indexes. Denote by $\xx_{\cI} = \{x_i : i \in \cI\}$ the subset of $\xx$ that its indexes are in $\cI$.  
-The marginal probability of this sub-event is 
-\be
-\label{eq:MAR}
-P(\xx_{\cI}) = \sum_{x_i \in \cX, \forall\ i \in [1,\ldots p] \setminus \cI} P(x_1, \ldots, x_p)
-\ee
 
-
-We claimed before that in many cases each variable is directly influenced by only a small subset of the $p$ variables that describe the event.
-In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i})$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
-We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
+In many real world situations each variable (sub-event) is directly depend on only small subset of other variables.
+In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
+We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation.
+% $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
 Now this dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
 Each variable $x_i$ will be assign a vertex $v_i$. 
 An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$\footnote{if $i \in \nei{j}$ than $j \in \nei{i}$ otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which result in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ in contradiction to $j \in \nei{i}$}.
@@ -53,16 +45,27 @@ With this restriction the probability can be written as
 \label{eq:basic_model}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-were we define $\thetav$ as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$.
+were we define $\thetav$ as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$ and $Z(\thetav)$ is the normalization constant (with respect to $\xx$)
+\be
+\label{eq:partition_function}
+Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
+\ee
 
 \subsubsection{What can we do with it?}
 There are two basic questions that are of interest.
-First, what is the assignment that is most probable (MAP - maximum a posteriori).
+The most basic question is which event is the most likely, in other words: what is the assignment that is most probable (MAP - maximum a posteriori).
 \be
 \label{eq:MAP}
 \xx_{MAP} = \arg \max_{\xx \in \cX^p} P(\xx) 
 \ee
-Second, what is the marginal probability of a sub event \eqref{eq:MAR}(MAR - finding the marginal probability).
+Now sometimes we are not interested in the whole event but only in small fraction of its variables.
+We are looking for the marginal probability of some sub-event $\xx_{\cI}$.
+This can be calculated by summing over all the rest of variables:
+\be
+\label{eq:MAR}
+P(\xx_{\cI}) = \sum_{\substack{\zz \in \cX^{P}\\
+ s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz)
+\ee
 Note that these two problems can be asked when part of the variables was seen hene exponential number of different queries on the same model. 
 Both inference tasks can easily be infer by going over all the possible event.
 This however is too expensive since it is exponential in the number of variables.
@@ -71,9 +74,21 @@ And indeed in the general case MAP\cite{shimony1994finding} is NP complete probl
 The situation is not as hopeless as was described.
 First the hardness result apply only on the general case, if we restrict the structure of the dependency graph to a tree both problems can be solved in polynomial time \footnote{In fact any the hardness result parameters can be changed from the number of variables in the graph to the graph tree width \cite{robertson1983graph,robertson1994quickly} }.
 Other model restriction is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate}, fast mixing models\cite{jerrum1993polynomial}.
-However in general case approximate algorithm nust be used we will return to this point later see . \todo{add reference}
+However in general case approximate algorithm must be used we will return to this point later see . \todo{add reference}
+\subsubsection{Pros and cons}
+We just claim that inference is hard so why should one use such model.
+I will now go over the reasons why one should use graphical models.
+One may answer is that it is optimal - in classification for example, if we know the exact conditional distribution and can infer the MAP we will have the optimal solution. This situation is very unrealistic: we usually do not know the true model moreover the inference is NP hard so we usually use some approximation. So we return to the question when should we use it?
 
+In many situations we need to understand our model. In biology, we learn the structure of the model to better understand the learned biology system. If we rule out a user misuse, we may need the ability to explain our decision. In graphical models each variable has meaning hence understanding the learned model is easier then other model - SVM for example.
+
+The model in graphical models usually lack the distinction between features and outcome. In situation that such separation is artificial graphical model give power that is not found else where. We can ask different queries on the same model and have consist answers. Take for example medical situation, we are interested on the probability of several symptoms, each is a different query.
+
+This bring us the next two important features, handling missing values and structured output. In many situations we do not always see all of the variables. Graphical models, handle missing values inherently and such cases need not special treatment ( as is the case in other models). Lastly, the queries result is not necessarily a single variable. Queries on several variables are possible and will take into account the relation between these variables.
+
+To conclude, graphical models is a very powerful toll. This power come with a price,  inferring and learning (as we will see later) are hard and approximation algorithm must be used in most cases.
 \subsection{Support Vector Machine}
+\subsubsection{Notations and Definitions}
 One basic problem in machine learning is classification.
 Given features of an instance we want the ability to classify - assign one label out of to small discrete group.
 Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|,q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
@@ -100,6 +115,12 @@ Taking the dual and some algebra gives:
 Where $\lambda$ is the relularization parameter, $\bold{1}_i$ is the all zero vector except the $i$ coordinate and $\bold{1}$ is the all one vector.
 Note that in this form it is enough to calculate the dot product between any two samples - no need to calculate the map $\phi$.
 This is know as the kernel trick \cite{hofmann2008kernel}.
+\subsubsection{Pros and Cons}
+Support Vector Machine, optimize objective that is very close to the optimal one. Learning is a convex optimization problem hence efficient and classification time complexity is linear in the number of features. In short its is very efficient method.
+But this efficiency come with the price of power of expression since we consider only linear models, to overcome this shortcoming we use kernels.
+
+When using kernel SVM the efficiency depend on the number of samples\footnote{More accurately it depend on the margin of the problem but in practice it is not usually come into effect.} since usually the number of samples that participate in the classifier scales with the number of samples( the number of non-zero $\alphav_i$). Hence both learning and classification can be relatively costing.
+Moreover in both linear and kernel SVM, there is no principle way to integrate prior knowledge. This has grate importance in many fields where there is strong dependencies between the features and known structure for example the task of object recognition.
 
 \subsection{Neural Networks}
 Neural networks, as SVM, try to solve classification problems.
@@ -116,6 +137,7 @@ Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} 
 
 This functions class result in a non convex function hence non convex optimization problem.
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
+
 
 \section{Learning Graphical Models}
 Learning graphical models (GM) can be divided into two main stages.
