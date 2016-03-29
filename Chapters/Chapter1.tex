@@ -26,7 +26,7 @@ After defining the event the probability is  a function from the space of events
 
 In many real world situations each variable (sub-event) is directly depend on only small subset of other variables.
 In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
-We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation.
+We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation and by $d_i = |\nei{i}|$ the number of neighbors of variable $i$.  
 % $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
 Now this dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
 Each variable $x_i$ will be assign a vertex $v_i$. 
@@ -143,4 +143,29 @@ But it allow for a quick calculation of the derivative using the chain role and 
 Learning graphical models (GM) can be divided into two main stages.
 The first is learning the dependency graph - the edges of the graph $E$.
 The second is learning the parameters of the model $\thetav$.
+We will go over now on what is known in these two objectives.
+\subsection{Structure learning}
+\begin{itemize}
+\item - if the graph s known to be a tree the exact structure can be found by maximum spanning tree where the weights are the empirical information between any two vertices \cite{chowLiu}.
+\item  difficulty result - structure learning time complexity is $\Omega(p^{\frac{d}{2}})$ \cite{bresler2014structure} and sample complexity of $\Omega(d\log p)$\cite{bresler2008reconstruction, santhanam2012information}.
+\item We can divide the algorithm into types:
+  \begin{itemize}
+    \item Focusing only with Gaussian multivariate distribution - this is equivalent to estimate the non-zeros cell in the inverse of the co-variance matrix \cite{meinshausen2006high,yuan2007model, friedman2008sparse}. 
+    \item search algorithm. 
+    \item algorithm assume known $d_{max}$ \cite{bresler2008reconstruction, abbeel2006learning} . \cite{bresler2008reconstruction} work directly on the probability while \cite{abbeel2006learning} check the conditional entropy.
+     
+  \end{itemize}
 
+\end{itemize}
+%% Need to change direction in the second reason - go over approximation.
+I believe the first thing to ask, why do we learned this model.
+Are we interested in the model itself - it is important to us to know the dependency graph, we want to know which variables has the greatest influence on certain variables etc.
+The other reason we will want to learned a model is to have the ability to ask queries on that model.
+In this setting we hope to learned a model such that has good generalization.
+In other words we are seeking a model that not only explain the observed data but give insight on unseen events.
+we want the ability to ask queries on unseen scenarios and receive good answers.
+This two reasons has, in a way, opposite goals: while the first need only to best explain the data, the second seek a model that is more general hence handle unseen events.
+Most of the research ignore this two different goals and always seek to  
+
+
+   
