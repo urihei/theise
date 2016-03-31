@@ -149,11 +149,11 @@ But it allow for a quick calculation of the derivative using the chain role and 
 Understanding why you are doing something before doing it, is good practice in life. 
 So I will start by presenting two reasons why we learned graphical models.
 In many domains the main interest is in understanding the model.
-We want to know what is the minimum set of variables that can explain specific variable - what are is neighbors.
-Which variable has the greatest effect on this variable etc.
+For example, we want to know what is the minimum set of variables that can explain specific variable - which verties are its neighbors.
+Or which variable has the greatest effect on this variable etc.
 For this purpose we are interested in learning the exact model - a model that is as similar as possible to the ``real'' model \footnote{
 In structure learning this sum-down the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
-When learning the parameters - the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
+When learning the parameters, the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
 This feature is know as reparameterization and it play important roll in Belief Propagation as was presented \ref{}\todo{FILL REF }}.
 
 On the other hand, in many domains we seek the ability to answer queries.
@@ -172,7 +172,7 @@ The first is learning the dependency graph - the edges of the graph $E$.
 The second is learning the parameters of the model $\thetav$.
 \subsection{Structure learning}
 First lets define what exactly is our goal.
-Having a probability $P(\xx;\thetav)$ defined as in \equref{eq:ciluqe_prob}.
+Having a probability $P(\xx;\thetav)$ defined as in \eqref{eq:ciluqe_prob}.
 We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P\xx;\thetav)$.
 
 There was a lot of research on the time and sample complexity of this problem.
@@ -181,8 +181,14 @@ In the global setting, there seem to be four parameters that govern the complexi
 The first is of course the number of vertices $p$.
 The second is the maximum degree in the graph - $d_{max} = \max_{i \in V} d_i$.
 The third and the forth parameters quantify the strength of the interaction between the variables.
-In the Ising model\footnote{ The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_i{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$} this parameters are easily expressed by (following \cite{santhanam2012information}) $\lambda = \min_{ij} \theta_{ij}$ and $\omega = \max_i \sum_{\nei{i}} \theta_{ij}$.
+In the Ising model\footnote{ The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$} this parameters are easily expressed by (following \cite{santhanam2012information}) $\lambda = \min_{ij} \theta_{ij}$ and $\omega = \max_i \sum_{\nei{i}} \theta_{ij}$.
 While in other models (where the cardinality is greater than $|\cX|<2$ it is not known how to express this quantities.
+Hence bound on non-binary models ignore these two factors\footnote{In proving upper bounds some conditions on the probability instead of the model is given. In my opinion the above two parameters hide there as well see \cite{bresler2008reconstruction}}.
+
+The sample complexity bounds are $N > \Omega(d_{max} \log p)$ and $N > \Omega(\max\{d_{max}^2, \lambda^{-2}\}log p) $ to the general case and the Ising model respectively. This mean that we need at least $N$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
+Algorithm for the general case with sample complexity bounds need to assume something on the probability (see discussion above) hence I will give upper bounds only on the Ising model.
+In the Ising model if $N > O(\max\{d^2, \lambda^2\}d\log p)$ than in high probability the exact graph $\exact{E}$ can be recover see\cite{santhanam2012information}.
+
 
 \begin{itemize}
 \item 
