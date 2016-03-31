@@ -33,6 +33,7 @@ Each variable $x_i$ will be assign a vertex $v_i$.
 An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$\footnote{if $i \in \nei{j}$ than $j \in \nei{i}$ otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which result in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ in contradiction to $j \in \nei{i}$}.
 Now by the Hammersley–Clifford theorem\cite{hammersley1971markov}\footnote{We defined the probability as positive}, we can write out the probability as
 \be
+\label{eq:ciluqe_prob}
 P(\xx) = \frac{1}{Z} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}
 \ee
 Where $\theta_{c}(\xx_{c}): \cX^{|c|} \to \reals$  is a function, $\cC$ is the set of all maximal cliques\footnote{a clique is a set of vertices that have an edge to all vertices in the set. A maximal clique mean that no other vertex can be added to the clique and it still be a clique.} in $G$ and $Z = \sum_{\xx \in \cX^p} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}$ is the normalization constant called the partition function.
@@ -95,7 +96,7 @@ Formally, given $\xx \in \Re^p$, a classifying function (more accurately class o
 Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning label $f(\xx,\ww)$ where the true label is $y$.
 
 The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
-First, we usually do not know the real distribution, but only have a sample of it: given a samples $D = \{(\xx_i,y_i)\}_{i=1}^M$  where $\xx_i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
+First, we usually do not know the real distribution, but only have a sample of it: given a samples $D = \{(\xx_i,y_i)\}_{i=1}^N$  where $\xx_i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
 We will want to minimize our objective on this sample - minimizing the empirical loss\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
 Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation, here by giving the instance of group $\cL$ and its index the same notation}.
 Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
@@ -138,15 +139,53 @@ Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} 
 This functions class result in a non convex function hence non convex optimization problem.
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
 
-
+\section{Approximate inference}
+\label{sec:approx}
+\subsection{Variational Methods}
+\subsubsection{Belief Propagation}
+\subsubsection{Tree Re-Weighted belief propagation}
+\subsection{Sampling}
 \section{Learning Graphical Models}
-Learning graphical models (GM) can be divided into two main stages.
+Understanding why you are doing something before doing it, is good practice in life. 
+So I will start by presenting two reasons why we learned graphical models.
+In many domains the main interest is in understanding the model.
+We want to know what is the minimum set of variables that can explain specific variable - what are is neighbors.
+Which variable has the greatest effect on this variable etc.
+For this purpose we are interested in learning the exact model - a model that is as similar as possible to the ``real'' model \footnote{
+In structure learning this sum-down the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
+When learning the parameters - the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
+This feature is know as reparameterization and it play important roll in Belief Propagation as was presented \ref{}\todo{FILL REF }}.
+
+On the other hand, in many domains we seek the ability to answer queries.
+When asking our model a query we want the result to be similar as if it is the result of the real process.
+For example, if we learned a model of digits in an image (the variables are the image pixels and the digit in the picture).
+Our objective is that when inferring the digit from an image we will have as answer the correct digit.
+This is regardless of how much the graph structure or the parameters are close to the real model.
+In a world with no computations limitation this two objective are the same - we will learned the exact model and preform exact inference.
+Unfortunately, exact inference is NP-hard in many cases, hence we will be forced to use approximate inference (see \secref{sec:approx}).
+Remember that our objective is to correctly answer queries, taking into account the performance of the inference algorithm is a must.
+
+Most of the research on learning graphical models(GM) seek to reconstruct the real model.
+I will give a short survey on learning for reconstruction of the exact model.
+It will be divided into the two main stages of the learning.
 The first is learning the dependency graph - the edges of the graph $E$.
 The second is learning the parameters of the model $\thetav$.
-We will go over now on what is known in these two objectives.
 \subsection{Structure learning}
+First lets define what exactly is our goal.
+Having a probability $P(\xx;\thetav)$ defined as in \equref{eq:ciluqe_prob}.
+We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P\xx;\thetav)$.
+
+There was a lot of research on the time and sample complexity of this problem.
+First if the graph is known to be a tree, the exact structure can be found by maximum spanning tree where the weights are the empirical information between any two vertices \cite{chowLiu}.
+In the global setting, there seem to be four parameters that govern the complexity of structure learning.
+The first is of course the number of vertices $p$.
+The second is the maximum degree in the graph - $d_{max} = \max_{i \in V} d_i$.
+The third and the forth parameters quantify the strength of the interaction between the variables.
+In the Ising model\footnote{ The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_i{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$} this parameters are easily expressed by (following \cite{santhanam2012information}) $\lambda = \min_{ij} \theta_{ij}$ and $\omega = \max_i \sum_{\nei{i}} \theta_{ij}$.
+While in other models (where the cardinality is greater than $|\cX|<2$ it is not known how to express this quantities.
+
 \begin{itemize}
-\item - if the graph s known to be a tree the exact structure can be found by maximum spanning tree where the weights are the empirical information between any two vertices \cite{chowLiu}.
+\item 
 \item  difficulty result - structure learning time complexity is $\Omega(p^{\frac{d}{2}})$ \cite{bresler2014structure} and sample complexity of $\Omega(d\log p)$\cite{bresler2008reconstruction, santhanam2012information}.
 \item We can divide the algorithm into types:
   \begin{itemize}
@@ -157,15 +196,7 @@ We will go over now on what is known in these two objectives.
   \end{itemize}
 
 \end{itemize}
-%% Need to change direction in the second reason - go over approximation.
-I believe the first thing to ask, why do we learned this model.
-Are we interested in the model itself - it is important to us to know the dependency graph, we want to know which variables has the greatest influence on certain variables etc.
-The other reason we will want to learned a model is to have the ability to ask queries on that model.
-In this setting we hope to learned a model such that has good generalization.
-In other words we are seeking a model that not only explain the observed data but give insight on unseen events.
-we want the ability to ask queries on unseen scenarios and receive good answers.
-This two reasons has, in a way, opposite goals: while the first need only to best explain the data, the second seek a model that is more general hence handle unseen events.
-Most of the research ignore this two different goals and always seek to  
+
 
 
    
