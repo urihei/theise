@@ -149,8 +149,8 @@ But it allow for a quick calculation of the derivative using the chain role and 
 Understanding why you are doing something before doing it, is good practice in life. 
 So I will start by presenting two reasons why we learned graphical models.
 In many domains the main interest is in understanding the model.
-For example, we want to know what is the minimum set of variables that can explain specific variable - which verties are its neighbors.
-Or which variable has the greatest effect on this variable etc.
+For example, we want to know what is the minimum set of variables that can explain specific variable - which variables are its neighbors.
+Or which variable has the greatest effect on another variable etc.
 For this purpose we are interested in learning the exact model - a model that is as similar as possible to the ``real'' model \footnote{
 In structure learning this sum-down the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
 When learning the parameters, the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
@@ -159,49 +159,46 @@ This feature is know as reparameterization and it play important roll in Belief 
 On the other hand, in many domains we seek the ability to answer queries.
 When asking our model a query we want the result to be similar as if it is the result of the real process.
 For example, if we learned a model of digits in an image (the variables are the image pixels and the digit in the picture).
-Our objective is that when inferring the digit from an image we will have as answer the correct digit.
+We are looking for a model that given a new image infer the correct digit - the digit that is in the image.
 This is regardless of how much the graph structure or the parameters are close to the real model.
 In a world with no computations limitation this two objective are the same - we will learned the exact model and preform exact inference.
 Unfortunately, exact inference is NP-hard in many cases, hence we will be forced to use approximate inference (see \secref{sec:approx}).
 Remember that our objective is to correctly answer queries, taking into account the performance of the inference algorithm is a must.
 
 Most of the research on learning graphical models(GM) seek to reconstruct the real model.
-I will give a short survey on learning for reconstruction of the exact model.
+I will give a short survey on learning when the objective is reconstruction of the exact model.
 It will be divided into the two main stages of the learning.
-The first is learning the dependency graph - the edges of the graph $E$.
-The second is learning the parameters of the model $\thetav$.
+First is learning the dependency graph - the edges of the graph $E$.
+Than learning the parameters of the model $\thetav$.
 \subsection{Structure learning}
 First lets define what exactly is our goal.
 Having a probability $P(\xx;\thetav)$ defined as in \eqref{eq:ciluqe_prob}.
-We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P\xx;\thetav)$.
+We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P(\xx;\thetav)$.
 
-There was a lot of research on the time and sample complexity of this problem.
-First if the graph is known to be a tree, the exact structure can be found by maximum spanning tree where the weights are the empirical information between any two vertices \cite{chowLiu}.
+I will start by presenting the sample and time complexity of the above problem. 
+First if the graph is known to be a tree, the exact structure can be found by maximum spanning tree.  Where the  weights are the empirical information between any two vertices \cite{chowLiu}. 
+Later \cite{tan2011learning} prove sample complexity for trees is $\Omega(\log(p))$.
 In the global setting, there seem to be four parameters that govern the complexity of structure learning.
 The first is of course the number of vertices $p$.
 The second is the maximum degree in the graph - $d_{max} = \max_{i \in V} d_i$.
 The third and the forth parameters quantify the strength of the interaction between the variables.
 In the Ising model\footnote{ The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$} this parameters are easily expressed by (following \cite{santhanam2012information}) $\lambda = \min_{ij} \theta_{ij}$ and $\omega = \max_i \sum_{\nei{i}} \theta_{ij}$.
-While in other models (where the cardinality is greater than $|\cX|<2$ it is not known how to express this quantities.
-Hence bound on non-binary models ignore these two factors\footnote{In proving upper bounds some conditions on the probability instead of the model is given. In my opinion the above two parameters hide there as well see \cite{bresler2008reconstruction}}.
+While in other models (where the cardinality is greater than $|\cX|>2$ it is not known how to express this quantities - the strength of the interaction between the variables as a function of the model parameters.
+Hence lower bounds  on non-binary models ignore these two factors\footnote{In proving upper bounds some conditions on the probability instead of the model is given. In my opinion the above two parameters hide there as well see \cite{bresler2008reconstruction}}.
 
-The sample complexity bounds are $N > \Omega(d_{max} \log p)$ and $N > \Omega(\max\{d_{max}^2, \lambda^{-2}\}log p) $ to the general case and the Ising model respectively. This mean that we need at least $N$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
-Algorithm for the general case with sample complexity bounds need to assume something on the probability (see discussion above) hence I will give upper bounds only on the Ising model.
-In the Ising model if $N > O(\max\{d^2, \lambda^2\}d\log p)$ than in high probability the exact graph $\exact{E}$ can be recover see\cite{santhanam2012information}.
+The sample complexity bounds are $N > \Omega(d_{max} \log p)$ and $N > \Omega(\max\{d_{max}^2, \lambda^{-2}\}log p) $ to the general case and the Ising model respectively where $\lambda = \min_{ij \in E}\theta_{ij}$ . This mean that we need at least $N$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
+Lower bound on sample complexity of $\Omega(p^{\frac{d_{max}}{2}})$ was given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithm that use an oracle that return the expectation of any function - no direct access to the data}
 
+Algorithm for structural graph are abundant we will give only a short list.
+Moreover the algorithms differ in what assumed to given to the algorithm, what is the underline model and other assumption so compression is hard.   
+ \begin{itemize}
+    \item Gaussian multivariate distributions  is an example where it is clear that the problem is easier since it  is equivalent to estimate the non-zeros cell in the inverse of the co-variance matrix. An example of algorithm solving this problem are \cite{meinshausen2006high,yuan2007model, friedman2008sparse}. 
+    \item As seen before $d_{max}$ the maximum degree play an important role in the lower bounds. Many algorithms \cite{bresler2008reconstruction, abbeel2006learning} assume  $d_{max}$ is known and preform a search on all subsets of that size (or larger).  In\cite{bresler2008reconstruction} give bound $O(p^{2d_{max}+1}\log p)$ with mild condition on the graph  . While \cite{abbeel2006learning} does not guarantee to reconstruct the graph, but to be as close as needed in a Kullback–Leibler divergence manner to the true one. Its complexity bounds are $O(p^{a d})$ where $a$ is some parameter of the model (it deals with factors graph so the compression is hard).
+    \item Focusing on Ising models with given threshold (the minimum difference of the probability when one of its neighbors change its assignment)  \cite{bresler2015efficiently} give an algorithm of $O(p^2\log p)$. In the paper  the given bound is  more accurate - it take into account the interaction strength . Note that this algorithm can not be extended to non pairwise models.
+\item Pradeep
+\item Andi 
 
-\begin{itemize}
-\item 
-\item  difficulty result - structure learning time complexity is $\Omega(p^{\frac{d}{2}})$ \cite{bresler2014structure} and sample complexity of $\Omega(d\log p)$\cite{bresler2008reconstruction, santhanam2012information}.
-\item We can divide the algorithm into types:
-  \begin{itemize}
-    \item Focusing only with Gaussian multivariate distribution - this is equivalent to estimate the non-zeros cell in the inverse of the co-variance matrix \cite{meinshausen2006high,yuan2007model, friedman2008sparse}. 
-    \item search algorithm. 
-    \item algorithm assume known $d_{max}$ \cite{bresler2008reconstruction, abbeel2006learning} . \cite{bresler2008reconstruction} work directly on the probability while \cite{abbeel2006learning} check the conditional entropy.
-     
   \end{itemize}
-
-\end{itemize}
 
 
 
