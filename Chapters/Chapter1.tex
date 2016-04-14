@@ -241,17 +241,18 @@ ordered in a vector in the same way $\thetav$.
 We are looking for $\thetav$ that maximize ML. 
 So taking the derivative and compare to zero is the prompted step:
 \bea
-\frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{i}(x_i,)} &=& \mub_{i}(x_i) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{i}(x_i)} \\
+\frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{i}(x_i)} &=& \mub_{i}(x_i) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{i}(x_i)} \\
 \frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{ij}(x_i,x_j)} &=& \mub_{ij}(x_i,x_j) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} \\
 \eea
   The derivative of the partition function is given by\cite{wainwright2008graphical}
 \bea
 \frac{ \partial \log(Z(\thetav))}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX
-s.t. \xx_k = x_k}}, \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{n \in V} \theta_i(x_i)} = p(x_i;\thetav)\\
+s.t. \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = p(x_i;\thetav)\\
 \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} &=& p(x_i,x_j;\thetav)
 \eea
 We can conclude that the ML parameter $\ml{\thetav}$ must satisfy the moment matching characters - the marginals of the model must equals to the empirical marginals.
 \be
+\label{eq:moment_matching}
 \mub_i(x_i) = p(x_i;\thetav), \ \ \ \mub_{ij}(x_i,x_j) = p(x_i,x_j;\thetav)
 \ee
 This feature is very intuitive, we want the resulted probability to be able to re-generate the sample's marginals.
@@ -271,10 +272,49 @@ Hence if a time efficient algorithm that find the ML parameter is to be found, i
 
 We will no consider an approximation to the ML Pseudo-Likelihood.
 \subsubsection{Pseudo-Likelihood}
-The classic way of understanding Pseudo-Likelihood (PL) is to see it as a way to approximate the likelihood.
+The classic way of understanding Pseudo-Likelihood (PL)\cite{besag1975statistical} is to see it as a way to approximate the likelihood.
 Specifically, if we will note that the likelihood can be written as $ p(\xx;\thetav) = \prod_{i=1}^p p(x_i |x_1,\ldots x_{i-1})$
 The PL approximation is
 \be
-pl(\xx;\thetav) = \prod_{i=1}^p p(x_i |\xx_{\setminus i}) = \prod_{i=1}^p p(x_i |\xx_{\nei{i}})
+pl(\xx;\thetav) = \prod_{i=1}^p p(x_i |\xx_{\setminus i};\thetav) = \prod_{i=1}^p p(x_i |\xx_{\nei{i}};\thetav)
 \ee
+Note that with using model \eqref{eq:basic_model}, we can write:
+\bea
+p(x_k |\xx_{\setminus k};\thetav) &=& \frac{p(\xx;\thetav)}{p(\xx_{\setminus k};\thetav)}\\
+&=& \frac{p(\xx;\thetav)}{\sum_{x_k \in \cX }p(\xx;\thetav)}\\
+&=&\frac{\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{ i \in V} \theta_i(x_i)}}{\sum_{ \tilde{x}_{k} \in \cX }\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}}\\
+&=&\frac{\exp{\sum_{j \in \nei{k}} \theta_{kj}(x_k,x_j) + \theta_k(x_k)}}{\sum_{\tilde{x}_k \in \cX}\exp{\sum_{j \in \nei{k}} \theta_{kj}(\tilde{x}_k,x_j) + \theta_k(\tilde{x}_k)}}\\
+\eea
+%Now if all we want is to find the parameters we can just maximize the conditional likelihood namely:
+Now we can write PL as,
+\bea
+&&\frac{1}{N} \log \left(\prod_{n=1}^N \prod_{i \in V} p(x^n_i | \xx^n_{\nei{i};\thetav})\right) =\\ 
+&=&\sum_{i \in V}\frac{1}{N}\sum_{n=1}^N \sum_{j \in \nei{i}} \theta_{ij}(x^n_i,x^n_j) + \theta_i(x^n_i)\\
+&&-\log\left(\sum_{\tilde{x}_i \in \cX}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x^n_j) + \theta_i(\tilde{x}_i)}\right) \\
+&=& \sum_{i \in V} \sum_{j \in \nei{i}}\sum_{x_i,x_j \in \cX} \mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{x_i \in \cX}\mub_i(x_i)\theta_i(x_i)\\
+&&-\sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}})\log\left(\sum_{\tilde{x}_i \in \cX}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x_j) + \theta_i(\tilde{x}_i)}\right) \\
+\eea
+And the derivative are,
+\bea
+\frac{\partial pl(X^n;\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=&
+2 \mub_{ij}(x_i,x_j) \\
+&&- \sum_{\xx_{\nei{i}\setminus j} \in \cX^{|\nei{i}-1|}} \mub_{\nei{i}}(x_j,  \xx_{\nei{i}\setminus j}) p(x_i|x_j, \xx_{\nei{i}\setminus j};\thetav)\\
+&& - \sum_{\xx_{\nei{j}\setminus i} \in \cX^{|\nei{j}-1|}} \mub_{\nei{j}}(x_i,  \xx_{\nei{j}\setminus i}) p(x_j|x_i, \xx_{\nei{i}\setminus j};\thetav)\\
+\frac{\partial pl(X^n;\thetav)}{\partial \theta_{i}(x_i)} &=& 
+\mub_i(x_i) - \sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}}) p(x_i|\xx_{\nei{i}};\thetav)
+\eea
+Note first that it is easy to calculate $ p(x_i|\xx_{\nei{i}};\thetav)$ since the partition function is summation only on the values of $x_i$.
+Hence optimizing by gradient descent is plausible.  
+Second, this condition is similar to the moment matching condition of \eqref{eq:moment_matching}.
+Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
+But if we consider the result by \cite{bresler2014hardness,montanari2015computational} to have any time efficient  algorithm we will need moments with higher dimensions hence pay in sample complexity. 
 
+Another view point of PL is just preforming ML on the conditional marginals, we are looking for the parameters that maximize the conditional probability for each vertex separately.
+The derivative of the singleton parameter is the same.
+The pairwise change so it include only one of the summation.
+Since in this view the parameters distribute Normally, we can just take the average of the two approximation to the parameters.
+Now all the characteristic of ML can be apply here.
+Note that since we still need to approximate larger set - we still have slower convergence.
+Moreover, since it directly dependent on its neighborhood a wrong neighborhood (wrong graph structure) is likely to have more impact than in ML ().
+
+   
