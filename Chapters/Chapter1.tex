@@ -206,7 +206,10 @@ Correlation decay was considered as an option\cite{montanari2009graphical} but \
 Another difficulty (which is sometimes ignored) is the jump of difficulty when the factor size is not bounded (or as large as $\dmax$). 
 I believe this can be a very int resting research direction, under what conditions  a model with bounded factor size and unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}.
 \subsection{Parameters Learning}
-As in the previous section I will start with the problem definition. In parameters learning it is assumed that the structure is given (but not necessarily the exact one). The most trivial objective will be to find $\exact{\thetav}$. But this  is well define objective since two parameters can differ but still give the same probability. Hence the objective will be, given a set of i.i.d sample from $p(\xx;\exact{\thetav})$ find $\thetav$ such that for all input $\forall \xx \in \cX^{p}$ we will have the same (or as close as possible) probability $p(\xx;\thetav) = p(\xx;\exact{\thetav})$.
+As in the previous section I will start with the problem definition. 
+In parameters learning it is assumed that the structure is given (but not necessarily the exact one). The most trivial objective will be to find $\exact{\thetav}$.  
+This  objective is not well define,  since two parameters can differ $\hat{\thetav} \neq \tilde{\thetav}$ but still give the same probability $\forall\ \xx \in \cX^p\ p(\xx;\hat{\thetav}) = p(\xx;\tilde{\thetav})$.
+Hence the objective will be to find the parameters that will define the same probability: given a set of i.i.d observations, sampled from $p(\xx;\exact{\thetav})$ find $\thetav$ such that for all input $\forall \xx \in \cX^{p}$ we will have the same (or as close as possible) probability $p(\xx;\thetav) = p(\xx;\exact{\thetav})$.
 Note that even to check this requirement is exponential of the size of $\xx$.
 So other objective, or other way to achieve this goal is required.
 I will start with the  most intuitive approach - maximum likelihood(ML).
@@ -215,7 +218,10 @@ I will start with the  most intuitive approach - maximum likelihood(ML).
 In ML we are looking for the parameters that will maximize the probability to sample the seen data-set.
 Note, that just giving probability of $\frac{1}{N}$ to each of the samples is the maximum likelihood solution, but it suffer from extreme overfitting.
 So some regularization is need , in GM it usually done by forcing a structure (forcing Independence assumptions) and the size of the factors.
-It is more convenient to maximize the log of the likelihood and to normalize it in the sample size $N$, denote by $X = [\xx^1, \ldots, \xx^N]$ the data-set.
+I will now define the maximum likelihood objective and than discuss its merits and drawbacks of it.
+
+It is more convenient to maximize the log of the likelihood and to normalize it by the sample size $N$, this changes do not change the parameters that maximize the  function $\arg \max_x\frac{1}{N}\log(f(x)) = \arg\max_x f(x)$. 
+Denote by $X = [\xx^1, \ldots, \xx^N]$ the data-set.
 With this the ML objective can be  formally defined  by  using the model in \eqref{eq:basic_model} as, 
 \bea
 \likelihood{X;\thetav} &=& \frac{1}{N}\log\left(\prod_{n=1}^N p(\xx^n;\thetav)\right) \\
@@ -248,3 +254,27 @@ We can conclude that the ML parameter $\ml{\thetav}$ must satisfy the moment mat
 \be
 \mub_i(x_i) = p(x_i;\thetav), \ \ \ \mub_{ij}(x_i,x_j) = p(x_i,x_j;\thetav)
 \ee
+This feature is very intuitive, we want the resulted probability to be able to re-generate the sample's marginals.
+ML has other desirable qualities (under some conditions): 
+It is consist - when $N \to \infty$, we will recover the exact parameters $\lim_{N \to \infty} \arg \max_{\thetav} p(X^N;\theta) =  \exact{\thetav}$\footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$.}. 
+It is efficient - in the limit no other consist estimator has lower mean square error than ML.   
+Asymptotic Normality: with sufficient data, the ML estimator mean will be the true parameter with add Gaussian noise, the probability to get very wrong parameter go down exponentially fast.
+
+It seem that ML is indeed all we need, this is however not the whole picture.
+ML suffer from several drawback.
+The first and most important it is not time efficient.
+Calculating the ML is $\#P$ since in involve calculating the partition function.
+Moreover, even calculating its derivative is $\#P$ since it involve inferring the marginals of the model.
+So direct gradient descent is not possible since it involve calculating the current model marginals.
+Even if we tackle the time complexity of finding the marginals, a result by \cite{bresler2014hardness,montanari2015computational} show that if $NP \neq RP$ no algorithm that use only the model marginals ( marginals corresponding to the model parameters) can learn the model parameters. 
+Hence if a time efficient algorithm that find the ML parameter is to be found, it must use higher order of marginals.
+
+We will no consider an approximation to the ML Pseudo-Likelihood.
+\subsubsection{Pseudo-Likelihood}
+The classic way of understanding Pseudo-Likelihood (PL) is to see it as a way to approximate the likelihood.
+Specifically, if we will note that the likelihood can be written as $ p(\xx;\thetav) = \prod_{i=1}^p p(x_i |x_1,\ldots x_{i-1})$
+The PL approximation is
+\be
+pl(\xx;\thetav) = \prod_{i=1}^p p(x_i |\xx_{\setminus i}) = \prod_{i=1}^p p(x_i |\xx_{\nei{i}})
+\ee
+
