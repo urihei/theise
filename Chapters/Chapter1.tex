@@ -240,11 +240,13 @@ ordered in a vector in the same way $\thetav$.
 
 We are looking for $\thetav$ that maximize ML. 
 So taking the derivative and compare to zero is the prompted step:
-\bea
-\frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{i}(x_i)} &=& \mub_{i}(x_i) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{i}(x_i)} \\
-\frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{ij}(x_i,x_j)} &=& \mub_{ij}(x_i,x_j) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} \\
-\eea
-  The derivative of the partition function is given by\cite{wainwright2008graphical}
+\bean
+\label{eq:ml_derv_single}
+\frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{i}(x_i)} &= \mub_{i}(x_i) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{i}(x_i)} =& \mub_{i}(x_i) - p(x_i;\thetav) \\
+\label{eq:ml_derv_pairs}
+\frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{ij}(x_i,x_j)} &= \mub_{ij}(x_i,x_j) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} =& \mub_{ij}(x_i,x_j) - p(x_i,x_j;\thetav)
+\eean
+  Where the derivative of the partition function is given by\cite{wainwright2008graphical}
 \bea
 \frac{ \partial \log(Z(\thetav))}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX
 s.t. \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = p(x_i;\thetav)\\
@@ -323,7 +325,19 @@ While PL parameters can easily be computed via gradient descent.
 No efficient way is known to recover ML parameters.
 The question whether there are cases when PL give better result than ML is still open.
 In the well specified case (the model structure and factors are exact) is was shown that ML is more efficient (sample wise) than PL \cite{liang2008asymptotic}
-While in the miss specified case (the more realistic case) is is not clear which method is better(see \cite{varin2011overview} for discussion ).
+While in the miss specified case (the more realistic case) is is not clear which method is better(see \cite{varin2011overview} for discussion).
 An interesting direction for research is to design an inference algorithm for PL.
 Meaning, design an efficient inference algorithm such that it is promised to return the empirical marginals when the model parameters was learned using PL.
    
+\subsubsection{Other Methods}
+Contrastive Divergance (CD) \cite{hinton2002training} is a method for parameters learning. 
+It was designed for models where part of the variables are hidden ( variables that there are no samples include them), but it could be used to general models.
+The idea is simple, remember \eqref{eq:ml_derv_single} and \eqref{eq:ml_derv_pairs} the difficulty is to evaluate the marginals according to the parameters $p(x_i,x_j;\thetav)$. 
+One way to approximate this quantity is by MCMC \ref{}.
+If we only preform small number of steps (usually one) to evaluate $p(x_i,x_j;\thetav)$ we result with CD.
+Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive} but it success in learning Restricted Boltzmann Machine (RBM) gain her its importance.
+
+ 
+
+
+  
