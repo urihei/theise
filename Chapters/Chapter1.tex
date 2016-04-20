@@ -312,13 +312,13 @@ Hence optimizing by gradient descent is plausible.
 Second, this condition is similar to the moment matching condition of \eqref{eq:moment_matching}.
 Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
 But if we consider the result by \cite{bresler2014hardness,montanari2015computational} to have any time efficient  algorithm we will need moments with higher dimensions hence pay in sample complexity. 
+Other characteristic of PL, such as $\thetav$ is asymptotically normally distributed,  can be derived from the more general family of composite likelihood see \cite{varin2011overview}.
 
 Another view point of PL is, that instead of approximating the likelihood, it just preforming ML on the conditional marginals. 
 We are looking for the parameters that maximize the conditional probability for each vertex separately.
 The derivative of the singleton parameter is the same.
-While the pairwise change so it include only one of the summation - hence a more moment matching like equation.
-Since in this view the parameters distribute Normally, we can just take the average of the two approximation to the parameters.
-Now all the characteristic of ML can be apply here.
+While the pairwise change, so it include only one of the summation - hence a more moment matching like equation.
+
 
 The first reason to use PL and not ML is time complexity.
 While PL parameters can easily be computed via gradient descent.
@@ -337,7 +337,27 @@ One way to approximate this quantity is by MCMC \ref{}.
 If we only preform small number of steps (usually one) to evaluate $p(x_i,x_j;\thetav)$ we result with CD.
 Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive} but it success in learning Restricted Boltzmann Machine (RBM) gain her its importance.
 
- 
-
+ A closed form equation for parameters estimation was given by \cite{abbeel2006learning}.
+Using the ideas from the proof of the Hammersley-Clifford theorem,  it estimate the canonical factors hence learned the graph parameters.
+More specifically, any distribution can be written by(using the model in \eqref{eq:ciluqe_prob}) 
+\be
+p(\xx;\exact{\thetav}) = \frac{1}{Z(\thetav)} \exp{\sum_{c \in \cC}\thetav_c(\xx_c)} = p(\tilde{\xx})\exp{\sum_{c\in\cC} \thetav^{\dagger}_c(\xx_c)}
+\ee
+Now the canonical factors $\thetav^{\dagger}$ are defined by,
+\be
+\thetav^{\dagger}_{c}(\xx_c) = \sum_{b \subseteq c} -1^{|c \setminus b|} \log{p(f(b,\xx_c,\tilde{\xx}))}
+\ee
+where  $f(b,\xx_c) : b \times \cX^{|c|} \times \cX^{|d|}\to \cX^{|d|}$  such that $b \subseteq c\subseteq d$ and for all $i \in d$ if $i \in b$ than $x_i = [\xx_c]_i$ otherwise $x_i = \tilde{\xx_i}$ for the fixed assignment $\tilde{\xx}$.
+This can be father simplify by using independence 
+\be
+\label{eq:abbeel}
+\thetav^{\dagger}_{c}(\xx_c) = \sum_{b \subseteq c} -1^{|c \setminus b|} \log{p(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})}
+\ee
+So a factor involve only the cliques and the neighbored variables.
+Hence to estimate the parameters we just need to change $p(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})$ by corespondent empirical marginals.
+In continues  paper \cite{roy2009learning} farther simplify the above equation but with no  implication to parameters learning.
+Note the resemblance of  \eqref{eq:abbeel} to the PL equation.
+Indeed in \cite{bradley2012sample} it is proved that the two methods give the same results.
+Moreover a compression of the sample complexity of this method, PL(more accurately of the composite likelihoods)  and ML is given.
 
   
