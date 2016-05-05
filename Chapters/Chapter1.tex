@@ -330,15 +330,14 @@ An interesting direction for research is to design an inference algorithm for PL
 Meaning, design an efficient inference algorithm such that it is promised to return the empirical marginals when the model parameters was learned using PL.
    
 \subsubsection{Other Methods}
-Contrastive Divergance (CD) \cite{hinton2002training} is a method for parameters learning. 
-It was designed for models where part of the variables are hidden ( variables that there are no samples include them), but it could be used to general models.
-The idea is simple, remember \eqref{eq:ml_derv_single} and \eqref{eq:ml_derv_pairs} the difficulty is to evaluate the marginals according to the parameters $p(x_i,x_j;\thetav)$. 
-One way to approximate this quantity is by MCMC \ref{}.
+Contrastive Divergance (CD) \cite{hinton2002training}  was designed for models where part of the variables are hidden ( variables that there are no samples include them), but it could be used to general models.
+The idea is simple, re-call from \eqref{eq:ml_derv_single} and \eqref{eq:ml_derv_pairs}, that the reason gradient-descent is impractical,  is  the hardness of evaluating the marginals according to the parameters $p(x_i,x_j;\thetav)$. 
+One way to approximate these marginals  is by MCMC \ref{}.
 If we only preform small number of steps (usually one) to evaluate $p(x_i,x_j;\thetav)$ we result with CD.
 Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive} but it success in learning Restricted Boltzmann Machine (RBM) gain her its importance.
 
- A closed form equation for parameters estimation was given by \cite{abbeel2006learning}.
-Using the ideas from the proof of the Hammersley-Clifford theorem,  it estimate the canonical factors hence learned the graph parameters.
+In contrast to the previous methods   \cite{abbeel2006learning} give a closed form equation for parameters estimation.
+Using the ideas from the proof of the Hammersley-Clifford theorem,  it estimate the canonical factors  - hence learned the graph parameters.
 More specifically, any distribution can be written by(using the model in \eqref{eq:ciluqe_prob}) 
 \be
 p(\xx;\exact{\thetav}) = \frac{1}{Z(\thetav)} \exp{\sum_{c \in \cC}\thetav_c(\xx_c)} = p(\tilde{\xx})\exp{\sum_{c\in\cC} \thetav^{\dagger}_c(\xx_c)}
@@ -347,17 +346,27 @@ Now the canonical factors $\thetav^{\dagger}$ are defined by,
 \be
 \thetav^{\dagger}_{c}(\xx_c) = \sum_{b \subseteq c} -1^{|c \setminus b|} \log{p(f(b,\xx_c,\tilde{\xx}))}
 \ee
-where  $f(b,\xx_c) : b \times \cX^{|c|} \times \cX^{|d|}\to \cX^{|d|}$  such that $b \subseteq c\subseteq d$ and for all $i \in d$ if $i \in b$ than $x_i = [\xx_c]_i$ otherwise $x_i = \tilde{\xx_i}$ for the fixed assignment $\tilde{\xx}$.
+where  $f(b,\xx_c,\tilde{\xx}) : \cI \times \cX^{|c|} \times \cX^{|d|}\to \cX^{|d|}$  such that $b \subseteq c\subseteq d$ and for all $i \in d$ if $i \in b$ than $x_i = [\xx_c]_i$ otherwise $x_i = \tilde{\xx_i}$ for the fixed assignment $\tilde{\xx}$.
 This can be father simplify by using independence 
 \be
 \label{eq:abbeel}
 \thetav^{\dagger}_{c}(\xx_c) = \sum_{b \subseteq c} -1^{|c \setminus b|} \log{p(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})}
 \ee
-So a factor involve only the cliques and the neighbored variables.
-Hence to estimate the parameters we just need to change $p(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})$ by corespondent empirical marginals.
+So a factor involve only the clique and the clique's neighbors.
+Hence to estimate the parameters we just need to change $p(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})$ by the corespondent empirical marginals.
 In continues  paper \cite{roy2009learning} farther simplify the above equation but with no  implication to parameters learning.
 Note the resemblance of  \eqref{eq:abbeel} to the PL equation.
 Indeed in \cite{bradley2012sample} it is proved that the two methods give the same results.
-Moreover a compression of the sample complexity of this method, PL(more accurately of the composite likelihoods)  and ML is given.
+They include a compression of the sample complexity of this method, PL(more accurately composite likelihoods)  and ML.
+
+Other methods goes in the same lines - avoiding the partition function. 
+For example \cite{hyvarinen2007some} use the ratio between the probability of two assignments, hence the partition function canceled.
+Note that using the ratio is not very different than using the conditional probability and indeed \cite{marlin2010inductive} and \cite{marlin2012asymptotic} compare the methods to pseudo-likelihood and explain the differences.
+Other methods like \cite{mizrahi2014icml} just cut off each clique with its neighbors and learn each factor independently\footnote{It assume independence of the clique neighbors from their other neighbors. But it is not clear how it effect the sample complexity a non is given in the paper. }.
+
+To conclude, ML is provably the most sample complexity efficient,   but no time efficient algorithm is known.
+Moreover, it was proven by \cite{bresler2014hardness,montanari2015computational} that no algorithm that use only the sufficient statistics in the clique order can optimize ML.
+On the other hand there is PL that is time efficient but its sample complexity is worst that that of PL.
+Methods like composite likelihood can give better sample complexity results while still be time efficient.
 
   
