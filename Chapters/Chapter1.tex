@@ -134,7 +134,7 @@ f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
 \eea
 Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$, $\wparamsi{k} = W_1,\ldots,W_k$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network.
 The $\sgn{x}$ function is known as the activation function a simple non linear function.
-Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result in a vector).}.
+Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}.
 
 This functions class result in a non convex function hence non convex optimization problem.
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
@@ -142,9 +142,30 @@ But it allow for a quick calculation of the derivative using the chain role and 
 \section{Approximate inference}
 \label{sec:approx}
 \subsection{Variational Methods}
+
 \subsubsection{Belief Propagation}
+\be
+\mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
+s.t.\  \xx_k=x_k}}e^{\theta_k(x_k) + \sum_{j \in \nei{k}}\theta_{k,j}(x_k,x_j)}e^{\sum_{i \in V \setminus k}\theta_{i}(x_i) +\sum_{\substack{ij \in E\\
+ s.t.\  i,j \ne k}}\theta_{ij}(x_i,x_j)}
+%} {\sum_{\hat{x}_k}e^{\theta_k(\hat{x}_k) + \sum_{j \in \nei{k}}\theta_{k,j}(\hat{x}_k,x_j)}e^{\sum_{i \in V \setminus k}\theta_{i}(x_i) +\sum_{\substack{ij \in E\\
+% s.t.\  i,j \ne k}}\theta_{ij}(x_i,x_j)}}
+\ee
+Denote by $\thetav^{\setminus k}$ the model where we remove all factors involve the vertex $k$.
+Now the marginal of the neighbors of $k$ in  that model is
+\be
+\muv_{\nei{k}}(\xx_{\nei{k}}; \thetav^{\setminus k}) \approx \sum_{\substack{\hat{\xx}\\
+s.t. \hat{\xx}_{\nei{k}} = \xx_{\nei{k}}}}  e^{\sum_{i \in V \setminus k}\theta_{i}(\hat{x}_i) +\sum_{\substack{ij \in E\\
+ s.t.\  i,j \ne k}}\theta_{ij}(\hat{x}_i,\hat{x}_j)}
+\ee
+ With this we can write
+\bea
+\mu_k(x_k;\thetav)  &\approx& \sum_{\xx_{\nei{k}}} e^{\theta_k(x_k) + \sum_{j \in \nei{k}}\theta_{k,j}(x_k,x_j)} \muv_{\nei{k}}(\xx_{\nei{k}}; \thetav^{\setminus k})\\
+ &\approx& e^{\theta_k(x_k)}  \prod_{j \in \nei{k}} \sum_{ x_j } e^{\theta_{k,j}(x_k,x_j)} \muv_{j}(x_j; \thetav^{\setminus k})\\
+\eea
 \subsubsection{Tree Re-Weighted belief propagation}
 \subsection{Sampling}
+\label{sec:sampling}
 \section{Learning Graphical Models}
 Understanding why you are doing something before doing it, is good practice in life. 
 So I will start by presenting two reasons why we learned graphical models.
