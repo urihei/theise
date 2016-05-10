@@ -18,7 +18,7 @@
 \subsection{Graphical Models}
 \subsubsection{Notations and Definitions}
 Probability is the chance that a certain event will take place.
-Hence we need to define all the possible.
+Hence we need to define all the possible events.
 We will denote an event by $x \in \cX$, and we will restrict it to be discrete $ |\cX| \in \naturalNumbers$
 \footnote{Through out this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models is very useful model}.
 An event can be a composite of simpler $p \in \naturalNumbers$ sub events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
@@ -34,7 +34,7 @@ An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$\footnote{if $i \in \ne
 Now by the Hammersley–Clifford theorem\cite{hammersley1971markov}\footnote{We defined the probability as positive}, we can write out the probability as
 \be
 \label{eq:ciluqe_prob}
-P(\xx) = \frac{1}{Z} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}
+P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}
 \ee
 Where $\theta_{c}(\xx_{c}): \cX^{|c|} \to \reals$  is a function, $\cC$ is the set of all maximal cliques\footnote{a clique is a set of vertices that have an edge to all vertices in the set. A maximal clique mean that no other vertex can be added to the clique and it still be a clique.} in $G$ and $Z = \sum_{\xx \in \cX^p} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}$ is the normalization constant called the partition function.
 Even from the ability to describe the probability in this compact form\footnote{the naive description length is $O(|\cX|^p)$ while with this representation it is $O(\sum_{c \in \cC} |\cX|^{|c|})$}the merit of connecting probability and graph is clear, in other words the potential of graphical models \cite{koller2009probabilistic}.
@@ -46,26 +46,40 @@ With this restriction the probability can be written as
 \label{eq:basic_model}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-were we define $\thetav$ as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$ and $Z(\thetav)$ is the normalization constant (with respect to $\xx$)
+were we define $\thetav \in \Omega_G $ as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$ hence $\Omega_G$ is the space of real vectors with dimension $|V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega_G \equiv \Re^{|V||\cX|+ |E||\cX|^2}$
+The normalization constant $Z(\thetav)$ - the partition function, is defined as, 
 \be
 \label{eq:partition_function}
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
+In what follow the log of the partition function will be of importance, hence it will be denoted as $A(\thetav) = \log(Z(\thetav)$. Moreover the derivative of it has an interesting characteristic \cite{wainwright2008graphical},
+\bea
+\label{eq:pratition_derivative}
+\frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\\
+s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = \mu^{\thetav}_i(x_i)\\
+\frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& \mu^{\thetav}_{ij}(x_i, x_j)\\
+\eea
+Where we define the marginals as $\mu_i^{\thetav}(x_i) \equiv P(x_i;\thetav)$ and $\mu_{ij}^{\thetav}(x_i,x_j) \equiv P(x_i,x_j;\thetav)$.
+Note that when clear, the dependence in $\thetav$ will be drooped. 
+Moreover ordering the marginals the same way as $\thetav$ will result in a vector $\muv$.
 
+The fact that the derivative of $A(\thetav)$ by $\thetav_{ij}(x_i,x_j)$ equals the marginal probability of these variables,
+illustrate its importance. 
+Other feature of it would be presented at \secref{sec:variational_methods}.
 \subsubsection{What can we do with it?}
 There are two basic questions that are of interest.
 The most basic question is which event is the most likely, in other words: what is the assignment that is most probable (MAP - maximum a posteriori).
 \be
 \label{eq:MAP}
-\xx_{MAP} = \arg \max_{\xx \in \cX^p} P(\xx) 
+\xx_{MAP} = \arg \max_{\xx \in \cX^p} P(\xx; \thetav) 
 \ee
 Now sometimes we are not interested in the whole event but only in small fraction of its variables.
 We are looking for the marginal probability of some sub-event $\xx_{\cI}$.
 This can be calculated by summing over all the rest of variables:
 \be
 \label{eq:MAR}
-P(\xx_{\cI}) = \sum_{\substack{\zz \in \cX^{P}\\
- s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz)
+P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX^{P}\\
+ s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz;\thetav)
 \ee
 Note that these two problems can be asked when part of the variables was seen hene exponential number of different queries on the same model. 
 Both inference tasks can easily be infer by going over all the possible event.
@@ -73,9 +87,11 @@ This however is too expensive since it is exponential in the number of variables
 And indeed in the general case MAP\cite{shimony1994finding} is NP complete problem while MAR\cite{cooper1990computational} is \#P complete (MAR is even hard to approximate \cite{roth1996hardness}).
 
 The situation is not as hopeless as was described.
-First the hardness result apply only on the general case, if we restrict the structure of the dependency graph to a tree both problems can be solved in polynomial time \footnote{In fact any the hardness result parameters can be changed from the number of variables in the graph to the graph tree width \cite{robertson1983graph,robertson1994quickly} }.
-Other model restriction is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate}, fast mixing models\cite{jerrum1993polynomial}.
-However in general case approximate algorithm must be used we will return to this point later see . \todo{add reference}
+First, the complexity parameter is not the number of variables but a feature of the graph called tree-width\cite{robertson1983graph,robertson1994quickly}.
+The tree width of the graph is usually smaller than the number of vertices, but given a graph it is NP-complete to determine if the graph has tree-width smaller than $k$\cite{Arnborg:1987}.
+For example if we restrict the structure of the dependency graph to a tree both problems can be solved in polynomial time since the tree-width of a tree is one.
+But there are other model restriction that is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
+However in general case the inference problem is hard and approximate algorithm must be used. I will discuss approximation algorithm  in \secref{sec:approx} . 
 \subsubsection{Pros and cons}
 We just claim that inference is hard so why should one use such model.
 I will now go over the reasons why one should use graphical models.
@@ -141,7 +157,35 @@ But it allow for a quick calculation of the derivative using the chain role and 
 
 \section{Approximate inference}
 \label{sec:approx}
+Graphical models is a way to model distributions.
+In order it to be of use an algorithm should be found that could answer queries based on the model, in other words preform inference.
+As written above, exact inference in the general is NP-complete.
+Hence the importance of finding an approximate inference.
+I will focus in this introduction only on the problem of finding the marginals (not the MAP problem) since in learning it is of more use as I will show later.
+
+The approximate inference algorithm can be divided in to two main categories: variational inference, and sampling.
+I will now try to go over the main principles of the two categories.
 \subsection{Variational Methods}
+\label{sec:variational_methods}
+I will follow in this section the excellent work by \cite{wainwright2008graphical}.
+We are interesting in finding $\muv$ the marginals.
+First we need to define our search space - the marginal-ploytope.
+\bea
+\margpoly_G = \big{\{} \muv \in \Re^d\ &|& \exists \thetav \in \Omega_G\ s.t. \\
+&& \forall i \in V \land \forall x_i \in \cX\ \   P(x_i;\thetav) = \mu_i(x_i)\\
+&& \forall ij \in E \land \forall x_i, x_j \in \cX\ \  P(x_i,x_j;\thetav) = \mu_{ij}(x_i,x_j) \big{\}}
+\eea
+Now we can define the conjugate dual 
+\be
+A^*(\muv) = \sup_{\thetav \in \Omega_G} \left\{\muv \cdot \thetav - A(\thetav)\right\}
+\ee
+Two things should be noted. The first is that if $\muv \in \margpoly_G$ than $A^*(\muv) = H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function is equals to the entropy of the probability that its marginals are $\muv$.
+Second that this is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
+It can be shown that $A(\thetav)$ is a convex function of $\thetav$ hence ${A^{*}}^* = A$ hence we can write the variational expression of $A(\thetav)$ as
+\bean
+A(\thetav) &=& \sup_{\muv \in \margpoly_G}\left \{ \muv \cdot \thetav - H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
+\muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly_G}\left \{ \muv \cdot \thetav - H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
+\eean
 
 \subsubsection{Belief Propagation}
 \be
@@ -236,6 +280,7 @@ So other objective, or other way to achieve this goal is required.
 I will start with the  most intuitive approach - maximum likelihood(ML).
 
 \subsubsection{Maximum Likelihood}
+\label{sec:max_likelihood}
 In ML we are looking for the parameters that will maximize the probability to sample the seen data-set.
 Note, that just giving probability of $\frac{1}{N}$ to each of the samples is the maximum likelihood solution, but it suffer from extreme overfitting.
 So some regularization is need , in GM it usually done by forcing a structure (forcing Independence assumptions) and the size of the factors.
@@ -267,12 +312,7 @@ So taking the derivative and compare to zero is the prompted step:
 \label{eq:ml_derv_pairs}
 \frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{ij}(x_i,x_j)} &= \mub_{ij}(x_i,x_j) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} =& \mub_{ij}(x_i,x_j) - p(x_i,x_j;\thetav)
 \eean
-  Where the derivative of the partition function is given by\cite{wainwright2008graphical}
-\bea
-\frac{ \partial \log(Z(\thetav))}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX
-s.t. \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = p(x_i;\thetav)\\
-\frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} &=& p(x_i,x_j;\thetav)
-\eea
+ Where the derivative of the partition function is given by \eqref{eq:pratition_derivative}.
 We can conclude that the ML parameter $\ml{\thetav}$ must satisfy the moment matching characters - the marginals of the model must equals to the empirical marginals.
 \be
 \label{eq:moment_matching}
