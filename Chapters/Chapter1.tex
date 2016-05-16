@@ -186,8 +186,59 @@ It can be shown that $A(\thetav)$ is a convex function of $\thetav$ hence ${A^{*
 A(\thetav) &=& \sup_{\muv \in \margpoly_G}\left \{ \muv \cdot \thetav - H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
 \muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly_G}\left \{ \muv \cdot \thetav - H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
 \eean
+\eqref{eq:variation_A,}and \eqref{eq:arg_variation_A} present a new way to infer  the marginals and  calculate the partition function.
+Not surprisingly, solving this optimization is hard in itself for two reasons.
+The first, the marginal-polytope is a very complex  body - is description is exponential in the size of $\muv$.
+The second is calculating the  entropy is a hard problem by itself.
+But the merit in these representation is the ability to approximate these two quantities - the entropy and the marginal polytope.
 
+I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ such both are easy to calculate. 
+For example if we select the independent graph it sum down to  the mean-field method \cite{peterson1987mean}.
+The second method give different approximation to the entropy and marginal polytope.
+If we outer bound the marginal-polytope by the local-polytope ( defined in \eqref{}) and the entropy by the Bethe-entropy it result in the  Bethe approximation that is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
+\subsubsection{Mean Field}
 \subsubsection{Belief Propagation}
+Belief-Propagation (BP) is a message passing algorithm.
+In each cycle a message, which reflect the source vertex belief  on the destination vertex probability.
+It sum down to
+\be
+\label{eq:belief_propagation}
+m_{i \to j}^{t}(x_j) \propto \sum_{x_i \in\cX} \exp{\theta_{i,j}(x_i,x_j)+\theta_{i}(x_i)}\prod_{k \in \nei{i} \setminus j } m_{k \to i}^{t-1} (x_i)
+\ee 
+Now the resulted pseudo-marginals is calculated as
+\bea
+\tau_i(x_i) &\propto& \exp{\theta_i(x_i)} \prod_{k \in \nei{i}} m^T_{k \to i}(x_i) \\
+\tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)
+\eea
+
+If the model graph is a tree BP is exact, the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$ .
+If there are loops in the graph the quality of the pseudo-marginals is unknown. 
+Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\bold{m}^0$.
+Despite the above BP give good results in practice \cite{}.
+
+If we want to understand BP we need to give meaning to the resulted pseudo-marginals.
+This was done by \cite{yedidia2000generalized, yedidia2003understanding} they found that the pseudo-marginals (fix point of BP) are local minima of the Bethe free energy of the system\footnote{Later \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are  local minima of the Bethe approximation}.
+The Bethe approximation to  the entropy is
+\be
+\label{eq:bethe_entropy}
+H_B(\tauv) = -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)
+\ee 
+Another approximation is the space the optimization is over - it replace the marginal-polytope with the local-polytope.
+\be
+\label{eq:local_polytope}
+\lclmargpoly = \left\{\tauv \in \Re^d\left| 
+\begin{array}{lr}
+\forall i \in V & \sum_{x_i} \tau_i(x_i) = 1\\
+\forall i \in V, \forall x_i \in \cX,\ \forall j \in \nei{j}& \sum_{x_j}\tau_{ij}(x_i,x_j) = \tau_i(x_i)\\
+\forall i \in V,\ \forall ij \in E,\ x_i,x_j \in \cX & \tau_i(x_i) \geq 0,\ \tau_{ij}(x_i,x_j) \geq 0
+\end{array}\right.\right\}
+\ee 
+We are now able to write the Bethe approximation to the partition function.
+\be
+\label{eq:bethe_approximation}
+A_B(\thetav) = \sup_{\tauv \in \lclmargpoly} \left\{\thetav \cdot \tauv - H_B(\tauv)\right\}
+\ee
+\ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
 s.t.\  \xx_k=x_k}}e^{\theta_k(x_k) + \sum_{j \in \nei{k}}\theta_{k,j}(x_k,x_j)}e^{\sum_{i \in V \setminus k}\theta_{i}(x_i) +\sum_{\substack{ij \in E\\
@@ -207,6 +258,7 @@ s.t. \hat{\xx}_{\nei{k}} = \xx_{\nei{k}}}}  e^{\sum_{i \in V \setminus k}\theta_
 \mu_k(x_k;\thetav)  &\approx& \sum_{\xx_{\nei{k}}} e^{\theta_k(x_k) + \sum_{j \in \nei{k}}\theta_{k,j}(x_k,x_j)} \muv_{\nei{k}}(\xx_{\nei{k}}; \thetav^{\setminus k})\\
  &\approx& e^{\theta_k(x_k)}  \prod_{j \in \nei{k}} \sum_{ x_j } e^{\theta_{k,j}(x_k,x_j)} \muv_{j}(x_j; \thetav^{\setminus k})\\
 \eea
+}
 \subsubsection{Tree Re-Weighted belief propagation}
 \subsection{Sampling}
 \label{sec:sampling}
