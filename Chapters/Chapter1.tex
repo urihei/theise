@@ -46,7 +46,7 @@ With this restriction the probability can be written as
 \label{eq:basic_model}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-were we define $\thetav \in \Omega_G $ as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$ hence $\Omega_G$ is the space of real vectors with dimension $|V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega_G \equiv \Re^{|V||\cX|+ |E||\cX|^2}$
+were we define $\thetav \in \Omega^G $\footnote{In times when the dependence in $G$ is clear it will be drooped.}  as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$ hence $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega^G \equiv \Re^{d}$
 The normalization constant $Z(\thetav)$ - the partition function, is defined as, 
 \be
 \label{eq:partition_function}
@@ -169,47 +169,53 @@ I will now try to go over the main principles of the two categories.
 \label{sec:variational_methods}
 I will follow in this section the excellent work by \cite{wainwright2008graphical}.
 We are interesting in finding $\muv$ the marginals.
-First we need to define our search space - the marginal-ploytope.
-\bea
-\margpoly_G = \big{\{} \muv \in \Re^d\ &|& \exists \thetav \in \Omega_G\ s.t. \\
-&& \forall i \in V \land \forall x_i \in \cX\ \   P(x_i;\thetav) = \mu_i(x_i)\\
-&& \forall ij \in E \land \forall x_i, x_j \in \cX\ \  P(x_i,x_j;\thetav) = \mu_{ij}(x_i,x_j) \big{\}}
-\eea
+First we need to define our search space - the marginal-ploytope $\margpoly^G$.
+\be
+\margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
+\begin{array}{lr}
+  \exists \thetav \in \Omega^G\ s.t. \\
+  \forall i \in V \land \forall x_i \in \cX &   P(x_i;\thetav) = \mu_i(x_i)\\
+  \forall ij \in E \land \forall x_i, x_j \in \cX &P(x_i,x_j;\thetav) = \mu_{ij}(x_i,x_j)
+\end{array} \right. \right\}
+\ee
 Now we can define the conjugate dual 
 \be
-A^*(\muv) = \sup_{\thetav \in \Omega_G} \left\{\muv \cdot \thetav - A(\thetav)\right\}
+A^*(\muv) = \sup_{\thetav \in \Omega^G} \left\{\muv \cdot \thetav - A(\thetav)\right\}
 \ee
-Two things should be noted. The first is that if $\muv \in \margpoly_G$ than $A^*(\muv) = H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function is equals to the entropy of the probability that its marginals are $\muv$.
+Two things should be noted. The first is that if $\muv \in \margpoly^G$ than $A^*(\muv) = -H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function is equals to the entropy of the probability that its marginals are $\muv$.
 Second that this is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
 It can be shown that $A(\thetav)$ is a convex function of $\thetav$ hence ${A^{*}}^* = A$ hence we can write the variational expression of $A(\thetav)$ as
 \bean
-A(\thetav) &=& \sup_{\muv \in \margpoly_G}\left \{ \muv \cdot \thetav - H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
-\muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly_G}\left \{ \muv \cdot \thetav - H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
+A(\thetav) &=& \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
+\muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
 \eean
-\eqref{eq:variation_A,}and \eqref{eq:arg_variation_A} present a new way to infer  the marginals and  calculate the partition function.
+\eqref{eq:variation_A}and \eqref{eq:arg_variation_A} present a new way to infer  the marginals and  calculate the partition function.
 Not surprisingly, solving this optimization is hard in itself for two reasons.
-The first, the marginal-polytope is a very complex  body - is description is exponential in the size of $\muv$.
-The second is calculating the  entropy is a hard problem by itself.
+The first, the marginal-polytope is a very complex  body - its description is exponential in $d$ the size of $\muv$.
+The second is calculating the entropy is a hard problem by itself.
 But the merit in these representation is the ability to approximate these two quantities - the entropy and the marginal polytope.
 
 I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ such both are easy to calculate. 
 For example if we select the independent graph it sum down to  the mean-field method \cite{peterson1987mean}.
 The second method give different approximation to the entropy and marginal polytope.
-If we outer bound the marginal-polytope by the local-polytope ( defined in \eqref{}) and the entropy by the Bethe-entropy it result in the  Bethe approximation that is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
+If we outer bound the marginal-polytope by the local-polytope ( defined in \eqref{eq:local_polytope}) and the entropy by the Bethe-entropy it result in the  Bethe approximation that is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
 \subsubsection{Mean Field}
 \subsubsection{Belief Propagation}
 Belief-Propagation (BP) is a message passing algorithm.
-In each cycle a message, which reflect the source vertex belief  on the destination vertex probability.
-It sum down to
+In each cycle\footnote{The order of the messages can effect convergence, hence can be arbitrarily be changed. see for example \cite{elidan2012residual}.} a message is passed from a vertex to all its neighbors.
+The message reflect the source vertex belief on the destination vertex probability.
+The message is a function of the messages from all neighbors except the destination neighbor and the factor connecting the two vertices.
+We continue to cycle until the difference in the messages is very small or after a fix number of cycles.
+The messages can be written as, 
 \be
 \label{eq:belief_propagation}
 m_{i \to j}^{t}(x_j) \propto \sum_{x_i \in\cX} \exp{\theta_{i,j}(x_i,x_j)+\theta_{i}(x_i)}\prod_{k \in \nei{i} \setminus j } m_{k \to i}^{t-1} (x_i)
 \ee 
-Now the resulted pseudo-marginals is calculated as
-\bea
-\tau_i(x_i) &\propto& \exp{\theta_i(x_i)} \prod_{k \in \nei{i}} m^T_{k \to i}(x_i) \\
-\tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)
-\eea
+Now the resulted pseudo-marginals is calculated by,
+\bean
+\tau_i(x_i) &\propto& \exp{\theta_i(x_i)} \prod_{k \in \nei{i}} m^T_{k \to i}(x_i) \label{eq:bp_single_marginal}\\
+\tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)\label{eq:bp_pairwise_marginal}
+\eean
 
 If the model graph is a tree BP is exact, the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$ .
 If there are loops in the graph the quality of the pseudo-marginals is unknown. 
@@ -217,13 +223,14 @@ Moreover, there are cases where BP  does not converge and even when it does the 
 Despite the above BP give good results in practice \cite{}.
 
 If we want to understand BP we need to give meaning to the resulted pseudo-marginals.
-This was done by \cite{yedidia2000generalized, yedidia2003understanding} they found that the pseudo-marginals (fix point of BP) are local minima of the Bethe free energy of the system\footnote{Later \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are  local minima of the Bethe approximation}.
-The Bethe approximation to  the entropy is
-\be
-\label{eq:bethe_entropy}
-H_B(\tauv) = -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)
-\ee 
-Another approximation is the space the optimization is over - it replace the marginal-polytope with the local-polytope.
+This was done by \cite{yedidia2000generalized, yedidia2003understanding} they found that the fix point of BP are local minima of the Bethe free energy of the system\footnote{Later \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are  local minima of the Bethe approximation}.
+I will now try to explain this result,
+first lets defined the Bethe entropy,
+\bean
+H_B(\tauv) &=& -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)\label{eq:bethe_entropy}\\
+&=&-\sum_{i}\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\frac{\tau_{ij}(x_i,x_j)}{\tau_i(x_i)\tau_j(x_j)} \label{eq:bethe_entorpy_information}
+\eean
+Now we need another approximation, the approximation of the space the optimization is over - replacing the marginal-polytope with the local-polytope.
 \be
 \label{eq:local_polytope}
 \lclmargpoly = \left\{\tauv \in \Re^d\left| 
@@ -236,8 +243,49 @@ Another approximation is the space the optimization is over - it replace the mar
 We are now able to write the Bethe approximation to the partition function.
 \be
 \label{eq:bethe_approximation}
-A_B(\thetav) = \sup_{\tauv \in \lclmargpoly} \left\{\thetav \cdot \tauv - H_B(\tauv)\right\}
+A_B(\thetav) = \sup_{\tauv \in \lclmargpoly} \left\{\thetav \cdot \tauv + H_B(\tauv)\right\}
 \ee
+And the Bethe energy is $-A_B(\thetav)$.\\
+Note that we replaced a convex function - the real entropy with a non convex function - the Bethe entropy hence this optimization is no longer convex.
+Moreover, I am not aware on any result of the complexity of this objective.
+So the importance of \eqref{eq:bethe_approximation} to inference, is its connection to BP.
+
+To see the connection to BP we just need to write the Lagrangian of this optimization,
+\bea
+\mathcal{L}(\thetav,\tauv,\lambdav) &=& -\thetav \cdot \tauv - H_B(\tauv) \\
+&+& \sum_i \lambda_i \left(1-\sum_{x_i} \tau_i(x_i)\right) + \sum_{ij}\lambda_{ij}\left(1-\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\right)\\
+&+& \sum_{i} \sum_{j \in \nei{i}}\sum_{x_i}\lambda_{j \to i, x_i}\left(\tau_i(x_i)-\sum_{x_j} \tau_{ij}(x_i,x_j)\right)
+\eea
+Using \eqref{eq:bethe_entorpy_information} for the Bethe entropy and remembering the derivative of $x\log\frac{x}{a}$ is $\log\frac{x}{a}+1$ the derivatives compare to zero give,
+\bea
+\log{\tau_i(x_i)} &=& \theta_i(x_i)+ \sum_{j \in \nei{i}} \lambda_{j \to i,x_i}-1+\lambda_i\\
+\log{\tau_{ij}(x_i,x_j)} &=&  \theta_{ij}(x_i,x_j) - \lambda_{j \to i,x_i} -  \lambda_{i \to j,x_j} +\log \tau_{i}(x_i) +\log \tau_{j}(x_j) -1 +\lambda_{ij}
+%\frac{\partial \mathcal{L}(\thetav,\tauv,\lambdav)}{\partial \tau_i(x_i)} &=& \theta_i(x_i) - \log{\tau_i(x_i)}-1 - \sum_{j \in \nei{i}} \lambda_{i \to j,x_i}\\
+%\frac{\partial \mathcal{L}(\thetav,\tauv,\lambdav)}{\partial \tau_{ij}(x_i,x_j)} &=& \theta_{ij}(x_i,x_j) + \log{\tau_{ij}(x_i,x_j)} + 1 + \lambda_{i \to j,x_i} + \lambda_{j \to i,x_j}
+\eea
+taking the exponent and rearranging\footnote{$\lambda_{ij}$,and$\lambda_i$ are part of the normalization a long with the constants.} we have,
+\bea
+\tau_i(x_i) &\propto& \exp{\theta_i(x_i)}\prod_{j \in \nei{i}} \exp{\lambda_{j \to i,x_i}}\\
+\tau_{ij}(x_i,x_j) &\propto&  \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} \exp{\lambda_{k \to i,x_i}} \prod_{k \in \nei{j}\setminus i} \exp{\lambda_{k \to j,x_j}}
+\eea
+Which is exactly as \eqref{eq:bp_single_marginal} and \eqref{eq:bp_pairwise_marginal} when BP converges.
+Hence, BP fix points are local minima of the Bethe energy.
+
+This result give us some insight to the result BP may return and to how it should be used.
+we mention before that there could be more than one fix point to BP.
+This is now clear.
+Local minima of the Bethe free energy is a stable fix point of BP.
+The Bethe free energy is a non-convex function hence multiple minima may exist.
+Hence BP may have multiple stable fix point.
+Note that not all fix point have the same quality (at least regarding the solution of \eqref{eq:bethe_approximation}).
+Two fix points where one have lower Bethe free energy should not be treated the same - the one of the lower energy could be a solution to \eqref{eq:bethe_approximation} while the other could not.
+This imply against a common practice of initializing the massages $\bold{m}^0$ to uniform distribution and running BP only once.
+The above imply that random initialization and multiple running of BP may improve the quality of BP results.
+
+Note that the above connect only the fix point of BP and the Bethe free energy.
+It say nothing on intermediate results (BP results before convergence) or what BP is trying to achieve.
+I think the answer is seeing BP is re-parametrization algorithm that try to change the parametrization of $\thetav$ such that it will belong to the local-polytope.
+For full proof please see \cite{wainwright2002stochastic}.
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
