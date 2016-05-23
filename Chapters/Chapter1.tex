@@ -205,7 +205,7 @@ Belief-Propagation (BP) is a message passing algorithm.
 In each cycle\footnote{The order of the messages can effect convergence, hence can be arbitrarily be changed. see for example \cite{elidan2012residual}.} a message is passed from a vertex to all its neighbors.
 The message reflect the source vertex belief on the destination vertex probability.
 The message is a function of the factor connecting the two vertices and the messages from all neighbors except the destination neighbor.
-We continue to cycle until the difference in the messages is very small or after a fix number of cycles.
+It continue to cycle until the difference in the messages is very small or after a fix number of cycles.
 The messages can be written as, 
 \be
 \label{eq:belief_propagation}
@@ -222,15 +222,19 @@ If there are loops in the graph the quality of the pseudo-marginals is unknown.
 Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\bold{m}^0$.
 Despite the above BP give good results in practice \cite{}.
 
-If we want to understand BP we need to give meaning to the resulted pseudo-marginals.
+The first step in understanding BP is to give meaning to the resulted pseudo-marginals.
 This was done by \cite{yedidia2000generalized, yedidia2003understanding} they found that the fix point of BP are local minima of the Bethe free energy of the system\footnote{Later \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are  local minima of the Bethe approximation}.
-I will now try to explain this result,
-first lets defined the Bethe entropy,
+So it gave meaning (from physics) to the fix point of BP.
+Moreover it allow theoretical analysis of BP. 
+I will now return on this result.
+
+As mention earlier, the approximation of \eqref{eq:variation_A} include two parts:
+first lets defined the Bethe entropy - an approximation of the true entropy,
 \bean
 H_B(\tauv) &=& -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)\label{eq:bethe_entropy}\\
 &=&-\sum_{i}\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\frac{\tau_{ij}(x_i,x_j)}{\tau_i(x_i)\tau_j(x_j)} \label{eq:bethe_entorpy_information}
 \eean
-Now we need another approximation, the approximation of the space the optimization is over - replacing the marginal-polytope with the local-polytope.
+Second  the approximation of the marginal-polytope with the local-polytope.
 \be
 \label{eq:local_polytope}
 \lclmargpoly = \left\{\tauv \in \Re^d\left| 
@@ -246,14 +250,14 @@ We are now able to write the Bethe approximation to the partition function.
 A_B(\thetav) = \sup_{\tauv \in \lclmargpoly} \left\{\thetav \cdot \tauv + H_B(\tauv)\right\}
 \ee
 And the Bethe energy is $-A_B(\thetav)$.\\
-In contrast to the variational free energy, the Bethe free energy is simple to calculate, since the local polytope is describe by linear number of  constrains and the Bethe entropy is easy to calculate.
+In contrast to the variational free energy, the Bethe free energy is simple to calculate, since the local polytope is describe by a linear number of  constrains and the Bethe entropy calculation is straight forward .
 This however come with a price.
 First the result must not belong to the marginal-polytope hence not a ``real'' marginal.
 Second, the resulted optimization is no longer convex - the Bethe entropy is non-convex function while the true one is convex.
 Hence the complexity of optimizing this objective is not clear - I am not aware on any such result.
-So the importance of \eqref{eq:bethe_approximation} to inference, is its connection to BP.
+%So the importance of \eqref{eq:bethe_approximation} to inference, is its connection to BP.
 
-To see the connection to BP we just need to write the Lagrangian of this optimization,
+After defining the Bethe energy , to see the connection to BP we just need to write the Lagrangian of this optimization,
 \bea
 \mathcal{L}(\thetav,\tauv,\lambdav) &=& -\thetav \cdot \tauv - H_B(\tauv) \\
 &+& \sum_i \lambda_i \left(1-\sum_{x_i} \tau_i(x_i)\right) + \sum_{ij}\lambda_{ij}\left(1-\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\right)\\
@@ -285,6 +289,17 @@ Two fix points where one have lower Bethe free energy should not be treated the 
 This imply against a common practice of initializing the massages $\bold{m}^0$ to uniform distribution and running BP only once.
 The above imply that random initialization and multiple running of BP may improve the quality of BP results.
 
+The connection between BP and the Bethe energy promote a wide research.
+The most immediate extension was the Generalized Belief Propagation \cite{yedidia2000generalized} where instead of maximizing the Bethe energy it maximize the Kikuchi free energy - an extension from only pairwise to larger areas.
+Another noted algorithm is the Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree}.  One of draw back of the Bethe approximation is the fact that the Bethe entropy is not a concave function. TRW suggest a surrogate entropy  which is concave. It doing so by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.  It's name come from the interpretation of these weights.
+One can choose a probability on the trees that are sub-graph of model graph.
+Such probability induce a probability of each edge to appear in any one of the trees.
+These probabilities are the weights of the information part.
+This gave another advantage to TRW,  the resulted log partition function is always upper bound the true partition function. 
+This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = z\left(\sum_{\mathcal{T}} t_{\mathcal{T}}\thetav_{\mathcal{T}}\right) \leq \sum_{\mathcal{T}} t_{\mathcal{T}} Z(\thetav_{\mathcal{T}})$ which is exactly the TRW approximation to the partition function.
+
+
+
 Note that the above connect only the fix point of BP and the Bethe free energy.
 It say nothing on intermediate results (BP results before convergence) or what BP is trying to achieve.
 I think the answer is seeing BP is re-parametrization algorithm that try to change the parametrization of $\thetav$ such that it will belong to the local-polytope.
@@ -292,8 +307,6 @@ For full proof please see \cite{wainwright2002stochastic}.
 
 More on Bethe-BP:
 \begin{itemize}
-\item Tree Re-Weighted belief propagation
-\item Kikuchi \cite{yedidia2005constructing}
 \item Convergence conditions. Bethe tree \cite{tatikonda2002loopy}, BP error \cite{ihler05b} Zeta function \cite{YusukeNips2009}, 
 \item Bounding the partition function. Bounding log-supermodular\cite{RuozziNips2012},\cite{AlanNips2007},
 \end{itemize}
