@@ -133,15 +133,38 @@ This imply against a common practice of initializing the massages $\bold{m}^0$ t
 The above imply that random initialization and multiple running of BP may improve the quality of BP results.
 
 The connection between BP and the Bethe energy promote a wide research.
-The most immediate extension was the Generalized Belief Propagation \cite{yedidia2000generalized} where instead of maximizing the Bethe energy it maximize the Kikuchi free energy - an extension from only pairwise to larger areas.
-Another noted algorithm is the Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree}.  One of draw back of the Bethe approximation is the fact that the Bethe entropy is not a concave function. TRW suggest a surrogate entropy  which is concave. It doing so by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.  It's name come from the interpretation of these weights.
-One can choose a probability on the trees that are sub-graph of model graph.
-Such probability induce a probability of each edge to appear in any one of the trees.
+The research can be divided to three categories.
+Extensions of BP, convergence of BP and bounding the error of BP.
+I will now give short survey to each category.  
+
+The most immediate extension to BP using the above, was the Generalized Belief Propagation \cite{yedidia2000generalized}. 
+Instead of maximizing the Bethe energy it maximize the Kikuchi free energy - an extension from only pairwise interaction to larger areas.
+
+One of the draw backs of the Bethe approximation is the fact that the Bethe entropy is not a concave function.
+Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree} suggest a surrogate entropy  which is concave.
+It doing so by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.
+It's name come from the interpretation of these weights.
+The model parameter can be decomposed: $\thetav=\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}$ such each $\thetav^{\mathfrak{t}}$ is sub-model\footnote{$\theta^{\mathfrak{t}}_{ij}$ is either $0$ or $\theta_{ij}$ and $\theta^{\mathfrak{t}}_i =\theta_i$} which its structure is a tree, and $t_{\mathfrak{t}}\geq 0$, $\sum_{\mathfrak{t}} t_{\mathfrak{t}} = 1$.
+Such probability induce a probability for each edge to appear in any one of the trees.
 These probabilities are the weights of the information part.
-This gave another advantage to TRW,  the resulted log partition function is always upper bound the true partition function. 
-This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = z\left(\sum_{\mathcal{T}} t_{\mathcal{T}}\thetav_{\mathcal{T}}\right) \leq \sum_{\mathcal{T}} t_{\mathcal{T}} Z(\thetav_{\mathcal{T}})$ which is exactly the TRW approximation to the partition function.
+This gave another advantage to TRW, the resulted log partition function is always upper bound the true partition function. 
+This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = z\left(\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}\right) \leq \sum_{\mathfrak{t}} t_{\mathfrak{t}} Z(\thetav^{\mathfrak{t}})$ which is exactly the TRW approximation to the partition function.
+Both algorithms suggest a variation of BP messages to fit the change in energy.
+A unify view of these two algorithm (and others) can be found in \cite{meshi2009convexifying}.
 
+Another line of inference algorithm try to optimize the Bethe free energy directly.
+For the binary case \cite{welling2001belief} and later \cite{shin2012complexity} give a similar algorithm but the later gave time complexity guaranties.
+A general algorithm was given by \cite{yuille2002cccp} which use CCP\cite{yuille2002concave} to optimize the Bethe or Kikuchi energies.
 
+One of the basic requirements of any algorithm is to know that it will end.
+In BP case, it mean that the messages will converges.
+It is easy to build a model which BP does not converge on.
+so the question remain, can characteristics be found that guaranteed BP convergence.
+The first work to so was \cite{tatikonda2002loopy} where a bound on the pairwise interaction was given to insure convergence.
+They use the computation tree of BP, the root is pseudo-marginal at time $t$ and the leaves are the marginals at time $0$.
+If the marginals in time $t$ is independent of the marginals at time $0$ BP will converge.
+
+ 
 
 Note that the above connect only the fix point of BP and the Bethe free energy.
 It say nothing on intermediate results (BP results before convergence) or what BP is trying to achieve.
@@ -150,7 +173,7 @@ For full proof please see \cite{wainwright2002stochastic}.
 
 More on Bethe-BP:
 \begin{itemize}
-\item Convergence conditions. Bethe tree \cite{tatikonda2002loopy}, BP error \cite{ihler05b} Zeta function \cite{YusukeNips2009}, 
+\item Convergence conditions., BP error \cite{ihler05b} Zeta function \cite{YusukeNips2009}, 
 \item Bounding the partition function. Bounding log-supermodular\cite{RuozziNips2012},\cite{AlanNips2007},
 \end{itemize}
 \ignore{
