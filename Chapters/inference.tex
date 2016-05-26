@@ -144,11 +144,11 @@ One of the draw backs of the Bethe approximation is the fact that the Bethe entr
 Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree} suggest a surrogate entropy  which is concave.
 It doing so by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.
 It's name come from the interpretation of these weights.
-The model parameter can be decomposed: $\thetav=\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}$ such each $\thetav^{\mathfrak{t}}$ is sub-model\footnote{$\theta^{\mathfrak{t}}_{ij}$ is either $0$ or $\theta_{ij}$ and $\theta^{\mathfrak{t}}_i =\theta_i$} which its structure is a tree, and $t_{\mathfrak{t}}\geq 0$, $\sum_{\mathfrak{t}} t_{\mathfrak{t}} = 1$.
+The model parameter can be decomposed: $\thetav=\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}$ such that each $\thetav^{\mathfrak{t}}$ is sub-model\footnote{$\theta^{\mathfrak{t}}_{ij}$ is either $0$ or $\theta_{ij}$ and $\theta^{\mathfrak{t}}_i =\theta_i$} which its structure is a tree, and $t_{\mathfrak{t}}\geq 0$, $\sum_{\mathfrak{t}} t_{\mathfrak{t}} = 1$.
 Such probability induce a probability for each edge to appear in any one of the trees.
 These probabilities are the weights of the information part.
 This gave another advantage to TRW, the resulted log partition function is always upper bound the true partition function. 
-This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = z\left(\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}\right) \leq \sum_{\mathfrak{t}} t_{\mathfrak{t}} Z(\thetav^{\mathfrak{t}})$ which is exactly the TRW approximation to the partition function.
+This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = Z\left(\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}\right) \leq \sum_{\mathfrak{t}} t_{\mathfrak{t}} Z(\thetav^{\mathfrak{t}})$ which is exactly the TRW approximation to the partition function.
 Both algorithms suggest a variation of BP messages to fit the change in energy.
 A unify view of these two algorithm (and others) can be found in \cite{meshi2009convexifying}.
 
@@ -156,15 +156,32 @@ Another line of inference algorithm try to optimize the Bethe free energy direct
 For the binary case \cite{welling2001belief} and later \cite{shin2012complexity} give a similar algorithm but the later gave time complexity guaranties.
 A general algorithm was given by \cite{yuille2002cccp} which use CCP\cite{yuille2002concave} to optimize the Bethe or Kikuchi energies.
 
-One of the basic requirements of any algorithm is to know that it will end.
+One of the basic requirements of any algorithm is to know that after some time it will return a result.
 In BP case, it mean that the messages will converges.
 It is easy to build a model which BP does not converge on.
 so the question remain, can characteristics be found that guaranteed BP convergence.
 The first work to so was \cite{tatikonda2002loopy} where a bound on the pairwise interaction was given to insure convergence.
-They use the computation tree of BP, the root is pseudo-marginal at time $t$ and the leaves are the marginals at time $0$.
-If the marginals in time $t$ is independent of the marginals at time $0$ BP will converge.
+For proving the bound the computation tree of BP we used.
+The computation tree describe the running of BP where each time is a level in the tree.
+The root value is the pseudo-marginal at time $t$ of specific vertex, its children are the neighbors that  send it a message with value of the message at time $t--1$.
+It continue to go back at time until the leaves which are the  the initial messages at time $0$.
+Considering the time at infinity, If the marginals in time $t$ is independent of the initial messages at time $0$ BP will converge.
+This method come from the physics world where it is called uniqueness of Gibbs measure or independence of boundary conditions.
 
- 
+In \cite{heskes2004uniqueness} the connection between Bethe and BP help us to find convergence guarantees.
+Finding conditions that insure the convexity of Bethe energy, imply finding condition to the convergence of BP. 
+For BP to converge,  the distance (in some measure) between the current messages and the previous one should get smaller and smaller.
+If this change can be bound by a constant the convergence of BP can be guaranteed.
+In both papers \cite{mooij2007sufficient}, \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
+Note that all these method do not find conditions to BP convergence but that BP will have a single fix point.
+This fact will be important in my paper \cite{heinemann2012cannot}.
+
+The relation between the Bethe partition function and the exact is till an open question.
+It is clear that a relation can be given in the general case - it sometimes bigger and at times smaller than the exact partition function.
+One of the first results was by \cite{AlanNips2007} that prove that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$) the Bethe partition function lower bounds the exact partition function.
+Later \cite{RuozziNips2012},  gave a stronger result, if the pairwise interaction are log sub-modular the Bethe partition function lower bound the exact partition function ( the case of attractive models is an instance of this class).
+In their prove   they used the important work of \cite{vontobel2013counting} that gave a 
+
 
 Note that the above connect only the fix point of BP and the Bethe free energy.
 It say nothing on intermediate results (BP results before convergence) or what BP is trying to achieve.
