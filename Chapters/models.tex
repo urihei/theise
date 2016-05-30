@@ -85,14 +85,14 @@ In many situations we need to understand our model. In biology, we learn the str
 
 The model in graphical models usually lack the distinction between features and outcome. In situation that such separation is artificial graphical model give power that is not found else where. We can ask different queries on the same model and have consist answers. Take for example medical situation, we are interested on the probability of several symptoms, each is a different query.
 
-This bring us the next two important features, handling missing values and structured output. In many situations we do not always see all of the variables. Graphical models, handle missing values inherently and such cases need not special treatment ( as is the case in other models). Lastly, the queries result is not necessarily a single variable. Queries on several variables are possible and will take into account the relation between these variables.
+This bring us to the next two important features, handling missing values and structured output. In many situations we do not always see all of the variables. Graphical models, handle missing values inherently and such cases need not special treatment ( as is the case in other models). Lastly, the queries result is not necessarily a single variable. Queries on several variables are possible and will take into account the relation between these variables.
 
 To conclude, graphical models is a very powerful toll. This power come with a price,  inferring and learning (as we will see later) are hard and approximation algorithm must be used in most cases.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
 One basic problem in machine learning is classification.
-Given features of an instance we want the ability to classify - assign one label out of to small discrete group.
-Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|,q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
+Given features of an instance we want the ability to classify - assign one label out of small discrete group.
+Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
 Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning label $f(\xx,\ww)$ where the true label is $y$.
 
 The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
