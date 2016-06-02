@@ -269,8 +269,8 @@ Q(\tilde{\xx}|\xx)\min\{1,\frac{Q(\xx|\tilde{\xx})P(\tilde{\xx})}{Q(\tilde{\xx}|
 1 - \sum_{\hat{\xx} \neq \xx} Q(\hat{\xx}|\xx)\min\{1,\frac{Q(\xx|\hat{\xx})P(\hat{\xx})}{Q(\hat{\xx}|\xx)P(\xx)}\} & \text{else}
 \end{array} \right.
 \ee
-Note that $Q(\xx|\tilde{\xx}))$ must only be irreducible\footnote{Irreducible defined by, for  all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$ such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it not necessarily be symmetric.
-Hence it could be the distribution over tree or any easy to sample distribution.
+Note that $Q(\xx|\tilde{\xx})$ must only be irreducible\footnote{Irreducible defined by, for  all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$ such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it not necessarily be symmetric.
+Hence it could be the distribution over a tree or any easy to sample distribution.
 Moreover, we only need to compute $\frac{P(\xx)}{P(\tilde{\xx})} $ hence the partition function canceled and the quantity is easy to calculate.
 
 Glauber chains or Gibbs sampler is another method to define the Markov transition matrix.
@@ -290,7 +290,7 @@ A(\xx,\tilde{\xx}) = \left\{
 Note that as in the above case We only need to compute the ratio of $P(\xx)$ hence the partition function can be canceled.
 
 The remain question giving an arbitrary $\xx$ start state how fast are we guaranteed to sample from the stationary distribution.
-This constant is called mixing time, and it depend the model features (such as interaction strength,  dependency structure etc.).
+This constant is called the \textit{mixing time}, and it depend the model features (such as interaction strength,  dependency structure etc.).
 Hence models with small mixing time can be easily be sampled, inferring the marginals is doable.
 This fact will be important when taking about inferning\ref{}.    
 
