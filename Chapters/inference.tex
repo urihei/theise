@@ -226,16 +226,6 @@ For full proof please see \cite{wainwright2002stochastic}.
 
 
 \ignore{
-Note that the above connect only the fix point of BP and the Bethe free energy.
-It say nothing on intermediate results (BP results before convergence) or what BP is trying to achieve.
-I think the answer is 
-
-More on Bethe-BP:
-\begin{itemize}
-\item Convergence conditions., BP error \cite{ihler05b} Zeta function \cite{YusukeNips2009}, 
-\item Bounding the partition function. Bounding log-supermodular\cite{RuozziNips2012},\cite{AlanNips2007},
-\end{itemize}
-
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
 s.t.\  \xx_k=x_k}}e^{\theta_k(x_k) + \sum_{j \in \nei{k}}\theta_{k,j}(x_k,x_j)}e^{\sum_{i \in V \setminus k}\theta_{i}(x_i) +\sum_{\substack{ij \in E\\
@@ -256,6 +246,51 @@ s.t. \hat{\xx}_{\nei{k}} = \xx_{\nei{k}}}}  e^{\sum_{i \in V \setminus k}\theta_
  &\approx& e^{\theta_k(x_k)}  \prod_{j \in \nei{k}} \sum_{ x_j } e^{\theta_{k,j}(x_k,x_j)} \muv_{j}(x_j; \thetav^{\setminus k})\\
 \eea
 }
-\subsubsection{}
 \subsection{Sampling}
 \label{sec:sampling}
+Sampling in a first glance seem the perfect solution for finding the marginals.
+The marginals can be estimated as the mean of bounded random variable.
+Using Hoeffding bound the probability of mistake greater than $\epsilon$ can be bound by $P(|p(x_i) - \frac{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}{M}| > \epsilon) < 2\exp{-\frac{2\epsilon^2M}{|\cX|^2}}$.
+This mean we have a time complexity of $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$\footnote{With probability greater than $1-\delta$ the estimation error will be less than $\epsilon$}.
+The problem in the above that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This is easly be seen from redction to q-coloring for example \cite{levin2009markov,bordewich2016mixing}}.
+So how can we sample.
+
+Markov Chain Mote Carlo(MCMC) is a method to sample from a distribution $P(\xx)$ while have the ability to sample only from distribution $Q(\xx)$.
+The idea is as follow, build a Markov chain with two main features.
+The first, it must be easy to move from one state to another.
+The second, the stationary distribution of the Markov chain is $P(\xx)$.
+
+Metropolis chains is an example how the Markov chain can be built.
+The transition matrix - the probability to  is defined as follow
+\be
+A(\xx,\tilde{\xx}) = \left\{
+\begin{array}{lr}
+Q(\tilde{\xx}|\xx)\min\{1,\frac{Q(\xx|\tilde{\xx})P(\tilde{\xx})}{Q(\tilde{\xx}|\xx)P(\xx)}\} & \tilde{\xx} \neq \xx\\
+1 - \sum_{\hat{\xx} \neq \xx} Q(\hat{\xx}|\xx)\min\{1,\frac{Q(\xx|\hat{\xx})P(\hat{\xx})}{Q(\hat{\xx}|\xx)P(\xx)}\} & \text{else}
+\end{array} \right.
+\ee
+Note that $Q(\xx|\tilde{\xx}))$ must only be irreducible\footnote{Irreducible defined by, for  all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$ such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it not necessarily be symmetric.
+Hence it could be the distribution over tree or any easy to sample distribution.
+Moreover, we only need to compute $\frac{P(\xx)}{P(\tilde{\xx})} $ hence the partition function canceled and the quantity is easy to calculate.
+
+Glauber chains or Gibbs sampler is another method to define the Markov transition matrix.
+The idea is simple, in each iteration only a small number of variables will change, denote this group by $\cI \subseteq [1,\ldots,p]$, $|\cI| = k$.
+Than the possible next states are the ones that differ from the current state $\xx$ only in the indices in $\cI$.
+Denote this set by $\mathcal{D}(\xx,\cI) = \left\{\tilde{\xx} \in \cX^p | \forall i \notin \cI,\ \xx_i = \tilde{\xx}_i \right\}$.
+The set $\mathcal{D}^k(\xx)= \cup_{\cI, |\cI|=k} \mathcal{D}(\xx,\cI)$ denotes the set of all $\tilde{\xx}$ that differ from $\xx$ only in $k$ entries.
+Now the transition matrix is defined as,
+\be
+A(\xx,\tilde{\xx}) = \left\{
+\begin{array}{lr}
+0 & \tilde{\xx} \notin \mathcal{D}^k(\xx)\\
+\frac{(p-k)!k!}{p!}\frac{P(\tilde{\xx})}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})} & \tilde{\xx} \in \mathcal{D}^k(\xx), \xx \neq \tilde{\xx}\\
+\frac{(p-k)!k!}{p!}\sum_{\cI, |\cI|=k}\frac{P(\xx)}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})}& \xx = \tilde{\xx}
+\end{array} \right.
+\ee
+Note that as in the above case We only need to compute the ratio of $P(\xx)$ hence the partition function can be canceled.
+
+The remain question giving an arbitrary $\xx$ start state how fast are we guaranteed to sample from the stationary distribution.
+This constant is called mixing time, and it depend the model features (such as interaction strength,  dependency structure etc.).
+Hence models with small mixing time can be easily be sampled, inferring the marginals is doable.
+This fact will be important when taking about inferning\ref{}.    
+
