@@ -1,0 +1,51 @@
+\section{Deep Learning and Kernels}
+\subsection{Support Vector Machine}
+\subsubsection{Notations and Definitions}
+One basic problem in machine learning is classification.
+Given features of an instance we want the ability to classify - assign one label out of small discrete group.
+Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
+Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning label $f(\xx,\ww)$ where the true label is $y$.
+
+The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
+First, we usually do not know the real distribution, but only have a sample of it: given a samples $D = \{(\xx_i,y_i)\}_{i=1}^N$  where $\xx_i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
+We will want to minimize our objective on this sample - minimizing the empirical loss\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
+Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation, here by giving the instance of group $\cL$ and its index the same notation}.
+Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
+This function is very hard to optimize since it is non-convex.
+One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
+\be
+\label{eq:svm_obj}
+\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^M \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx_{i}) + \ww_r \cdot \phi(\xx_i)\} + \lambda \|W\|^2
+\ee
+
+Taking the dual and some algebra gives:
+\bea
+\label{eq:svm_obj_dual}
+\max_{A \in \Re^{M,|\cL|}}&& -\sum_{i,j}^M(\phi(\xx_i)\cdot\phi(\xx_j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^M\alphav_i \cdot \bold{1}_{y_i}\\
+\text{subject to}:&& \forall i\ \ \alphav_i \leq \bold{1}_i, \text{ and } \alphav_i \cdot \bold{1} = 0
+\eea
+Where $\lambda$ is the relularization parameter, $\bold{1}_i$ is the all zero vector except the $i$ coordinate and $\bold{1}$ is the all one vector.
+Note that in this form it is enough to calculate the dot product between any two samples - no need to calculate the map $\phi$.
+This is know as the kernel trick \cite{hofmann2008kernel}.
+\subsubsection{Pros and Cons}
+Support Vector Machine, optimize objective that is very close to the optimal one. Learning is a convex optimization problem hence efficient and classification time complexity is linear in the number of features. In short its is very efficient method.
+But this efficiency come with the price of power of expression since we consider only linear models, to overcome this shortcoming we use kernels.
+
+When using kernel SVM the efficiency depend on the number of samples\footnote{More accurately it depend on the margin of the problem but in practice it is not usually come into effect.} since usually the number of samples that participate in the classifier scales with the number of samples( the number of non-zero $\alphav_i$). Hence both learning and classification can be relatively costing.
+Moreover in both linear and kernel SVM, there is no principle way to integrate prior knowledge. This has grate importance in many fields where there is strong dependencies between the features and known structure for example the task of object recognition.
+
+\subsection{Neural Networks}
+Neural networks, as SVM, try to solve classification problems.
+But instead of restricting  the function class to linear function, it choose a different class of cassification functions that we will now describe.
+Remember that a classification function is a function $f: \Re^p \times \Re^q \to \cL$ so a neural networks have the form:\bea
+\label{eq:neural_networks}
+f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
+\zz_{k}(\xx, \wparamsi{k}) &=& \sgn{W_k \zz_{k-1}(\xx, \wparamsi{k-1}}\\
+\zz_{1}(\xx,W_1) &=&  \sgn{W_1 \xx}
+\eea
+Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$, $\wparamsi{k} = W_1,\ldots,W_k$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network.
+The $\sgn{x}$ function is known as the activation function a simple non linear function.
+Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}.
+
+This functions class result in a non convex function hence non convex optimization problem.
+But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.

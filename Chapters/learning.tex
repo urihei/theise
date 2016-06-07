@@ -1,4 +1,5 @@
-\section{Learning Graphical Models}
+\subsection{Learning Graphical Models}
+\label{sec:learning}
 Understanding why you are doing something before doing it, is good practice in life. 
 So I will start by presenting two reasons why we learned graphical models.
 In many domains the main interest is in understanding the model.
@@ -7,7 +8,7 @@ Or which variable has the greatest effect on another variable etc.
 For this purpose we are interested in learning the exact model - a model that is as similar as possible to the ``real'' model \footnote{
 In structure learning this sum-down the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
 When learning the parameters, the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
-This feature is know as reparameterization and it play important roll in Belief Propagation as was presented \ref{}\todo{FILL REF }}.
+This feature is know as reparameterization and it play important roll in Belief Propagation as was presented in \secref{sec:belief}}.
 
 On the other hand, in many domains we seek the ability to answer queries.
 When asking our model a query we want the result to be similar as if it is the result of the real process.
@@ -26,7 +27,7 @@ Than learning the parameters of the model $\thetav$.
 \subsection{Structure learning}
 First lets define what exactly is our goal.
 Having a probability $P(\xx;\exact{\thetav})$ defined as in \eqref{eq:ciluqe_prob}.
-We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P(\xx;\exact{\thetav})$.
+We are looking to find the exact edge set $\exact{E}$ given a data set of $M$ identical independent distributed (i.i.d) samples from $P(\xx;\exact{\thetav})$.
 
 I will start by presenting the sample and time complexity of the above problem. 
 First if the graph is known to be a tree, the exact structure can be found by maximum spanning tree.  Where the  weights are the empirical information between any two vertices \cite{chowLiu}. 
@@ -39,25 +40,30 @@ In the Ising model\footnote{ The Ising model is a pairwise binary model where $\
 While in other models (where the cardinality is greater than $|\cX|>2$ or the size of factors greater than $\exists c \in \cC, |c|>2$) it is unknown how to express this quantities - the strength of the interaction between the variables as a function of the model parameters.
 Hence lower bounds  on non-binary models ignore these two factors\footnote{In proving upper bounds some conditions on the probability instead of the model is given. In my opinion the above two parameters hide inside the condition see for example \cite{bresler2008reconstruction}}.
 
-The sample complexity bounds are $N > \Omega(\dmax \log p)$ and $N > \Omega(\max\{\dmax^2, \lambda^{-2}\}log p) $ to the general case and the Ising model respectively. This mean that we need at least $N$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
+The sample complexity bounds are $M > \Omega(\dmax \log p)$ to the general case and $N > \Omega(\max\{\dmax^2, \lambda^{-2}\}log p) $ for the Ising model.
+This mean that we need at least $M$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
 Lower bound on sample complexity of $\Omega(p^{\frac{\dmax}{2}})$ was given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithm that use an oracle that return the expectation of any function - no direct access to the data}.
 
 Algorithm for structural graph are abundant, I will give only a short list.
 Moreover the algorithms differ what is assumed to be given as input , what is the underline model and other assumption so compression is hard.
 I will denote by $a$ parameters (other than $p$, $\dmax$) that depend on the model - usually some bound on interaction strength.
- \begin{itemize}
-    \item Gaussian multivariate distributions  is an example where it is clear that the problem is easier since it  is equivalent to the estimation of the non-zeros cell in the inverse of the covariance matrix. An example of algorithm solving this problem are \cite{meinshausen2006high,yuan2007model, friedman2008sparse}. 
-    \item As seen before $\dmax$ the maximum degree, play an important role in the lower bounds. Many algorithms \cite{bresler2008reconstruction, abbeel2006learning} assume  $\dmax$ is given as  part of the algorithm input. Knowing this quantity, an exhaustive search over all subsets of size $\dmax$(or a function of it) is preformed in-order to find each vertex neighbors.  In\cite{bresler2008reconstruction} their algorithm's time complexity is $O(p^{2\dmax+1}\log p)$ and sample complexity is $O(\dmax a \log p)$ . While in \cite{abbeel2006learning} their algorithm does not guarantee to reconstruct the model (edge set), but to be as close as needed in a Kullback–Leibler divergence manner to the true one. Its time complexity bounds are $O(p^{a d})$ and sample complexity $O(\dmax a \log p)$. Another paper in this class is \cite{wu2013learning},  instead of the max degree as an input they require the two sizes. Conditioning on some sets with size smaller or equals to the given quantities insure dependence . In other words $ij \not \in E$ the following take place $\exists S \subset V, |S|< D_1, \forall T \subset V, |T|<D_2    X_i \bot X_j | X_T, X_S$ , and the two quantities are $D_1$ and $D_2$\footnote{In the Ising model $D_1 = \dmax$ and $D_2 = \dmax -1$. When allowing factors with higher cardinality two variables can be independent (and any test will indicate they are so) but given another variable they can be dependent - there exit an edge between the two variables. These two quantities bound the size of such sets. }. 
-    \item Focusing on Ising models when a threshold (the minimum difference of the probability when one of its neighbors change its assignment) is given as an input,  \cite{bresler2015efficiently} give an algorithm with time complexity of $O(p^2\log p)$ and sample complexity of $O( a \log p)$. In the paper a more accurate is given -  it take into account the interaction strength . Their algorithm has two stages,  first it collect pseudo-neighborhood for specific vertex - a set that include the correct neighborhood. Than by iterating over all this set, it remove vertices that does not change the conditional probability. Note that this algorithm can not be extended to non pairwise models.
-\item In \cite{ravikumar2010high} give another flavor of algorithm. Their algorithm is based on optimization of the conditional likelihood of a vertex given all the other vertices with $l_1$ regularization - $\max_{\thetav} \frac{1}{N}\sum_n^N \log p(x^n_i| \xx^n_{\setminus i};\thetav) - \lambda \sum_{ij} |\theta_{ij}|$. Now the neighborhood set is defined by $\nei{i} = \{\theta_{ij} : |\theta_{ij} > \alpha\}$ where $\alpha$ is a threshold based on the graph parameters. Under certain conditions the algorithm reconstruct $E$ in high probability with time complexity of $O(p^4)$  and sample complexity of $O( d^3 \log p)$. Note that this algorithm is not very sensitive to the selection of $\alpha$ (They suggest how to approximate it) and very practical. Its main draw back is (to my opinion), that the conditions (or parameters) that guarantee its success are not directly connected to the model parameters. Hence it is very hard to compare it to other such algorithms. Another problem is the assumption of pairwise interaction.     
-\item Correlation decay is an important concept in structure learning \cite{montanari2009graphical}. The idea is simple, Let denote by $B_{\tau}(i)$ all the vertices that are within distance(a formal definition will be given later) $\tau$ from vertex $i$ and denote by $\partial B_{\tau}(i)$ the boundary of that group. We will require that the assignment of $\partial B_{\tau}(i)$ have negligible effect on the probability of variable $x_i$ for all $i \in V$. It is now clear, if the learned model have this characteristic when deciding what are the neighbors of vertex $i$ only a subset of vertices needed to be considered. By adding this condition \cite{bresler2008reconstruction} approved its time complexity to $O(d^{ad})$. If we further assume that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree) we can apply greedy algorithms \cite{netrapalli2010greedy, anandkumar2013learning}. In \cite{anandkumar2013learning} they preform a greedy algorithm with time complexity of $O(d^{2d}p)$ and sample complexity of $O(d^2\log p)$ but focused only on pairwise case.  
-\end{itemize}
+
+Gaussian multivariate distributions  is an example where it is clear that the problem is easier since it  is equivalent to the estimation of the non-zeros cell in the inverse of the covariance matrix. An example of algorithm solving this problem are \cite{meinshausen2006high,yuan2007model, friedman2008sparse}. 
+
+As seen before $\dmax$ the maximum degree, play an important role in the lower bounds. Many algorithms \cite{bresler2008reconstruction, abbeel2006learning} assume  $\dmax$ is given as  part of the algorithm input. Knowing this quantity, an exhaustive search over all subsets of size $\dmax$(or a function of it) is preformed in-order to find each vertex neighbors.  In\cite{bresler2008reconstruction} their algorithm's time complexity is $O(p^{2\dmax+1}\log p)$ and sample complexity is $O(\dmax a \log p)$ . While in \cite{abbeel2006learning} their algorithm does not guarantee to reconstruct the model (edge set), but to be as close as needed in a Kullback–Leibler divergence manner to the true one. Its time complexity bounds are $O(p^{a d})$ and sample complexity $O(\dmax a \log p)$. Another paper in this class is \cite{wu2013learning},  instead of the max degree as an input they require the two sizes. Conditioning on some sets with size smaller or equals to the given quantities insure dependence . In other words $ij \not \in E$ the following take place $\exists S \subset V, |S|< D_1, \forall T \subset V, |T|<D_2    X_i \bot X_j | X_T, X_S$ , and the two quantities are $D_1$ and $D_2$\footnote{In the Ising model $D_1 = \dmax$ and $D_2 = \dmax -1$. When allowing factors with higher cardinality two variables can be independent (and any test will indicate they are so) but given another variable they can be dependent - there exit an edge between the two variables. These two quantities bound the size of such sets. }. 
+
+Focusing on Ising models when a threshold (the minimum difference of the probability when one of its neighbors change its assignment) is given as an input,  \cite{bresler2015efficiently} give an algorithm with time complexity of $O(p^2\log p)$ and sample complexity of $O( a \log p)$. In the paper a more accurate bound is given  which take into account the interaction strength . Their algorithm has two stages,  first it collect pseudo-neighborhood for specific vertex - a set that include the correct neighborhood. Than by iterating over all this set, it remove vertices that does not change the conditional probability. Note that this algorithm can not be extended to non pairwise models.
+
+In \cite{ravikumar2010high} give another flavor of algorithm. Their algorithm is based on optimization of the conditional likelihood of a vertex given all the other vertices with $l_1$ regularization - $\max_{\thetav} \frac{1}{N}\sum_n^N \log p(x^n_i| \xx^n_{\setminus i};\thetav) - \lambda \sum_{ij} |\theta_{ij}|$. Now the neighborhood set is defined by $\nei{i} = \{\theta_{ij} : |\theta_{ij} > \alpha\}$ where $\alpha$ is a threshold based on the graph parameters. Under certain conditions the algorithm reconstruct $E$ in high probability with time complexity of $O(p^4)$  and sample complexity of $O( d^3 \log p)$. Note that this algorithm is not very sensitive to the selection of $\alpha$ (They suggest how to approximate it) and very practical. Its main draw back is (to my opinion), that the conditions (or parameters) that guarantee its success are not directly connected to the model parameters. Hence it is very hard to compare it to other such algorithms. Another problem is the assumption of pairwise interaction.     
+
+Correlation decay is an important concept in structure learning \cite{montanari2009graphical}. The idea is simple, Let denote by $B_{\tau}(i)$ all the vertices that are within distance(a formal definition will be given later) $\tau$ from vertex $i$ and denote by $\partial B_{\tau}(i)$ the boundary of that group. We will require that the assignment of $\partial B_{\tau}(i)$ have negligible effect on the probability of variable $x_i$ for all $i \in V$. It is now clear, if the learned model have this characteristic when deciding what are the neighbors of vertex $i$ only a subset of vertices needed to be considered. By adding this condition \cite{bresler2008reconstruction} approved its time complexity to $O(d^{ad})$. If we further assume that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree) we can apply greedy algorithms \cite{netrapalli2010greedy, anandkumar2013learning}. In \cite{anandkumar2013learning} they preform a greedy algorithm with time complexity of $O(d^{2d}p)$ and sample complexity of $O(d^2\log p)$ but focused only on pairwise case.  
+
 We can summarize the current state as follows. 
 In the general case the maximum degree must be given. Having it as an input, the sample and time complexity are very close to the known lower bounds. 
 Hence The big question remain, what needed to be assumed in order to allow efficient learning. 
 Correlation decay was considered as an option\cite{montanari2009graphical} but \cite{bresler2014structure} shows that it indeed not a necessary one. 
 Another difficulty (which is sometimes ignored) is the jump of difficulty when the factor size is not bounded (or as large as $\dmax$). 
-I believe this can be a very int resting research direction, under what conditions  a model with bounded factor size and unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}.
+I believe this can be a very interesting research direction, under what conditions  a model with bounded factor size and unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}.
 \subsection{Parameters Learning}
 As in the previous section I will start with the problem definition. 
 In parameters learning it is assumed that the structure is given (but not necessarily the exact one). The most trivial objective will be to find $\exact{\thetav}$.  
@@ -72,25 +78,25 @@ I will start with the  most intuitive approach - maximum likelihood(ML).
 In ML we are looking for the parameters that will maximize the probability to sample the seen data-set.
 Note, that just giving probability of $\frac{1}{N}$ to each of the samples is the maximum likelihood solution, but it suffer from extreme overfitting.
 So some regularization is need , in GM it usually done by forcing a structure (forcing Independence assumptions) and the size of the factors.
-I will now define the maximum likelihood objective and than discuss its merits and drawbacks of it.
+I will now define the maximum likelihood objective and than discuss its merits and drawbacks.
 
 It is more convenient to maximize the log of the likelihood and to normalize it by the sample size $N$, this changes do not change the parameters that maximize the  function $\arg \max_x\frac{1}{N}\log(f(x)) = \arg\max_x f(x)$. 
 Denote by $X = [\xx^1, \ldots, \xx^N]$ the data-set.
 With this the ML objective can be  formally defined  by  using the model in \eqref{eq:basic_model} as, 
-\bea
-\likelihood{X;\thetav} &=& \frac{1}{N}\log\left(\prod_{n=1}^N p(\xx^n;\thetav)\right) \\
-&=& \frac{1}{N}\sum_{n=1}^N\log\left(p(\xx^n;\thetav)\right)\\
-&=& \frac{1}{N}\sum_{n=1}^N\log\left(\frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x^n_i,x^n_j) + \sum_{n \in V} \theta_i(x^n_i)}\right)\\
-&=& \frac{1}{N}\sum_{n=1}^N \sum_{ij \in E} \theta_{ij}(x^n_i,x^n_j) + \sum_{i \in V} \theta_i(x^n_i) -\log(Z(\thetav))\\
-&=& \sum_{ij \in E} \sum_{x_i,x_j \in \cX}\mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{i \in V} \sum_{x_i \in \cX}\mub_i(x_i)\theta_i(x_i) -\log(Z(\thetav))\\
-&=&  \mubv \cdot \thetav - \log(Z(\thetav))
-\eea
+\bean
+\likelihood{X;\thetav} &=& \frac{1}{N}\log\left(\prod_{n=1}^N p(\xx^n;\thetav)\right) \nonumber \\
+&=& \frac{1}{N}\sum_{n=1}^N\log\left(p(\xx^n;\thetav)\right)\nonumber\\
+&=& \frac{1}{N}\sum_{n=1}^N\log\left(\frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x^n_i,x^n_j) + \sum_{n \in V} \theta_i(x^n_i)}\right)\nonumber\\
+&=& \frac{1}{N}\sum_{n=1}^N \sum_{ij \in E} \theta_{ij}(x^n_i,x^n_j) + \sum_{i \in V} \theta_i(x^n_i) - A(\thetav)\nonumber\\
+&=& \sum_{ij \in E} \sum_{x_i,x_j \in \cX}\mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{i \in V} \sum_{x_i \in \cX}\mub_i(x_i)\theta_i(x_i) -A(\thetav)\nonumber\\
+&=&  \mubv \cdot \thetav - A(\thetav) \label{eq:ML}
+\eean
 Where $\mubv$ is the empirical marginals
 \be
 \mub_i(x_i) = \frac{1}{N}\sum_{n=1}^{N} \deltaF{x_i=x_i^n },\ \
 \mub_{ij}(x_i,x_j)  = \frac{1}{N}\sum_{n=1}^{N} \deltaF{x_i=x_i^n \land  x_j=x_j^n}
 \ee
-ordered in a vector in the same way $\thetav$.
+ordered in a vector in the same way as $\thetav$.
 
 We are looking for $\thetav$ that maximize ML. 
 So taking the derivative and compare to zero is the prompted step:
@@ -110,18 +116,50 @@ This feature is very intuitive, we want the resulted probability to be able to r
 ML has other desirable qualities (under some conditions): 
 It is consist - when $N \to \infty$, we will recover the exact parameters $\lim_{N \to \infty} \arg \max_{\thetav} p(X^N;\theta) =  \exact{\thetav}$\footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$.}. 
 It is efficient - in the limit no other consist estimator has lower mean square error than ML.   
-Asymptotic Normality: with sufficient data, the ML estimator mean will be the true parameter with add Gaussian noise, the probability to get very wrong parameter go down exponentially fast.
+Asymptotic Normality: with sufficient data, the ML estimator mean will be the true parameter with added Gaussian noise, the probability to get very wrong parameter go down exponentially fast.
 
 It seem that ML is indeed all we need, this is however not the whole picture.
 ML suffer from several drawback.
 The first and most important it is not time efficient.
 Calculating the ML is $\#P$ since in involve calculating the partition function.
 Moreover, even calculating its derivative is $\#P$ since it involve inferring the marginals of the model.
-So direct gradient descent is not possible since it involve calculating the current model marginals.
-Even if we tackle the time complexity of finding the marginals, a result by \cite{bresler2014hardness,montanari2015computational} show that if $NP \neq RP$ no algorithm that use only the model marginals ( marginals corresponding to the model parameters) can learn the model parameters. 
+%So direct gradient descent is not possible since it involve calculating the current model marginals.
+Indeed \ignore{Even if we tackle the time complexity of finding the marginals}, a result by \cite{bresler2014hardness,montanari2015computational} show that if $NP \neq RP$ no algorithm that use only the model marginals ( marginals corresponding to the model parameters) can learn the model parameters. 
 Hence if a time efficient algorithm that find the ML parameter is to be found, it must use higher order of marginals.
 
-We will no consider an approximation to the ML Pseudo-Likelihood.
+In practice, since inference is hard, approximate inference is used.
+Due to BP success, it was used to approximate the marginal in gradient descent.
+The next section discuss the meaning of doing do.
+\subsubsection{Maximum Likelihood with BP as the approximate inference}
+Optimizing ML is usually done by gradient descent.
+In order to calculate the derivative, the marginals of the current model are needed.
+BP is a successful algorithm for finding the marginals.
+so using it to find the marginals seem like a good choice.
+But what is optimize exactly?
+
+using the variation stand point \eqref{eq:ML} cab be written as
+\be
+\sup_{\thetav \in \Omega^G} \likelihood{X;\thetav} = \sup_{\thetav \in \Omega^G}\left\{ \mubv \cdot \thetav - \sup_{\muv \in \margpoly} \left\{\muv \cdot \thetav - A^*(\muv)\right\}\right\}
+\ee
+Since BP is used and remembering the result of \cite{yedidia2000generalized} the optimization can be written as ,
+\be
+\bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
+\ee
+This will be called the Bethe maximum likelihood.
+It is a convex function of $\thetav$ since $A_B(\thetav)$ is a convex function of $\thetav$ (but not smooth).
+Moreover it can be proving that $\bethelikelihood{X; \thetav}$ is strictly convex (see \appref{})  
+Taking the derivative and comparing to zero result in,
+\be
+\mu_{ij}(x_i,x_j) = \convexhull{ \arg \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}}
+\ee
+It is easy to see that if the Bethe energy has only one maximum the moment matching condition \eqref{eq:moment_matching} is satisfied.
+While in the case of multiple maximum no moment matching is guaranteed.
+Hence, the learned parameters will not reconstruct the empirical marginals.
+A question remain, is such empirical marginals exist such that no parameters exist that will guaranteed moment matching?
+
+In the paper \cite{heinemann2012cannot} we prove that such empirical marginals exist, and show that indeed there are marginals in the marginal polytope that will \textbf{never} (for any parameter) be the result of BP.
+
+We will now consider an approximation to the ML Pseudo-Likelihood.
 \subsubsection{Pseudo-Likelihood}
 Pseudo-Likelihood (PL)\cite{besag1975statistical} is a way to approximate the likelihood.
 It is the first of larger family of likelihood approximation called composite likelihood \cite{lindsay1988composite}.
@@ -172,16 +210,16 @@ While the pairwise change, so it include only one of the summation - hence a mor
 The first reason to use PL and not ML is time complexity.
 While PL parameters can easily be computed via gradient descent.
 No efficient way is known to recover ML parameters.
-The question whether there are cases when PL give better result than ML is still open.
-In the well specified case (the model structure and factors are exact) is was shown that ML is more efficient (sample wise) than PL \cite{liang2008asymptotic}
-While in the miss specified case (the more realistic case) is is not clear which method is better(see \cite{varin2011overview} for discussion).
+The question whether there are cases when PL give better results than ML is still open.
+In the well specified case (the model structure and factors are exact) it was shown that ML is more efficient (sample wise) than PL \cite{liang2008asymptotic}
+While in the miss specified case (the more realistic case) it is not clear which method is better(see \cite{varin2011overview} for discussion).
 An interesting direction for research is to design an inference algorithm for PL.
 Meaning, design an efficient inference algorithm such that it is promised to return the empirical marginals when the model parameters was learned using PL.
    
 \subsubsection{Other Methods}
 Contrastive Divergance (CD) \cite{hinton2002training}  was designed for models where part of the variables are hidden ( variables that there are no samples include them), but it could be used to general models.
 The idea is simple, re-call from \eqref{eq:ml_derv_single} and \eqref{eq:ml_derv_pairs}, that the reason gradient-descent is impractical,  is  the hardness of evaluating the marginals according to the parameters $p(x_i,x_j;\thetav)$. 
-One way to approximate these marginals  is by MCMC \ref{}.
+One way to approximate these marginals  is by MCMC \secref{sec:sampling}.
 If we only preform small number of steps (usually one) to evaluate $p(x_i,x_j;\thetav)$ we result with CD.
 Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive} but it success in learning Restricted Boltzmann Machine (RBM) gain her its importance.
 
@@ -217,3 +255,9 @@ To conclude, ML is provably the most sample complexity efficient,   but no time 
 Moreover, it was proven by \cite{bresler2014hardness,montanari2015computational} that no algorithm that use only the sufficient statistics in the clique order can optimize ML.
 On the other hand there is PL that is time efficient but its sample complexity is worst that that of PL.
 Methods like composite likelihood can give better sample complexity results while still be time efficient.
+
+\subsection{Inferning}
+In a world without computation limitation learning the exact model is optimal.
+I our world however it is not always the case.
+Since when using the model approximation algorithm will be used, the quality of the learned model should be with respect to the results of the approximation algorithm, not how close the model to the real one.
+In \cite{wainwright2006estimating} it   

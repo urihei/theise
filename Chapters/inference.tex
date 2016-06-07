@@ -1,7 +1,7 @@
-\section{Approximate inference}
+\subsection{Approximate inference}
 \label{sec:approx}
-Graphical models is a way to model distributions.
-In order it to be of use an algorithm should be found that could answer queries based on the model, in other words preform inference.
+Graphical models is a power full tool.
+In order it to be of use, an algorithm should be found that could answer queries based on the model, in other words preform inference.
 As written above, exact inference in the general is NP-complete.
 Hence the importance of finding an approximate inference.
 I will focus in this introduction only on the problem of finding the marginals (not the MAP problem) since in learning it is of more use as I will show later.
@@ -27,26 +27,28 @@ A^*(\muv) = \sup_{\thetav \in \Omega^G} \left\{\muv \cdot \thetav - A(\thetav)\r
 \ee
 Two things should be noted. The first is that if $\muv \in \margpoly^G$\footnote{This imply only for marginals in the inner part of the marginal polytope. For marginals on the boundaries more delicate treatment should be given} than $A^*(\muv) = -H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function is equals to the entropy of the probability that its marginals are $\muv$.
 Second that this is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
-It can be shown that $A(\thetav)$ is a convex function of $\thetav$ hence ${A^{*}}^* = A$ hence we can write the variational expression of $A(\thetav)$ as
+It can be shown that $A(\thetav)$ is a convex function of $\thetav$ hence ${A^{*}}^* = A$, now the variational expression of $A(\thetav)$ can be written as, 
 \bean
 A(\thetav) &=& \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
 \muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
 \eean
-\eqref{eq:variation_A}and \eqref{eq:arg_variation_A} present a new way to infer  the marginals and  calculate the partition function.
+\eqref{eq:arg_variation_A} and \eqref{eq:variation_A} present a new way to infer  the marginals and  calculate the partition function.
 Not surprisingly, solving this optimization is hard in itself for two reasons.
 The first, the marginal-polytope is a very complex  body - its description is exponential in $d$ the size of $\muv$.
-The second is calculating the entropy is a hard problem by itself.
-But the merit in these representation is the ability to approximate these two quantities - the entropy and the marginal polytope.
+The second, calculating the entropy is a hard problem by itself.
+The merit in this representation, is the ability to approximate these two quantities - the entropy and the marginal polytope.
 
-I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ such both are easy to calculate. 
-For example if we select the independent graph it sum down to  the mean-field method \cite{peterson1987mean}.
+I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ in a way that both are easy to calculate. 
+For example if we select the independent graph it sum down to the mean-field method \cite{peterson1987mean}.
 The second method give different approximation to the entropy and marginal polytope.
-If we outer bound the marginal-polytope by the local-polytope ( defined in \eqref{eq:local_polytope}) and the entropy by the Bethe-entropy it result in the  Bethe approximation that is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
+The local polytope ( defined in \eqref{eq:local_polytope}) is an outer bound and approximation of the marginal-polytope.
+While the entropy is approximated by the Bethe-entropy. 
+the resulted approximation is the  Bethe approximation which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
 \subsubsection{Mean Field}
-Mean field is a technique that simplify complex model by a simpler one.
-In inference, it approximate the real model marginals by marginals of a simpler model.
-More specifically, it replace the marginal polytope (of the true dependencies graph) and the true entropy with marginal polytope of simpler graph and entropy of models with this dependencies graph.
-I will illustrate this technique by choosing the simplest graph the independent graph denote by $G_I$.
+Mean field is a technique that approximate a complex model by a simpler one.
+%In inference, it approximate the real model marginals by marginals of a simpler model.
+More specifically in inference, it replace the marginal polytope (of the true dependencies graph) and the true entropy with marginal polytope of simpler graph and entropy of the model with the simpler dependencies graph.
+I will illustrate this technique by choosing the simplest graph - the independent graph denote by $G_I$.
 In this case the marginal polytope sum down to,
 \be
 \margpoly^{G_I} = \left\{\muv \in \Re^{d}\left|
@@ -68,19 +70,20 @@ So the partition function can no be written as
 A_{G_I}(\thetav) = \sup_{\muv \in \margpoly^{G_I}}\left \{ \muv \cdot \thetav + H_{G_I}(\muv))) \right\} \label{eq:naive_mean_field} \\
 \ee
 Note that $A(\thetav) \geq A_{G_I}(\thetav)$ since by restricting the marginal polytope the result can only decrease (the entropy is exact on this models family).
-Taking the derivative of the right side of \eqref{eq:naive_mean_field} and compare to zero give
+Taking the derivative of the right side of \eqref{eq:naive_mean_field} and compare to zero gives
 \be
 \mu_i(x_i) \propto \exp{\theta_i(x_i) + \sum_{j\in \nei{i}} \sum_{x_j} \theta_{ij}(x_i,x_j)\mu_j(x_j) } \label{eq:naive_iter}
 \ee
-Iterating through \eqref{eq;naive_iter} will converge since \eqref{eq:naive_mean_field} is concave function.
+Iterating through \eqref{eq:naive_iter} will converge since \eqref{eq:naive_mean_field} is a concave function.
 
 The above example demonstrate two important feature of the chosen dependency graph.
 First, the entropy should be easy to calculate.
 Second, if the resulted equation is convex, the optimization will be easy.
-The second feature not always hold, for example if the dependency graph we choose is a tree. 
+The second feature does not always hold, for example if the dependency graph is a tree. 
 The model entropy is the Bethe entropy (see \eqref{eq:bethe_entropy}) which is not a concave function. 
-Hence, local maximum could occur and the  resulted algorithm may not converge\footnote{ This is not BP, to get BP the optimization should be over the local polytope not the tree polytope}.
+Hence, local maximum could occur and the resulted algorithm may not converge\footnote{ This is not BP, to get BP the optimization should be over the local polytope not the tree polytope}.
 \subsubsection{Belief Propagation}
+\label{sec:belief}
 Belief-Propagation (BP) is a message passing algorithm.
 In each cycle\footnote{The order of the messages can effect convergence, hence can be arbitrarily be changed. see for example \cite{elidan2012residual}.} a message is passed from a vertex to all its neighbors.
 The message reflect the source vertex belief on the destination vertex probability.
@@ -97,15 +100,16 @@ Now the resulted pseudo-marginals is calculated by,
 \tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)\label{eq:bp_pairwise_marginal}
 \eean
 
-If the model graph is a tree - BP is exact, the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$ .
-If there are loops in the graph the quality of the pseudo-marginals is unknown. 
+If the model graph is a tree - BP is exact, the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$.
+There are other models families  where the error of BP marginals can be bound.
+Tree-like model is an example of such family\cite{dembo2010ising}, this fact is used in my second paper\cite{heinemann2014inferning}. 
+But in the general case the quality of the pseudo-marginals is unknown. 
 Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\bold{m}^0$.
 Despite the above BP give good results in practice \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
 
 The first step in understanding BP is to give meaning to the resulted pseudo-marginals.
 This was done by \cite{yedidia2000generalized, yedidia2003understanding} they found that the fix point of BP are local minima of the Bethe free energy of the system\footnote{Later \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are  local minima of the Bethe approximation}.
-So it gave meaning (from physics) to the fix point of BP.
-Moreover it allow theoretical analysis of BP. 
+Not only that this result gave meaning to BP fix points, it allow theoretical analysis of BP. 
 I will now present this result.
 
 As mention earlier, the approximation of \eqref{eq:variation_A} include two parts:
@@ -134,7 +138,7 @@ In contrast to the variational free energy, the Bethe free energy is simple to c
 This however come with a price.
 First the result must not belong to the marginal-polytope hence not a ``real'' marginal.
 Second, the resulted optimization is no longer convex - the Bethe entropy is non-convex function while the true one is convex.
-Hence the complexity of optimizing this objective is not clear - I am not aware on any result on the time complexity of Bethe approximation.
+Hence the complexity of optimizing this objective is not clear - I am not aware on any result on the time complexity of Bethe approximation\footnote{In \cite{weller2012bethe} a polynomial algorithm is suggested that approximate the Bethe free energy up to arbitrary precision under some models constrains.}.
 %So the importance of \eqref{eq:bethe_approximation} to inference, is its connection to BP.
 
 After defining the Bethe energy , to see the connection to BP we just need to write the Lagrangian of this optimization,
@@ -179,12 +183,12 @@ Instead of maximizing the Bethe energy it maximize the Kikuchi free energy - an 
 
 One of the draw backs of the Bethe approximation is the fact that the Bethe entropy is not a concave function.
 Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree} suggest a surrogate entropy  which is concave.
-It doing so by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.
+This is done by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.
 It's name come from the interpretation of these weights.
 The model parameter can be decomposed: $\thetav=\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}$ such that each $\thetav^{\mathfrak{t}}$ is sub-model\footnote{$\theta^{\mathfrak{t}}_{ij}$ is either $0$ or $\theta_{ij}$ and $\theta^{\mathfrak{t}}_i =\theta_i$} which its structure is a tree, and $t_{\mathfrak{t}}\geq 0$, $\sum_{\mathfrak{t}} t_{\mathfrak{t}} = 1$.
 Such probability induce a probability for each edge to appear in any one of the trees.
 These probabilities are the weights of the information part.
-This gave another advantage to TRW, the resulted log partition function is always upper bound the true partition function. 
+This gave another advantage to TRW, the resulted log partition function is an upper bound to the true partition function. 
 This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = Z\left(\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}\right) \leq \sum_{\mathfrak{t}} t_{\mathfrak{t}} Z(\thetav^{\mathfrak{t}})$ which is exactly the TRW approximation to the partition function.
 Both algorithms suggest a variation of BP messages to fit the change in energy.
 A unify view of these two algorithm (and others) can be found in \cite{meshi2009convexifying}.
@@ -195,26 +199,26 @@ A general algorithm was given by \cite{yuille2002cccp} which use CCP\cite{yuille
 
 One of the basic requirements of any algorithm is to know that after some time it will return a result.
 In BP case, it mean that the messages will converges.
-It is easy to build a model which BP does not converge on.
-so the question remain, can characteristics be found that guaranteed BP convergence.
+A model that BP does not converge on is easy to build.
+so the question remain, can convergence be guaranteed under some model's constrains.
 The first work to so was \cite{tatikonda2002loopy} where a bound on the pairwise interaction was given to insure convergence.
-For proving the bound the computation tree of BP we used.
-The computation tree describe the running of BP where each time is a level in the tree.
-The root value is the pseudo-marginal at time $t$ of specific vertex, its children are the neighbors that  send it a message with value of the message at time $t-1$.
-It continue to go back at time until the leaves which are the  the initial messages at time $0$.
+For proving the bound the computation tree of BP was used.
+The computation tree, describe the running of BP where each time is a level in the tree.
+The root value is the pseudo-marginal of specific vertex at time $t$ , its children are the neighbors that send it a message with values of the messages at time $t-1$.
+It continue to go back at time, until the leaves which are the initial messages at time $0$.
 Considering the time at infinity, If the marginals in time $t$ is independent of the initial messages at time $0$ BP will converge.
 This method come from the physics world where it is called uniqueness of Gibbs measure or independence of boundary conditions.
 
 In \cite{heskes2004uniqueness} the connection between Bethe and BP help us to find convergence guarantees.
 Finding conditions that insure the convexity of Bethe energy, imply finding condition to the convergence of BP. 
 For BP to converge,  the distance (in some measure) between the current messages and the previous one should get smaller and smaller.
-If this change can be bound by a constant the convergence of BP can be guaranteed.
+If this change can be bound by a constant (strictly smaller than one) the convergence of BP can be guaranteed.
 In both papers \cite{mooij2007sufficient}, \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
 Note that all these method do not find conditions to BP convergence but that BP will have a single fix point.
 This fact will be important in my paper \cite{heinemann2012cannot}.
 
 The relation between the Bethe partition function and the exact is till an open question.
-It is clear that a relation can not be given in the general case - it sometimes bigger and at times smaller than the exact partition function.
+It is clear that a relation can not be given in the general case - it sometimes bigger and sometimes smaller than the exact partition function.
 One of the first results was by \cite{AlanNips2007} that prove that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$) the Bethe partition function lower bounds the exact partition function.
 Later \cite{RuozziNips2012},  gave a stronger result, if the pairwise interaction are log sub-modular the Bethe partition function lower bound the exact partition function ( the case of attractive models is an instance of this class).
 In their prove they used the important work of \cite{vontobel2013counting} that gave a combinatorial meaning to the Bethe entropy.
@@ -223,7 +227,6 @@ To conclude, the connection between BP and Bethe contribute to the understanding
 The biggest short coming of this connection is that it say nothing with respect to BP massages before conversion.
 In contrast,  another interpretation of BP is seeing BP is re-parametrization algorithm that try to change the parametrization of $\thetav$ such that it will belong to the local-polytope.
 For full proof please see \cite{wainwright2002stochastic}.
-
 
 \ignore{
 \be
@@ -252,7 +255,7 @@ Sampling in a first glance seem the perfect solution for finding the marginals.
 The marginals can be estimated as the mean of bounded random variable.
 Using Hoeffding bound the probability of mistake greater than $\epsilon$ can be bound by $P(|p(x_i) - \frac{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}{M}| > \epsilon) < 2\exp{-\frac{2\epsilon^2M}{|\cX|^2}}$.
 This mean we have a time complexity of $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$\footnote{With probability greater than $1-\delta$ the estimation error will be less than $\epsilon$}.
-The problem in the above that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This is easly be seen from redction to q-coloring for example \cite{levin2009markov,bordewich2016mixing}}.
+The problem in the above is, that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This is easly be seen from redction to q-coloring for example \cite{levin2009markov,bordewich2016mixing}}.
 So how can we sample.
 
 Markov Chain Mote Carlo(MCMC) is a method to sample from a distribution $P(\xx)$ while have the ability to sample only from distribution $Q(\xx)$.
@@ -260,8 +263,14 @@ The idea is as follow, build a Markov chain with two main features.
 The first, it must be easy to move from one state to another.
 The second, the stationary distribution of the Markov chain is $P(\xx)$.
 
+To define Markov chain one need to define the transition matrix between any two states.
+In MCMC it is a matrix of dimension $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$ where each row sum to one $\sum_j A_{i,j} = 1$.
+The stationary distribution is a distribution to be on a state that satisfy $A\vv=\vv$.
+The distribution needed to be sampled should be the stationary distribution for the MCMC.
+
+
 Metropolis chains is an example how the Markov chain can be built.
-The transition matrix - the probability to  is defined as follow
+The transition matrix is defined as follow
 \be
 A(\xx,\tilde{\xx}) = \left\{
 \begin{array}{lr}
@@ -290,7 +299,13 @@ A(\xx,\tilde{\xx}) = \left\{
 Note that as in the above case We only need to compute the ratio of $P(\xx)$ hence the partition function can be canceled.
 
 The remain question giving an arbitrary $\xx$ start state how fast are we guaranteed to sample from the stationary distribution.
-This constant is called the \textit{mixing time}, and it depend the model features (such as interaction strength,  dependency structure etc.).
+This constant is called the \textit{mixing time}.
+The mixing time is defined as the maximum number of moves needed to take until reaching the stationary distribution while starting from any distribution.
+\be
+\tau_{\epsilon}  = \min_{\tau \in \naturalNumbers}\sup_{\vv \in \Omega} \left\{\tau | d\left(A^{\tau}\vv,P(\xx)\right) < \epsilon\right\}
+\ee
+where $\Omega = \{ \vv \in [0,1]^{|\cX|^{p}} | \sum_i \vv_i = 1\}$, and $d(\vv,\tilde{\vv})$ is any distance function between probabilities.\footnote{ From the above condition it is easy to see the connection to the spectral gap (the distance between the largest to the second eigenvalue) and the mixing time. For more information see\cite{levin2009markov}}  .
+The mixing time depend on the model features such as interaction strength,  dependency structure etc.
 Hence models with small mixing time can be easily be sampled, inferring the marginals is doable.
 This fact will be important when taking about inferning\ref{}.    
 

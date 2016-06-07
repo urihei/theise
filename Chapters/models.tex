@@ -1,6 +1,5 @@
-\section{Different models}
-\subsection{Graphical Models}
-\subsubsection{Notations and Definitions}
+\section{Graphical Models - Learning and Inference}
+\subsection{Notations and Definitions}
 Probability is the chance that a certain event will take place.
 Hence we need to define all the possible events.
 We will denote an event by $x \in \cX$, and we will restrict it to be discrete $ |\cX| \in \naturalNumbers$
@@ -10,7 +9,7 @@ After defining the event the probability is  a function from the space of events
 
 In many real world situations each variable (sub-event) is directly depend on only small subset of other variables.
 In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
-We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation and by $d_i = |\nei{i}|$ the number of neighbors of variable $i$.  
+We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation and by $d_i = |\nei{i}|$ the number of neighbors of variable - $i$ its degree.  
 % $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
 Now this dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
 Each variable $x_i$ will be assign a vertex $v_i$. 
@@ -30,7 +29,8 @@ With this restriction the probability can be written as
 \label{eq:basic_model}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-were we define $\thetav \in \Omega^G $\footnote{In times when the dependence in $G$ is clear it will be drooped.}  as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$ hence $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega^G \equiv \Re^{d}$.\footnote{I will assume (if not said otherwise) that $\thetav$ is unique - some of the vectors values are fixed to zero.}
+were we define $\thetav \in \Omega^G $\footnote{In times when the dependence in $G$ is clear it will be drooped.}  as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$. 
+So, $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega^G \equiv \Re^{d}$.\footnote{I will assume (if not said otherwise) that $\thetav$ is unique - some of the vectors values are fixed to zero.}
 The normalization constant $Z(\thetav)$ - the partition function, is defined as, 
 \be
 \label{eq:partition_function}
@@ -65,7 +65,7 @@ This can be calculated by summing over all the rest of variables:
 P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX^{P}\\
  s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz;\thetav)
 \ee
-Note that these two problems can be asked when part of the variables was seen hene exponential number of different queries on the same model. 
+Note that these two problems can be asked when part of the variables was seen this result in exponential number of different queries on the same model. 
 Both inference tasks can easily be infer by going over all the possible event.
 This however is too expensive since it is exponential in the number of variables.
 And indeed in the general case MAP\cite{shimony1994finding} is NP complete problem while MAR\cite{cooper1990computational} is \#P complete (MAR is even hard to approximate \cite{roth1996hardness}).
@@ -73,68 +73,34 @@ And indeed in the general case MAP\cite{shimony1994finding} is NP complete probl
 The situation is not as hopeless as was described.
 First, the complexity parameter is not the number of variables but a feature of the graph called tree-width\cite{robertson1983graph,robertson1994quickly}.
 The tree width of the graph is usually smaller than the number of vertices, but given a graph it is NP-complete to determine if the graph has tree-width smaller than $k$\cite{Arnborg:1987}.
-For example if we restrict the structure of the dependency graph to a tree both problems can be solved in polynomial time since the tree-width of a tree is one.
-But there are other model restriction that is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
-However in general case the inference problem is hard and approximate algorithm must be used. I will discuss approximation algorithm  in \secref{sec:approx} . 
+Hence inference (both MaP and MAR) is easy on models with dependency structure of a tree since the tree-width of a tree is one.
+There are others model restriction that is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
+However in general case the inference problem is hard and approximate algorithm must be used.
+I will discuss approximation algorithm in \secref{sec:approx} . 
 \subsubsection{Pros and cons}
-We just claim that inference is hard so why should one use such model.
-I will now go over the reasons why one should use graphical models.
-One may answer is that it is optimal - in classification for example, if we know the exact conditional distribution and can infer the MAP we will have the optimal solution. This situation is very unrealistic: we usually do not know the true model moreover the inference is NP hard so we usually use some approximation. So we return to the question when should we use it?
+We just claim that inference is hard so why should one use such a model which can not be used.
+%I will now go over the reasons why one should use graphical models.
+One may answer is that it is optimal - in classification for example, if we know the exact conditional distribution and can infer the MAP we will have the optimal solution. 
+This situation is very unrealistic: the true model is usually unknown moreover the inference is still NP hard.
+So the question still stand, when should we use it?
 
-In many situations we need to understand our model. In biology, we learn the structure of the model to better understand the learned biology system. If we rule out a user misuse, we may need the ability to explain our decision. In graphical models each variable has meaning hence understanding the learned model is easier then other model - SVM for example.
+In many situations we need to understand our model.
+In biology, we learn the structure of the model to better understand the learned biology system.
+In many cases, such as user misuse, an explanation of the decision is needed. 
+in other words, the ability to explain the factors that influence the decision is a must, you can not take action against a costumer with out any ability to explain your decision. 
+In graphical models each variable has meaning hence understanding the learned model is easier then in other models - SVM for example.
 
-The model in graphical models usually lack the distinction between features and outcome. In situation that such separation is artificial graphical model give power that is not found else where. We can ask different queries on the same model and have consist answers. Take for example medical situation, we are interested on the probability of several symptoms, each is a different query.
+The model in graphical models usually lack the distinction between features and outcome.
+In situation that such separation is artificial graphical model give power that is not found else where.
+Different queries can be asked on the same model and have consist answers.
+Medical diagnosis is an example where each time different set of variables are seen.
+Moreover, for each patent the interesting variables  symptoms or disease can change, hence different queries.
 
-This bring us to the next two important features, handling missing values and structured output. In many situations we do not always see all of the variables. Graphical models, handle missing values inherently and such cases need not special treatment ( as is the case in other models). Lastly, the queries result is not necessarily a single variable. Queries on several variables are possible and will take into account the relation between these variables.
+This bring us to the next two important features, handling missing values and structured output.
+In many situations no all of the variables are seen.
+Graphical models, handle missing values inherently and such cases need not special treatment ( as is the case in other models).
+Lastly, the queries result is not necessarily a single variable.
+Queries on several variables are possible and will take into account the relation between these variables.
 
-To conclude, graphical models is a very powerful toll. This power come with a price,  inferring and learning (as we will see later) are hard and approximation algorithm must be used in most cases.
-\subsection{Support Vector Machine}
-\subsubsection{Notations and Definitions}
-One basic problem in machine learning is classification.
-Given features of an instance we want the ability to classify - assign one label out of small discrete group.
-Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
-Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning label $f(\xx,\ww)$ where the true label is $y$.
-
-The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
-First, we usually do not know the real distribution, but only have a sample of it: given a samples $D = \{(\xx_i,y_i)\}_{i=1}^N$  where $\xx_i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
-We will want to minimize our objective on this sample - minimizing the empirical loss\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
-Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation, here by giving the instance of group $\cL$ and its index the same notation}.
-Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
-This function is very hard to optimize since it is non-convex.
-One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
-\be
-\label{eq:svm_obj}
-\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^M \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx_{i}) + \ww_r \cdot \phi(\xx_i)\} + \lambda \|W\|^2
-\ee
-
-Taking the dual and some algebra gives:
-\bea
-\label{eq:svm_obj_dual}
-\max_{A \in \Re^{M,|\cL|}}&& -\sum_{i,j}^M(\phi(\xx_i)\cdot\phi(\xx_j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^M\alphav_i \cdot \bold{1}_{y_i}\\
-\text{subject to}:&& \forall i\ \ \alphav_i \leq \bold{1}_i, \text{ and } \alphav_i \cdot \bold{1} = 0
-\eea
-Where $\lambda$ is the relularization parameter, $\bold{1}_i$ is the all zero vector except the $i$ coordinate and $\bold{1}$ is the all one vector.
-Note that in this form it is enough to calculate the dot product between any two samples - no need to calculate the map $\phi$.
-This is know as the kernel trick \cite{hofmann2008kernel}.
-\subsubsection{Pros and Cons}
-Support Vector Machine, optimize objective that is very close to the optimal one. Learning is a convex optimization problem hence efficient and classification time complexity is linear in the number of features. In short its is very efficient method.
-But this efficiency come with the price of power of expression since we consider only linear models, to overcome this shortcoming we use kernels.
-
-When using kernel SVM the efficiency depend on the number of samples\footnote{More accurately it depend on the margin of the problem but in practice it is not usually come into effect.} since usually the number of samples that participate in the classifier scales with the number of samples( the number of non-zero $\alphav_i$). Hence both learning and classification can be relatively costing.
-Moreover in both linear and kernel SVM, there is no principle way to integrate prior knowledge. This has grate importance in many fields where there is strong dependencies between the features and known structure for example the task of object recognition.
-
-\subsection{Neural Networks}
-Neural networks, as SVM, try to solve classification problems.
-But instead of restricting  the function class to linear function, it choose a different class of cassification functions that we will now describe.
-Remember that a classification function is a function $f: \Re^p \times \Re^q \to \cL$ so a neural networks have the form:\bea
-\label{eq:neural_networks}
-f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
-\zz_{k}(\xx, \wparamsi{k}) &=& \sgn{W_k \zz_{k-1}(\xx, \wparamsi{k-1}}\\
-\zz_{1}(\xx,W_1) &=&  \sgn{W_1 \xx}
-\eea
-Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$, $\wparamsi{k} = W_1,\ldots,W_k$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network.
-The $\sgn{x}$ function is known as the activation function a simple non linear function.
-Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}.
-
-This functions class result in a non convex function hence non convex optimization problem.
-But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
+To conclude, graphical models is a very powerful toll.
+This power come with a price,  inferring and learning (as we will see in \secref{sec:learning})are hard and approximation algorithm must be used in most cases.
