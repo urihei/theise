@@ -104,7 +104,7 @@ If the model graph is a tree - BP is exact, the pseudo-marginals are the exact m
 There are other models families  where the error of BP marginals can be bound.
 Tree-like model is an example of such family\cite{dembo2010ising}, this fact is used in my second paper\cite{heinemann2014inferning}. 
 But in the general case the quality of the pseudo-marginals is unknown. 
-Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\bold{m}^0$.
+Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\boldsymbol{m}^0$.
 Despite the above BP give good results in practice \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
 
 The first step in understanding BP is to give meaning to the resulted pseudo-marginals.
@@ -170,7 +170,7 @@ The Bethe free energy is a non-convex function hence multiple minima may exist.
 Hence BP may have multiple stable fix point.
 Note that not all fix point have the same quality (at least regarding the solution of \eqref{eq:bethe_approximation}).
 Two fix points where one have lower Bethe free energy should not be treated the same - the one of the lower energy could be a solution to \eqref{eq:bethe_approximation} while the other could not.
-This imply against a common practice of initializing the massages $\bold{m}^0$ to uniform distribution and running BP only once.
+This imply against a common practice of initializing the massages $\boldsymbol{m}^0$ to uniform distribution and running BP only once.
 The above imply that random initialization and multiple running of BP may improve the quality of BP results.
 
 The connection between BP and the Bethe energy promote a wide research.

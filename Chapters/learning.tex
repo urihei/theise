@@ -258,6 +258,27 @@ Methods like composite likelihood can give better sample complexity results whil
 
 \subsection{Inferning}
 In a world without computation limitation learning the exact model is optimal.
-I our world however it is not always the case.
-Since when using the model approximation algorithm will be used, the quality of the learned model should be with respect to the results of the approximation algorithm, not how close the model to the real one.
-In \cite{wainwright2006estimating} it   
+In our world however it is not always the case.
+The quality of the learning process is with respect to the outcome of the approximate inference  algorithm.
+Hence, the learned model should be selected such the inference algorithm will return good results, not such it be close to the real model.
+In \cite{wainwright2006estimating} bring up this point and empirically demonstrate that indeed when TRW is the inference algorithm the parameters should be the TRW parameters (there is a close form equations). 
+Note that in this paper the structure of the model was given.
+An interesting question remain, who learning should be preform when the structure is not given and the goal is preforming inference on the learned model.
+
+The complexity of inference for a given model is govern by its tree-width \cite{robertson1983graph,robertson1994quickly}.
+Learning models with bound tree-width will guarantee easy inference.
+This however turn out to be a hard problem by itself \cite{srebro2001maximum}.
+Many algorithm tried to approximate this problem for example \cite{karger2001learning,bach2001thin,elidan2009learning}.
+
+Another class of interesting  models is where the inference algorithm is not exact but guaranteed to return good approximation. 
+As mention earlier (see here \ref{sec:belief} ) running BP on model that are tree-like can be proved to return good approximation \cite{dembo2010ising}.
+Tree-like models are models that are locally trees, but allow far away cycles.
+The meaning of far away in models, is translated to $\epsilon$ influence of the assignment of two vertices on each other (or on group of vertices to a vertex).
+In other words, in models were in the influential surrounding  are trees inference is possible.
+In our paper \cite{heinemann2014inferning} the structure and parameters are learned such it will belong to such model group.
+
+Fast mixing models are another model family that  is known to have good approximation inference algorithm.
+As explained above  \secref{sec:sample}, if the mixing time is small, sampling from the distribution is feasible - good approximation inference. 
+In the paper \cite{domke2015maximum} learned models such the resulted models is guaranteed to belong to the fast mixing model family.
+
+ 
