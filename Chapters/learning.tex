@@ -134,10 +134,10 @@ The next section discuss the meaning of doing do.
 Optimizing ML is usually done by gradient descent.
 In order to calculate the derivative, the marginals of the current model are needed.
 BP is a successful algorithm for finding the marginals.
-so using it to find the marginals seem like a good choice.
+So using it to find the marginals seem like a good choice.
 But what is optimize exactly?
 
-using the variation stand point \eqref{eq:ML} cab be written as
+Using the variation stand point \eqref{eq:ML} cab be written as
 \be
 \sup_{\thetav \in \Omega^G} \likelihood{X;\thetav} = \sup_{\thetav \in \Omega^G}\left\{ \mubv \cdot \thetav - \sup_{\muv \in \margpoly} \left\{\muv \cdot \thetav - A^*(\muv)\right\}\right\}
 \ee
@@ -147,8 +147,18 @@ Since BP is used and remembering the result of \cite{yedidia2000generalized} the
 \ee
 This will be called the Bethe maximum likelihood.
 It is a convex function of $\thetav$ since $A_B(\thetav)$ is a convex function of $\thetav$ (but not smooth).
-Moreover it can be proving that $\bethelikelihood{X; \thetav}$ is strictly convex (see \appref{})  
-Taking the derivative and comparing to zero result in,
+Moreover it can be proved that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex (see \appref{})
+To summarize, optimize ML by using BP as the inference algorithm in gradient descent will in fact optimize the Bethe likelihood and not the exact one.
+
+In \cite{ganapathi2012constrained} the ML is optimize via its dual - maximizing the entropy with moment matching constrain.
+Since this problem is hard, the problem is relaxed in the same way as the Bethe - using the local marginal polytope  instead of the marginal polytope and using the Bethe entropy instead of the exact one.
+So in fact trying to optimize an objective that similar to the Bethe likelihood \footnote{Note that if no other constrains are found, the moment matching condition in the Bethe entropy maximization fully specifies the solution}.
+To optimize this relaxed objective the Bethe free energy must be found this is done by \cite{yuille2002cccp}.
+Note that as was showed in our paper \cite{heinemann2012cannot} there are empirical marginals that are never  maximize the Bethe free energy - which result in unfeasible objective.
+to clarify this point lets look at the optimizer of the Bethe likelihood.
+
+
+Since the Bethe likelihood $\bethelikelihood{X;\thetav}$ is a non-smooth function the optimal conditions sum down to,
 \be
 \mu_{ij}(x_i,x_j) = \convexhull{ \arg \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}}
 \ee
