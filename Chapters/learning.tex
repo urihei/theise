@@ -93,6 +93,7 @@ With this the ML objective can be  formally defined  by  using the model in \eqr
 \eean
 Where $\mubv$ is the empirical marginals
 \be
+\label{eq:empirical_mar}
 \mub_i(x_i) = \frac{1}{N}\sum_{n=1}^{N} \deltaF{x_i=x_i^n },\ \
 \mub_{ij}(x_i,x_j)  = \frac{1}{N}\sum_{n=1}^{N} \deltaF{x_i=x_i^n \land  x_j=x_j^n}
 \ee
@@ -131,6 +132,7 @@ In practice, since inference is hard, approximate inference is used.
 Due to BP success, it was used to approximate the marginal in gradient descent.
 The next section discuss the meaning of doing do.
 \subsubsection{Maximum Likelihood with BP as the approximate inference}
+\label{sec:Bethe_ML}
 Optimizing ML is usually done by gradient descent.
 In order to calculate the derivative, the marginals of the current model are needed.
 BP is a successful algorithm for finding the marginals.

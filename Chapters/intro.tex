@@ -7,20 +7,48 @@ But even manually design tools to use this amount of data is not possible.
 The need of automated ways to create tools that will handle the growing amount of data is immanent.   
 
 Machine learning, is the discipline that try to close this gap.
-It objective is to find algorithms that takes as an input past data and return tools that can monitored, classify, recommend etc based on the current data.
+It objective is to find algorithms that takes as an input past data, and return tools that can monitored, classify, recommend etc current data.
 %The challenge is huge but results of this field merit are already exist.
 Graphical Models (GM), Support Vector Machine (SVM) and deep learning are the leading methods in machine learning.
-In this work i will touch each of these methods and try to contribute to their understanding and success.
+In this work I will touch each of these methods and try to contribute to their understanding and success.
 
 Graphical models describe the world as stochastic process.
 %Each feature is describe by a vertex which is connect to all features that directly effects it.
-Given an event it return the probability to see this event.
-This give us a huge power, the most probable event can be found or the probability of each feature assignment cab be calculated.
+Given an event, it return the probability to see the event.
+This give us a huge power, the most probable event can be found or the probability of each feature assignment can be calculated.
 Moreover, this inference queries could be asked when part of the assignment is seen while querying on the unseen part.
-The problem is that inference in GM is usually hard - all known algorithm are impractical\footnote{More formally MAP is NP-complete and MAR is \#P is the general case see \secref{sec:def}}.
+Sadly there is another side of the story, inference in GM is usually hard - all known algorithm are impractical\footnote{More formally MAP is NP-complete and MAR is \#P is the general case see \secref{sec:def}}.
 Hence approximate inference play important rule in GM research.
 
-As the above imply, the required ability is automatically create  the tools which translate to learning graphical models.
+One of the most used algorithm for approximate inference is Belief Propagation \cite{pearl1986fusion}.
+It is algorithm that is exact on trees (the dependencies graph is a tree) but use in model with cycles with great success \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
+Running BP on models with cycles bring up several problems.
+There are cases where it does not converge, the final result depend on the initial state, the quality of the resulted pseudo-marginals (it will be shown that they are not always true marginals) vary.
+After the publication of \cite{yedidia2000generalized}, that connect BP result to the Bethe free energy, a surge of papers was published that try to improve it \cite{elidan2012residual}, change it \cite{welling2001belief,wainwright2003tree,meshi2009convexifying}, analyze its convergence \cite{tatikonda2002loopy,mooij2007sufficient,roosta2008convergence} and understand its results \cite{heskes2002stable,yedidia2005constructing,AlanNips2007,YusukeNips2009,RuozziNips2012}.
+
+As the above imply, the required ability is: automatically create the tools, which translate to learning graphical models.
+Most of the research on learning GM focus on learning the exact model - a model as close as possible to reality.
+If the objective is to learn model that will be used for inference it may not be, the correct goal.
+In a world without computation restriction learning the exact model will be optimal since exact inference will be used as an inference algorithm.
+Unfortunately, this is usually not the case, as mentioned above only approximate inference is practical.
+But when an approximation algorithm is used as the inference algorithm, its characteristics must be taken into account when learning.
+
+Maximum Likelihood (ML) is the common objective for learning the model parameters.
+maximizing this objective is usually done by gradient descent, while inference is needed for calculating the derivative (see \secref{sec:max_likelihood}).
+In \cite{wainwright2006estimating} is argued that using the same inference algorithm in learning as when the learned model is used improve the results outcome.
+In our paper \cite{heinemann2014inferning} we take another direction, our goal is to guarantee the quality of the resulted marginals - the marginals that are the output of the inference algorithm when run on the learned model.
+BP is known to be exact on trees, this result can be extended by using parameter that measure how locally tree is the model.
+In our paper, an algorithm for learning models (structure and parameters) is given such that the size of this parameter is bound - hence the size of the error of BP.
+
+As written above, when maximizing ML with gradient descent an inference algorithm must be used.
+BP, as a good approximation inference algorithm, is a plausible choice.
+In \cite{heinemann2012cannot} we show that when maximizing the ML in that way on actually maximize the Bethe ML (see \secref{sec:Bethe_ML}).
+Another characteristics of BP we find is that not all the marginal can be a result of BP.
+In other words, there are marginal (inside the marginal polytope) that will never be (for all parameters) the a stable result of BP\footnote{ The paper \cite{pitkow2011learning} return our result.}.
+Combining these two facts, it could be concluded that for some empirical marginals ( see definition \eqref{eq:empirical_mar}) no parameter will result with moment matching \footnote{ A property of learned model that insure equivalence between the empirical marginals and the model marginals see \secref{sec:max_likelihood}}, hence gradient descent will never converge \footnote{This explain the failure of BP as inference algorithm in gradient descent as in \cite{wainwright2006estimating} and others}.
+Moreover, since Bethe ML is the real objective the canonical parameters is proved to be optimal when moment matching is achievable.
+
+In recent years the success of deep networks was overwhelming\footnote{not all thinks it the to the \href{https://www.linkedin.com/pulse/computer-vision-research-my-deep-depression-nikos-paragios?trk=hp-feed-article-title-like}{best}}
 
 
- 
+  
