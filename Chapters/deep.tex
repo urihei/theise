@@ -1,13 +1,14 @@
 \section{Deep Learning and Kernels}
+
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
 One basic problem in machine learning is classification.
 Given features of an instance we want the ability to classify - assign one label out of small discrete group.
 Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
-Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning label $f(\xx,\ww)$ where the true label is $y$.
+Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
 
 The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
-First, we usually do not know the real distribution, but only have a sample of it: given a samples $D = \{(\xx_i,y_i)\}_{i=1}^N$  where $\xx_i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
+First, we usually do not know the real distribution, but only have a sample of it: given $N$ samples $D = \{(\xx^i,y_i)\}_{i=1}^N$  where $\xx^i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
 We will want to minimize our objective on this sample - minimizing the empirical loss\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
 Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation, here by giving the instance of group $\cL$ and its index the same notation}.
 Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
@@ -15,25 +16,47 @@ This function is very hard to optimize since it is non-convex.
 One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
 \be
 \label{eq:svm_obj}
-\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^M \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx_{i}) + \ww_r \cdot \phi(\xx_i)\} + \lambda \|W\|^2
+\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^N \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|W\|^2
 \ee
 
 Taking the dual and some algebra gives:
 \bea
 \label{eq:svm_obj_dual}
-\max_{A \in \Re^{M,|\cL|}}&& -\sum_{i,j}^M(\phi(\xx_i)\cdot\phi(\xx_j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^M\alphav_i \cdot \bold{1}_{y_i}\\
+\max_{A \in \Re^{N,|\cL|}}&& -\sum_{i,j}^N(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^N\alphav_i \cdot \bold{1}_{y_i}\\
 \text{subject to}:&& \forall i\ \ \alphav_i \leq \bold{1}_i, \text{ and } \alphav_i \cdot \bold{1} = 0
 \eea
 Where $\lambda$ is the relularization parameter, $\bold{1}_i$ is the all zero vector except the $i$ coordinate and $\bold{1}$ is the all one vector.
 Note that in this form it is enough to calculate the dot product between any two samples - no need to calculate the map $\phi$.
 This is know as the kernel trick \cite{hofmann2008kernel}.
-\subsubsection{Pros and Cons}
-Support Vector Machine, optimize objective that is very close to the optimal one. Learning is a convex optimization problem hence efficient and classification time complexity is linear in the number of features. In short its is very efficient method.
+
+\subsubsection{Kernels}
+I will present the ideas with an example.
+Consider, a two dimension input $p=2$ and a feature map $\phi([x_1, x_2]) = [x_1^2, x_2^2, x_1x_2, x_1, x_2, 1]$ ($q =6$).
+Note that a linear classifier in $\Re^6$ induce non-linear classifier in $\Re^2$, in our example the classifier $f = \deltaF{x_1x_2 < 1}$ is clearly linear in $\phi([x_1, x_2])$ while a circle in $\Re^2$.
+Define the polynomial kernel as $K_{c,d}(\xx,\xx') = (\xx \cdot \xx'+c)^d$.
+It is easy to see that $K_{c,2}(\xx, \xx') \approx \phi([x_1, x_2]) \cdot \phi([x'_1, x'_2])$\footnote{For equality $\phi([x_1, x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2c}x_1, \sqrt{2c}x_2, \sqrt{c}]$}.
+The learned classifier by SVM will have the form of $\deltaF{f(\xx) >0}$ where $f(\xx) = \sum_{i=1}^N \alpha_{i}K(\xx,\xx^i)$ \footnote{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.}.
+Even for this kernel for a big $p$ using only the kernel instead of full calculation of $\phi(\xx)$ may be of great value.
+
+The importance of kernel though, came from feature maps where $\phi(\xx)$ map to an infinite space $q=\infty$ (Note that its is not necessarily even countable).
+For example, the feature map of the Radial Basis Function (RBF) $K_{\sigma}(\xx,\xx') = \exp{\frac{-\|\xx-\xx'\|^2}{2\sigma}}$  has infinite dimension see \cite{shashuaNotes}.
+It turn out, that whenever the kernel is positive definite\footnote{A kernel is positive definite if for all $\xx^1, \ldots, \xx^M \in \Re^p$ the matrix $K_{i,j} = K(\xx^i,\xx^j)$ is positive definite see \cite{hofmann2008kernel}} a Hilbert space can be defined.
+It elements are any function that can be written as $f\left(\xx;\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i K(\xx,{\xx'}^i)$ for some $\alpha_i \in \Re$ and ${\xx'}^i \in \Re^p$, and the inner product is defined by $f \cdot g = \sum_{i=1}^n\sum_{j=1}^{n'} \alpha_i\alpha_i' K(\xx^i,{\xx'}^j)$.
+This allow the use of SVM with any positive definite kernel - hence finding a linear classifier in the reproduced Hilbert space.
+
+Using kernel in the dot product allow us to change the hypothesis class from linear function in the original space $\Re^p$ to linear classifier in the reproduced Hilbert space.
+But a question remain, having a linear classifier in this space, can it be learned using only the kernel and the sample.
+The Representer theorem\cite{scholkopf2002learning} answer this question with affirmative.
+The function $f \in \mathcal{H}_K$ in the kernel reproduced Hilbert space which minimize the regularized empirical loss can be expressed as a linear combination  of the samples maps $f(\xx) = \sum_i^M \alpha_i K(\xx,x_i)$.
+In the SVM case it translate to the fact that the resulted classifier $f\left(\xx;\{\alpha_i, \xx^i\}_{i=1}^N\right)$ minimize the empirical hinge loss with $l_2$ regularization for a given $\lambda$.
+
+
+\ignore{Support Vector Machine, optimize objective that is very close to the optimal one. Learning is a convex optimization problem hence efficient and classification time complexity is linear in the number of features. In short its is very efficient method.
 But this efficiency come with the price of power of expression since we consider only linear models, to overcome this shortcoming we use kernels.
 
 When using kernel SVM the efficiency depend on the number of samples\footnote{More accurately it depend on the margin of the problem but in practice it is not usually come into effect.} since usually the number of samples that participate in the classifier scales with the number of samples( the number of non-zero $\alphav_i$). Hence both learning and classification can be relatively costing.
 Moreover in both linear and kernel SVM, there is no principle way to integrate prior knowledge. This has grate importance in many fields where there is strong dependencies between the features and known structure for example the task of object recognition.
-
+}
 \subsection{Neural Networks}
 Neural networks, as SVM, try to solve classification problems.
 But instead of restricting  the function class to linear function, it choose a different class of cassification functions that we will now describe.

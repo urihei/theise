@@ -27,7 +27,7 @@ Than learning the parameters of the model $\thetav$.
 \subsection{Structure learning}
 First lets define what exactly is our goal.
 Having a probability $P(\xx;\exact{\thetav})$ defined as in \eqref{eq:ciluqe_prob}.
-We are looking to find the exact edge set $\exact{E}$ given a data set of $M$ identical independent distributed (i.i.d) samples from $P(\xx;\exact{\thetav})$.
+We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P(\xx;\exact{\thetav})$.
 
 I will start by presenting the sample and time complexity of the above problem. 
 First if the graph is known to be a tree, the exact structure can be found by maximum spanning tree.  Where the  weights are the empirical information between any two vertices \cite{chowLiu}. 
@@ -40,8 +40,8 @@ In the Ising model\footnote{ The Ising model is a pairwise binary model where $\
 While in other models (where the cardinality is greater than $|\cX|>2$ or the size of factors greater than $\exists c \in \cC, |c|>2$) it is unknown how to express this quantities - the strength of the interaction between the variables as a function of the model parameters.
 Hence lower bounds  on non-binary models ignore these two factors\footnote{In proving upper bounds some conditions on the probability instead of the model is given. In my opinion the above two parameters hide inside the condition see for example \cite{bresler2008reconstruction}}.
 
-The sample complexity bounds are $M > \Omega(\dmax \log p)$ to the general case and $N > \Omega(\max\{\dmax^2, \lambda^{-2}\}log p) $ for the Ising model.
-This mean that we need at least $M$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
+The sample complexity bounds are $N > \Omega(\dmax \log p)$ to the general case and $N > \Omega(\max\{\dmax^2, \lambda^{-2}\}log p) $ for the Ising model.
+This mean that we need at least $N$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
 Lower bound on sample complexity of $\Omega(p^{\frac{\dmax}{2}})$ was given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithm that use an oracle that return the expectation of any function - no direct access to the data}.
 
 Algorithm for structural graph are abundant, I will give only a short list.
