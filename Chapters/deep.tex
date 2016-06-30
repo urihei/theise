@@ -1,5 +1,11 @@
 \section{Deep Learning and Kernels}
-
+This section try to use two facts.
+The first is that kernels allow SVM to produce non-linear classifiers in the input space.
+In other words, the use of kernels change the hypothesis class from linear in the input space to linear in the kernel reproduced Hilbert space.
+The second fact is  the success of deep learning drive to a believe that deep learning describe good hypothesis class.
+Combining the two seem the logical next step.
+Can a kernel be found such the reproduced Hilbert space define an hypothesis class that is the same as the hypothesis class deep learning induce.
+I will now give short introduction to the some ideas in the two fields which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
 One basic problem in machine learning is classification.
@@ -32,11 +38,12 @@ This is know as the kernel trick \cite{hofmann2008kernel}.
 \subsubsection{Kernels}
 I will present the ideas with an example.
 Consider, a two dimension input $p=2$ and a feature map $\phi([x_1, x_2]) = [x_1^2, x_2^2, x_1x_2, x_1, x_2, 1]$ ($q =6$).
-Note that a linear classifier in $\Re^6$ induce non-linear classifier in $\Re^2$, in our example the classifier $f = \deltaF{x_1x_2 < 1}$ is clearly linear in $\phi([x_1, x_2])$ while a circle in $\Re^2$.
+Note that a linear classifier in $\Re^6$ induce non-linear classifier in $\Re^2$, in our example a classifier $f = \deltaF{x_1x_2 < 1}$ is clearly linear in the range of $\phi([x_1, x_2])$ while a circle in $\Re^2$.
 Define the polynomial kernel as $K_{c,d}(\xx,\xx') = (\xx \cdot \xx'+c)^d$.
-It is easy to see that $K_{c,2}(\xx, \xx') \approx \phi([x_1, x_2]) \cdot \phi([x'_1, x'_2])$\footnote{For equality $\phi([x_1, x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2c}x_1, \sqrt{2c}x_2, \sqrt{c}]$}.
-The learned classifier by SVM will have the form of $\deltaF{f(\xx) >0}$ where $f(\xx) = \sum_{i=1}^N \alpha_{i}K(\xx,\xx^i)$ \footnote{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.}.
-Even for this kernel for a big $p$ using only the kernel instead of full calculation of $\phi(\xx)$ may be of great value.
+It is easy to see that the dot product between two feature maps equals to the polynomial kernel $K_{c,2}(\xx, \xx') \approx \phi([x_1, x_2]) \cdot \phi([x'_1, x'_2])$\footnote{For equality $\phi([x_1, x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2c}x_1, \sqrt{2c}x_2, \sqrt{c}]$}.
+As mention above, in SVM only the result of the inner product can used - instead of explicitly calculating $\phi(\xx)$ for each sample only the kernel can be calculated. 
+If the kernel is used while learning (and not the explicit feature maps) the resulted classifier will have the form of $\deltaF{f(\xx) >0}$ where $f(\xx) = \sum_{i=1}^N \alpha_{i}K(\xx,\xx^i)$ \footnote{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.}.
+Even for this kernel, for a big $p$ using only the kernel instead of full calculation of $\phi(\xx)$ may be of great value.
 
 The importance of kernel though, came from feature maps where $\phi(\xx)$ map to an infinite space $q=\infty$ (Note that its is not necessarily even countable).
 For example, the feature map of the Radial Basis Function (RBF) $K_{\sigma}(\xx,\xx') = \exp{\frac{-\|\xx-\xx'\|^2}{2\sigma}}$  has infinite dimension see \cite{shashuaNotes}.
@@ -44,7 +51,7 @@ It turn out, that whenever the kernel is positive definite\footnote{A kernel is 
 It elements are any function that can be written as $f\left(\xx;\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i K(\xx,{\xx'}^i)$ for some $\alpha_i \in \Re$ and ${\xx'}^i \in \Re^p$, and the inner product is defined by $f \cdot g = \sum_{i=1}^n\sum_{j=1}^{n'} \alpha_i\alpha_i' K(\xx^i,{\xx'}^j)$.
 This allow the use of SVM with any positive definite kernel - hence finding a linear classifier in the reproduced Hilbert space.
 
-Using kernel in the dot product allow us to change the hypothesis class from linear function in the original space $\Re^p$ to linear classifier in the reproduced Hilbert space.
+Using kernels allow us to change the hypothesis class from linear function in the original space $\Re^p$ to linear classifier in the reproduced Hilbert space.
 But a question remain, having a linear classifier in this space, can it be learned using only the kernel and the sample.
 The Representer theorem\cite{scholkopf2002learning} answer this question with affirmative.
 The function $f \in \mathcal{H}_K$ in the kernel reproduced Hilbert space which minimize the regularized empirical loss can be expressed as a linear combination  of the samples maps $f(\xx) = \sum_i^M \alpha_i K(\xx,x_i)$.
@@ -72,3 +79,23 @@ Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} 
 
 This functions class result in a non convex function hence non convex optimization problem.
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
+
+\subsection{Deep networks Kernels}
+
+In \cite{cho2009kernel} a kernel is defined that try to mimic deep networks.
+The one layer kernel is defined as 
+\be
+K_n(\xx, \xx') = 2\int{\frac{\exp{\frac{\|\ww\|^2}{2}}}{(2\pi)^p} \sgn{\ww \cdot \xx} \sgn{\ww\cdot \xx'} (\ww\cdot \xx)^n (\ww \cdot \xx')^n d \ww}
+\ee
+where $\sgn{x} = \deltaF{ x>0}$ and $n \in \naturalNumbers$.
+To explain this integral let first look at $n=0$ in this case define $\theta = \cos^{-1}\left( \frac{\xx \cdot \xx'}{\|\xx\|\|\xx'\|}\right)$ than $K_0(\xx,\xx') = 1 - \frac{1}{\pi}\theta$.
+So the integral is just the  angle between the two vectors which is easy to see if you note that the integral will not be zero only when both $\sgn{\ww \cdot \xx}$ and $\sgn{\ww\cdot \xx'}$ is not zero.
+This is exactly the angle between the two vectors.
+Using the same idea, for $n=1$ instead of using the zero-one activation function use the ReLu activation function with result of a kernel $K_1(\xx,\xx') = \frac{1}{\pi}\|\xx\|\|\xx'\|\left(\sin \theta +(\pi-\theta)\cos \theta\right)$
+For higher $n$ a close form solution is presented with intuition of activation function that look like $\sgn{x}x^n$ so higher $n$ will result in a higher polynomial when $x$ is positive.
+
+
+The above 
+
+
+ 
