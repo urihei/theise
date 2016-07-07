@@ -42,7 +42,9 @@ Note that a linear classifier in $\Re^6$ induce non-linear classifier in $\Re^2$
 Define the polynomial kernel as $K_{c,d}(\xx,\xx') = (\xx \cdot \xx'+c)^d$.
 It is easy to see that the dot product between two feature maps equals to the polynomial kernel $K_{c,2}(\xx, \xx') \approx \phi([x_1, x_2]) \cdot \phi([x'_1, x'_2])$\footnote{For equality $\phi([x_1, x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2c}x_1, \sqrt{2c}x_2, \sqrt{c}]$}.
 As mention above, in SVM only the result of the inner product can used - instead of explicitly calculating $\phi(\xx)$ for each sample only the kernel can be calculated. 
-If the kernel is used while learning (and not the explicit feature maps) the resulted classifier will have the form of $\deltaF{f(\xx) >0}$ where $f(\xx) = \sum_{i=1}^N \alpha_{i}K(\xx,\xx^i)$ \footnote{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.}.
+If the kernel is used while learning (and not the explicit feature maps) the resulted classifier will have the form of $\deltaF{f(\xx) >0}$ where $f(\xx) = \sum_{i=1}^N \alpha_{i}K(\xx,\xx^i)$ \footnote{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. 
+Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.
+This degrade the learning time complexity to $O(N^3)$ and the classification time complexity to $O(Np)$. Many paper try to solve this shortcoming for example \cite{williams2001using,rahimi2007random}}.
 Even for this kernel, for a big $p$ using only the kernel instead of full calculation of $\phi(\xx)$ may be of great value.
 
 The importance of kernel though, came from feature maps where $\phi(\xx)$ map to an infinite space $q=\infty$ (Note that its is not necessarily even countable).
@@ -57,6 +59,11 @@ The Representer theorem\cite{scholkopf2002learning} answer this question with af
 The function $f \in \mathcal{H}_K$ in the kernel reproduced Hilbert space which minimize the regularized empirical loss can be expressed as a linear combination  of the samples maps $f(\xx) = \sum_i^M \alpha_i K(\xx,x_i)$.
 In the SVM case it translate to the fact that the resulted classifier $f\left(\xx;\{\alpha_i, \xx^i\}_{i=1}^N\right)$ minimize the empirical hinge loss with $l_2$ regularization for a given $\lambda$.
 
+\ignore{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. 
+Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.
+This degrade the learning time complexity to $O(N^3)$ and the classification time complexity to $O(Np)$.
+There where many papers trying to solve this problem, I will mention only two.
+The first \cite{williams2001using} show that the kernel matrix could be approximated by }
 \subsubsection{Kernelize models}
 \label{sec:elad_trick}
 The above imply that using kernels enable learning of non linear function.
@@ -106,17 +113,22 @@ This functions class result in a non convex function hence non convex optimizati
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
 
 \subsection{Deep networks Kernels}
-I will now go over the work of \cite{cho2009kernel} since it is the work our paper \cite{heinemann2016improper}is based on\footnote{In fact we started with the general direction of \secref{sec:elad_trick} with activation function of zero one and ReLu- this result with exactly the same kernels as \cite{cho2009kernel}. As I will show later for deeper networks there is a difference between the methods.}.
+Above it was argued that a kernel that induce the same hypothesis class as deep networks is of value.
+In \cite{le2007continuous} a one layer kernel was introduced with activation function sign - if $x>0$ $\sgn{x} = 1$ else $\sgn{x}= -1$.
+They show that the kernel for one layer with infinite number of hidden units is $K(\xx,\xx') = 1-\frac{\sqrt{2}}{\delta \sqrt{(d-1)\pi}} \|\xx-\xx'\|$ where $\|\xx'\| \leq \delta \in \Re$. 
+But the first work that consider deep networks was of  \cite{cho2009kernel}.
+Our work \cite{heinemann2016improper}is based on this work\footnote{In fact we started with the general direction of \secref{sec:elad_trick} with activation function of zero one and ReLu- this result with exactly the same kernels as \cite{cho2009kernel}. As I will show later for deeper networks there is a difference between the methods.} hence it will be presented in more details.
+Lets return with the simple case of one layer network. 
 Kernel define an inner product in some space.
-Hence, by starting with one layer networks the one intuitive kernel to such network can be defined as,
+So the intuitive definition for the wanted kernel will be a dot product of the network output,
 \be
 \label{eq:saul_ker_motviation}
-K(\xx, \xx';W_1) = \sgn{W_1\xx} \cdot \sgn{W_1\xx'} = \sum_{i=0}^{l_1} \sgn{\ww_1^i \xx}\sgn{\ww_1^i \xx')}
+K(\xx, \xx';W_1) = \frac{1}{l_1}\sgn{W_1\xx} \cdot \sgn{W_1\xx'} = \frac{1}{l_1}\sum_{i=0}^{l_1} \sgn{\ww_1^i \xx}\sgn{\ww_1^i \xx')}
 \ee
-Where $\ww_1^i$ is the $i$ row of the matrix $W_1$.
+Where $\ww_1^i$ is the $i$ row of the matrix $W_1$, $\sgn{x}$ is some activation function  and $l_1$ is the number of neurons in the first hidden layer.
 
 But this kernel depend on the an known parameter $W_1$.
-If it is assumed that the parameters $\ww_1^i \sim N(0,1)$ are distributed normally and the number of nodes goes to infinity the kernel can be written as
+If it is assumed that the parameters $\ww_1^i \sim N(0,1)$ are distributed normally and the number of nodes goes to infinity $l_1 \to \infty$ the kernel can be written as
 \be
 K(\xx, \xx') = \int{\frac{\exp{\frac{\|\ww\|^2}{2}}}{(2\pi)^p} \sgn{\ww \cdot \xx} \sgn{\ww\cdot \xx'}}
 \ee
