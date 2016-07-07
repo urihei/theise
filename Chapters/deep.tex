@@ -2,7 +2,7 @@
 This section try to use two facts.
 The first is that kernels allow SVM to produce non-linear classifiers in the input space.
 In other words, the use of kernels change the hypothesis class from linear in the input space to linear in the kernel reproduced Hilbert space.
-The second fact is  the success of deep learning drive to a believe that deep learning describe good hypothesis class.
+The second fact is  the success of deep learning drive the a believe that deep learning describe good hypothesis class.
 Combining the two seem the logical next step.
 Can a kernel be found such the reproduced Hilbert space define an hypothesis class that is the same as the hypothesis class deep learning induce.
 I will now give short introduction to the some ideas in the two fields which will allow us to discuss relevant work.
@@ -47,9 +47,9 @@ Even for this kernel, for a big $p$ using only the kernel instead of full calcul
 
 The importance of kernel though, came from feature maps where $\phi(\xx)$ map to an infinite space $q=\infty$ (Note that its is not necessarily even countable).
 For example, the feature map of the Radial Basis Function (RBF) $K_{\sigma}(\xx,\xx') = \exp{\frac{-\|\xx-\xx'\|^2}{2\sigma}}$  has infinite dimension see \cite{shashuaNotes}.
-It turn out, that whenever the kernel is positive definite\footnote{A kernel is positive definite if for all $\xx^1, \ldots, \xx^M \in \Re^p$ the matrix $K_{i,j} = K(\xx^i,\xx^j)$ is positive definite see \cite{hofmann2008kernel}} a Hilbert space can be defined.
-It elements are any function that can be written as $f\left(\xx;\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i K(\xx,{\xx'}^i)$ for some $\alpha_i \in \Re$ and ${\xx'}^i \in \Re^p$, and the inner product is defined by $f \cdot g = \sum_{i=1}^n\sum_{j=1}^{n'} \alpha_i\alpha_i' K(\xx^i,{\xx'}^j)$.
-This allow the use of SVM with any positive definite kernel - hence finding a linear classifier in the reproduced Hilbert space.
+It turn out, that whenever the kernel is positive definite\footnote{A kernel is positive definite if for all $\xx^1, \ldots, \xx^M \in \Re^p$ the matrix $K_{i,j} = K(\xx^i,\xx^j)$ is positive definite see \cite{hofmann2008kernel}} it induce a Hilbert space - kernel reproduced Hilbert space.
+The elements of the Hilbert space are any function that can be written as $f\left(\xx;\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i K(\xx,{\xx'}^i)$ for some $\alpha_i \in \Re$ and ${\xx'}^i \in \Re^p$, and the inner product is defined as $f \cdot g = \sum_{i=1}^n\sum_{j=1}^{n'} \alpha_i\alpha_i' K(\xx^i,{\xx'}^j)$.
+So by using positive definite kernel in SVM, one find linear classifier in the reproduced Hilbert space the kernel induce.
 
 Using kernels allow us to change the hypothesis class from linear function in the original space $\Re^p$ to linear classifier in the reproduced Hilbert space.
 But a question remain, having a linear classifier in this space, can it be learned using only the kernel and the sample.
@@ -57,6 +57,31 @@ The Representer theorem\cite{scholkopf2002learning} answer this question with af
 The function $f \in \mathcal{H}_K$ in the kernel reproduced Hilbert space which minimize the regularized empirical loss can be expressed as a linear combination  of the samples maps $f(\xx) = \sum_i^M \alpha_i K(\xx,x_i)$.
 In the SVM case it translate to the fact that the resulted classifier $f\left(\xx;\{\alpha_i, \xx^i\}_{i=1}^N\right)$ minimize the empirical hinge loss with $l_2$ regularization for a given $\lambda$.
 
+\subsubsection{Kernelize models}
+\label{sec:elad_trick}
+The above imply that using kernels enable learning of non linear function.
+Having the above the question is on importance.
+Giving a hypothesis class or more specifically function that their parameters needed to be learned, could a kernel be defined such a linear classifier in its reproduced Hilbert space will represent the same hypothesis class.
+I will now describe a method that by enlarging the hypothesis class defined such a kernel.
+
+Learning a function from hypothesis class translate most of the times to learning its parameters.
+This can be translated to finding a delta function for the following integral $ f(\xx;\thetav^*) = \int{f(\xx;\ww)\delta(\ww-\bar{\ww}) d\ww}$.
+Where $\delta(\thetav)$ is the Dirac delta function and the learned parameter is $\bar{\ww}$.
+Lets relax the above and allow any function - not only the Dirac delta function $ f(\xx;\ww^*) = \int{f(\xx;\ww)\alpha(\ww) d\ww}$
+where $\alpha \cX^q \to \Re^{+}$ is some function\footnote{Note that by that we enlarge the hypothesis class to include any combination of classifiers.}.
+But how can such function can be learned, or in our context can a kernel be defined such SVM learned such a function.
+
+Lets define the map $\Phi(\xx) = f(\xx,\ww)$\footnote{Note that here we treat $\ww$ as variable and not parameter} it take as an input a sample and return a function of the parameters $g : \Re^q \to \Re$.
+Lets define the following kernel $K(\Phi(\xx),\Phi(\xx')) = \int{f(\xx,\ww) f(\xx',\ww) d \ww}$\footnote{This is the basic integral for $L^2$.}.
+An element of the reproduced Hilbert space is $g\left(\Phi(\xx);\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i \int{f(\xx,\ww) f(\xx',\ww) d \ww}$\footnote{Note that the Dirac delta function is not in the reproduced Hilbert space since $\int \delta(\ww)\delta(\ww) d\ww \nless \infty$. However it could be approximate by functions inside the Hilbert space to any requested accuracy}.
+Having this, using this kernel in SVM result with classifier that by the Representer theorem\cite{scholkopf2002learning} it guaranteed to minimize \eqref{eq:svm_obj_dual} (no other element of this Hilbert space result with a lower value of \eqref{eq:svm_obj_dual}).
+
+Summarizing, giving any function $f(\xx;\ww)$ the kernel $K(\xx,\xx')=\int{f(\xx,\ww) f(\xx',\ww) d \ww}$ is defined.
+Using this kernel in SVM will result in a convex optimization of the learning problem.
+This however came with the price, first by extending the hypothesis class the sample complexity increase as well.
+Second, the function can only be approximated - the sample complexity depend on the needed quality of the approximations.
+ 
+I will now present basic notation for deep learning.
 
 \ignore{Support Vector Machine, optimize objective that is very close to the optimal one. Learning is a convex optimization problem hence efficient and classification time complexity is linear in the number of features. In short its is very efficient method.
 But this efficiency come with the price of power of expression since we consider only linear models, to overcome this shortcoming we use kernels.
@@ -73,7 +98,7 @@ f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
 \zz_{k}(\xx, \wparamsi{k}) &=& \sgn{W_k \zz_{k-1}(\xx, \wparamsi{k-1}}\\
 \zz_{1}(\xx,W_1) &=&  \sgn{W_1 \xx}
 \eea
-Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$, $\wparamsi{k} = W_1,\ldots,W_k$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network.
+Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$, $\wparamsi{k} = W_1,\ldots,W_k$, $W_i in \Re^{l_i,l_{i-1}}$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network and $l_i$ is the size of layer $i$ with $l_0 = p$.
 The $\sgn{x}$ function is known as the activation function a simple non linear function.
 Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}.
 
@@ -81,21 +106,39 @@ This functions class result in a non convex function hence non convex optimizati
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
 
 \subsection{Deep networks Kernels}
-
-In \cite{cho2009kernel} a kernel is defined that try to mimic deep networks.
-The one layer kernel is defined as 
+I will now go over the work of \cite{cho2009kernel} since it is the work our paper \cite{heinemann2016improper}is based on\footnote{In fact we started with the general direction of \secref{sec:elad_trick} with activation function of zero one and ReLu- this result with exactly the same kernels as \cite{cho2009kernel}. As I will show later for deeper networks there is a difference between the methods.}.
+Kernel define an inner product in some space.
+Hence, by starting with one layer networks the one intuitive kernel to such network can be defined as,
 \be
-K_n(\xx, \xx') = 2\int{\frac{\exp{\frac{\|\ww\|^2}{2}}}{(2\pi)^p} \sgn{\ww \cdot \xx} \sgn{\ww\cdot \xx'} (\ww\cdot \xx)^n (\ww \cdot \xx')^n d \ww}
+\label{eq:saul_ker_motviation}
+K(\xx, \xx';W_1) = \sgn{W_1\xx} \cdot \sgn{W_1\xx'} = \sum_{i=0}^{l_1} \sgn{\ww_1^i \xx}\sgn{\ww_1^i \xx')}
 \ee
-where $\sgn{x} = \deltaF{ x>0}$ and $n \in \naturalNumbers$.
-To explain this integral let first look at $n=0$ in this case define $\theta = \cos^{-1}\left( \frac{\xx \cdot \xx'}{\|\xx\|\|\xx'\|}\right)$ than $K_0(\xx,\xx') = 1 - \frac{1}{\pi}\theta$.
-So the integral is just the  angle between the two vectors which is easy to see if you note that the integral will not be zero only when both $\sgn{\ww \cdot \xx}$ and $\sgn{\ww\cdot \xx'}$ is not zero.
-This is exactly the angle between the two vectors.
-Using the same idea, for $n=1$ instead of using the zero-one activation function use the ReLu activation function with result of a kernel $K_1(\xx,\xx') = \frac{1}{\pi}\|\xx\|\|\xx'\|\left(\sin \theta +(\pi-\theta)\cos \theta\right)$
-For higher $n$ a close form solution is presented with intuition of activation function that look like $\sgn{x}x^n$ so higher $n$ will result in a higher polynomial when $x$ is positive.
+Where $\ww_1^i$ is the $i$ row of the matrix $W_1$.
 
+But this kernel depend on the an known parameter $W_1$.
+If it is assumed that the parameters $\ww_1^i \sim N(0,1)$ are distributed normally and the number of nodes goes to infinity the kernel can be written as
+\be
+K(\xx, \xx') = \int{\frac{\exp{\frac{\|\ww\|^2}{2}}}{(2\pi)^p} \sgn{\ww \cdot \xx} \sgn{\ww\cdot \xx'}}
+\ee
 
-The above 
+This integral can be solved for a family of activation functions \footnote{ The activation functions are defined as $\sgn{x}_n = \deltaF{x >0}x^n $  a close form equation is given for the integral for all $n$}.
+Define $\theta = \cos^{-1}\left( \frac{\xx \cdot \xx'}{\|\xx\|\|\xx'\|}\right)$ if the activation function is the zero one the kernel is defined as $K_0(\xx,\xx') = 1 - \frac{1}{\pi}\theta$.
+While the ReLu activation function induce the following $K(\xx,\xx') = \frac{1}{\pi}\|\xx\|\|\xx'\|\left(\sin \theta +(\pi-\theta)\cos \theta\right)$
 
+So far the kernel describe one layer networks (with infinite number of nodes).
+Can a kernel be found to deeper networks.
+Returning to \eqref{eq:saul_ker_motviation} a kernel for network with depth $L$ will look like (using \eqref{eq:neural_networks} notations)
+\bea
+K_L(\xx,\xx') &=& \zz_{L}(\xx, \wparamsi{L}) \cdot \zz_{L}(\xx', \wparamsi{L})\\
+ &=& K\left(\zz_{L-1}(\xx, \wparamsi{L-1}), \zz_{L-1}(\xx', \wparamsi{L-1})\right)
+\eea
+remember that for $l_i = \infty$ for all $1 \leq i \leq L$.
+Using the fact the kernels itself is defined only by inner products this equation have a closed form formulation.
+For example the deep kernel with activation function zero one can be written as $K_{L+1}(\xx,\xx') = 1 - \frac{1}{\pi}\cos^{-1}\left(K_{L}(\xx,\xx')\right)$
+While with the ReLu activation function, it can be written as 
+\be
+K_{L+1}(\xx,\xx') = \frac{1}{\pi}\|\xx\|\|\xx'\|\left(\sin \theta_L +(\pi-\theta_L)\cos \theta_L\right)
+\ee
+where $\theta_L = \cos^{-1}\left(K_L(\xx,\xx')\right)$\footnote{General equation is given for all $n$}.
 
  
