@@ -2,17 +2,17 @@
 \subsection{Notations and Definitions}
 \label{sec:def}
 Probability is the chance that a certain event will take place.
-Hence we need to define all the possible events.
+So the first thing needed to be defined is  all the possible events.
 We will denote an event by $x \in \cX$, and we will restrict it to be discrete $ |\cX| \in \naturalNumbers$
-\footnote{Through out this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models is very useful model}.
+\footnote{Through out this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models are very useful models}.
 An event can be a composite of simpler $p \in \naturalNumbers$ sub events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
 After defining the event the probability is  a function from the space of events to a number between zero and one $\pr:\cX^{p} \to (0,1]$ with an important restriction that $\sum_{\xx \in \cX^{p}} \pr(\xx) = 1$\footnote{Note that we exclude zero since we require positive distribution.}\footnote{Without loss of generality for ease of notation we assumed that all variables have the same domain. This assumption can be easily removed.}.
 
 In many real world situations each variable (sub-event) is directly depend on only small subset of other variables.
 In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
-We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation and by $d_i = |\nei{i}|$ the number of neighbors of variable - $i$ its degree.  
+We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation and by $d_i = |\nei{i}|$ the number of neighbors of variable $i$ - its degree.  
 % $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
-Now this dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
+This dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
 Each variable $x_i$ will be assign a vertex $v_i$. 
 An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$\footnote{if $i \in \nei{j}$ than $j \in \nei{i}$ otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which result in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ in contradiction to $j \in \nei{i}$}.
 Now by the Hammersley–Clifford theorem\cite{hammersley1971markov}\footnote{We defined the probability as positive}, we can write out the probability as
@@ -31,7 +31,7 @@ With this restriction the probability can be written as
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
 were we define $\thetav \in \Omega^G $\footnote{In times when the dependence in $G$ is clear it will be drooped.}  as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$. 
-So, $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega^G \equiv \Re^{d}$.\footnote{I will assume (if not said otherwise) that $\thetav$ is unique - some of the vectors values are fixed to zero.}
+So, $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega^G \subseteq \Re^{d}$.\footnote{I will assume (if not said otherwise) that $\thetav$ is unique - some of the vectors values are fixed to zero.}
 The normalization constant $Z(\thetav)$ - the partition function, is defined as, 
 \be
 \label{eq:partition_function}
@@ -66,7 +66,7 @@ This can be calculated by summing over all the rest of variables:
 P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX^{P}\\
  s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz;\thetav)
 \ee
-Note that these two problems can be asked when part of the variables was seen this result in exponential number of different queries on the same model. 
+Note that these two problems can be asked when part of the variables was seen, this result in exponential number of different queries on the same model. 
 Both inference tasks can easily be infer by going over all the possible event.
 This however is too expensive since it is exponential in the number of variables.
 And indeed in the general case MAP\cite{shimony1994finding} is NP complete problem while MAR\cite{cooper1990computational} is \#P complete (MAR is even hard to approximate \cite{roth1996hardness}).
@@ -74,12 +74,12 @@ And indeed in the general case MAP\cite{shimony1994finding} is NP complete probl
 The situation is not as hopeless as was described.
 First, the complexity parameter is not the number of variables but a feature of the graph called tree-width\cite{robertson1983graph,robertson1994quickly}.
 The tree width of the graph is usually smaller than the number of vertices, but given a graph it is NP-complete to determine if the graph has tree-width smaller than $k$\cite{Arnborg:1987}.
-Hence inference (both MaP and MAR) is easy on models with dependency structure of a tree since the tree-width of a tree is one.
+Hence inference (both MAP and MAR) is easy on models with dependency structure of a tree since the tree-width of a tree is one.
 There are others model restriction that is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
 However in general case the inference problem is hard and approximate algorithm must be used.
-I will discuss approximation algorithm in \secref{sec:approx} . 
+I will discuss approximation algorithms in \secref{sec:approx} . 
 \subsubsection{Pros and cons}
-We just claim that inference is hard so why should one use such a model which can not be used.
+We just claim that inference is hard so why should one use a model which can not be used.
 %I will now go over the reasons why one should use graphical models.
 One may answer is that it is optimal - in classification for example, if we know the exact conditional distribution and can infer the MAP we will have the optimal solution. 
 This situation is very unrealistic: the true model is usually unknown moreover the inference is still NP hard.
@@ -87,19 +87,19 @@ So the question still stand, when should we use it?
 
 In many situations we need to understand our model.
 In biology, we learn the structure of the model to better understand the learned biology system.
-In many cases, such as user misuse, an explanation of the decision is needed. 
-in other words, the ability to explain the factors that influence the decision is a must, you can not take action against a costumer with out any ability to explain your decision. 
+Moreover, in many cases, such as user misuse, an explanation of the decision is needed. 
+In other words, the ability to explain the factors that influence the decision is a must, you can not take action against a costumer with out any ability to explain your decision. 
 In graphical models each variable has meaning hence understanding the learned model is easier then in other models - SVM for example.
 
 The model in graphical models usually lack the distinction between features and outcome.
 In situation that such separation is artificial graphical model give power that is not found else where.
 Different queries can be asked on the same model and have consist answers.
-Medical diagnosis is an example where each time different set of variables are seen.
-Moreover, for each patent the interesting variables  symptoms or disease can change, hence different queries.
+Medical diagnosis is an example where each time a different set of variables are seen.
+Moreover, for each patient the variables of interest - symptoms or diseases can change, hence different queries.
 
 This bring us to the next two important features, handling missing values and structured output.
-In many situations no all of the variables are seen.
-Graphical models, handle missing values inherently and such cases need not special treatment ( as is the case in other models).
+In many situations not all of the variables are seen.
+Graphical models, handle missing values inherently and such cases do not need any special treatment (as is the case in other models).
 Lastly, the queries result is not necessarily a single variable.
 Queries on several variables are possible and will take into account the relation between these variables.
 

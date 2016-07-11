@@ -1,6 +1,6 @@
 \subsection{Approximate inference}
 \label{sec:approx}
-Graphical models is a power full tool.
+Graphical models is a powerful tool.
 In order it to be of use, an algorithm should be found that could answer queries based on the model, in other words preform inference.
 As written above, exact inference in the general is NP-complete.
 Hence the importance of finding an approximate inference.
@@ -11,8 +11,8 @@ I will now try to go over the main principles of the two categories.
 \subsection{Variational Methods}
 \label{sec:variational_methods}
 I will follow in this section the excellent work by \cite{wainwright2008graphical}.
-We are interested in finding $\muv$ the marginals.
-First we need to define our search space - the marginal-ploytope $\margpoly^G$.
+The goal of the inference is to find $\muv$ the model marginals.
+Hence the first thing to define is the space of $\muv$ - the marginal-ploytope $\margpoly^G$.
 \be
 \margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
 \begin{array}{lr}
@@ -21,13 +21,14 @@ First we need to define our search space - the marginal-ploytope $\margpoly^G$.
   \forall ij \in E \land \forall x_i, x_j \in \cX &P(x_i,x_j;\thetav) = \mu_{ij}(x_i,x_j)
 \end{array} \right. \right\}
 \ee
-Now we can define the conjugate dual 
+Having this the conjugate dual of the log partition function could be defined
 \be
+\label{eq:conjugate_partition}
 A^*(\muv) = \sup_{\thetav \in \Omega^G} \left\{\muv \cdot \thetav - A(\thetav)\right\}
 \ee
 Two things should be noted. The first is that if $\muv \in \margpoly^G$\footnote{This imply only for marginals in the inner part of the marginal polytope. For marginals on the boundaries more delicate treatment should be given} than $A^*(\muv) = -H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function is equals to the entropy of the probability that its marginals are $\muv$.
-Second that this is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
-It can be shown that $A(\thetav)$ is a convex function of $\thetav$ hence ${A^{*}}^* = A$, now the variational expression of $A(\thetav)$ can be written as, 
+Second,  \eqref{eq:conjugate_partition} is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
+It can be shown that $A(\thetav)$ is a convex function of $\thetav$ which lead to ${A^{*}}^* = A$, having that the variational expression of $A(\thetav)$ can be written as, 
 \bean
 A(\thetav) &=& \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
 \muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
@@ -41,15 +42,14 @@ The merit in this representation, is the ability to approximate these two quanti
 I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ in a way that both are easy to calculate. 
 For example if we select the independent graph it sum down to the mean-field method \cite{peterson1987mean}.
 The second method give different approximation to the entropy and marginal polytope.
-The local polytope ( defined in \eqref{eq:local_polytope}) is an outer bound and approximation of the marginal-polytope.
-While the entropy is approximated by the Bethe-entropy. 
-the resulted approximation is the  Bethe approximation which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
+For example, the local polytope (defined in \eqref{eq:local_polytope}) is an outer bound  of the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
+The resulted approximation is the  Bethe approximation which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
 \subsubsection{Mean Field}
 Mean field is a technique that approximate a complex model by a simpler one.
 %In inference, it approximate the real model marginals by marginals of a simpler model.
-More specifically in inference, it replace the marginal polytope (of the true dependencies graph) and the true entropy with marginal polytope of simpler graph and entropy of the model with the simpler dependencies graph.
+More specifically, it replace the marginal polytope (of the true dependencies graph) and the true entropy, with marginal polytope and entropy of simpler dependencies graph.
 I will illustrate this technique by choosing the simplest graph - the independent graph denote by $G_I$.
-In this case the marginal polytope sum down to,
+In this case, the marginal polytope sum down to,
 \be
 \margpoly^{G_I} = \left\{\muv \in \Re^{d}\left|
 \begin{array}{lr}
@@ -70,7 +70,7 @@ So the partition function can no be written as
 A_{G_I}(\thetav) = \sup_{\muv \in \margpoly^{G_I}}\left \{ \muv \cdot \thetav + H_{G_I}(\muv))) \right\} \label{eq:naive_mean_field} \\
 \ee
 Note that $A(\thetav) \geq A_{G_I}(\thetav)$ since by restricting the marginal polytope the result can only decrease (the entropy is exact on this models family).
-Taking the derivative of the right side of \eqref{eq:naive_mean_field} and compare to zero gives
+Taking the derivative of the right side of \eqref{eq:naive_mean_field} and comparing to zero gives
 \be
 \mu_i(x_i) \propto \exp{\theta_i(x_i) + \sum_{j\in \nei{i}} \sum_{x_j} \theta_{ij}(x_i,x_j)\mu_j(x_j) } \label{eq:naive_iter}
 \ee
@@ -85,7 +85,7 @@ Hence, local maximum could occur and the resulted algorithm may not converge\foo
 \subsubsection{Belief Propagation}
 \label{sec:belief}
 Belief-Propagation (BP) is a message passing algorithm.
-In each cycle\footnote{The order of the messages can effect convergence, hence can be arbitrarily be changed. see for example \cite{elidan2012residual}.} a message is passed from a vertex to all its neighbors.
+In each cycle\footnote{The order of the messages can effect convergence rate see for example \cite{elidan2012residual}.} a message is passed from a vertex to all its neighbors.
 The message reflect the source vertex belief on the destination vertex probability.
 The message is a function of the factor connecting the two vertices and the messages from all neighbors except the destination neighbor.
 It continue to cycle until the difference in the messages is very small or after a fix number of cycles.
@@ -101,8 +101,8 @@ Now the resulted pseudo-marginals is calculated by,
 \eean
 
 If the model graph is a tree - BP is exact, the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$.
-There are other models families  where the error of BP marginals can be bound.
-Tree-like model is an example of such family\cite{dembo2010ising}, this fact is used in my second paper\cite{heinemann2014inferning}. 
+There are other models families  where the error of BP marginals can be bound
+\footnote{Tree-like model is an example of such family\cite{dembo2010ising}, this fact is used in my second paper\cite{heinemann2014inferning}}. 
 But in the general case the quality of the pseudo-marginals is unknown. 
 Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\boldsymbol{m}^0$.
 Despite the above BP give good results in practice \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
@@ -136,7 +136,7 @@ A_B(\thetav) = \sup_{\tauv \in \lclmargpoly} \left\{\thetav \cdot \tauv + H_B(\t
 And the Bethe energy is $-A_B(\thetav)$.\\
 In contrast to the variational free energy, the Bethe free energy is simple to calculate, since the local polytope is describe by a linear number of  constrains and the Bethe entropy calculation is straight forward .
 This however come with a price.
-First the result must not belong to the marginal-polytope hence not a ``real'' marginal.
+First the result does not necessarily belong to the marginal-polytope hence not a ``real'' marginal.
 Second, the resulted optimization is no longer convex - the Bethe entropy is non-convex function while the true one is convex.
 Hence the complexity of optimizing this objective is not clear - I am not aware on any result on the time complexity of Bethe approximation\footnote{In \cite{weller2012bethe} a polynomial algorithm is suggested that approximate the Bethe free energy up to arbitrary precision under some models constrains.}.
 %So the importance of \eqref{eq:bethe_approximation} to inference, is its connection to BP.

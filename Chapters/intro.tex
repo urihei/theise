@@ -2,7 +2,7 @@ The world around is digitized.
 What we read(news, letters, chats, articles etc), what we see (pictures, movies), what we hear(music, radio, Skype,etc) are already (for several years) saved in the format of bytes.
 Factories, medical records, financial action are all also been digitized.
 But this is only the tip of the iceberg, gradually most of are surrounding will be monitored and be transformed into  bytes.
-These bytes are  sent and stored to central units that should use this enormous amount of data/ 
+These bytes are sent and stored to central units, that are expected to utilize it.
 This amount of data is almost useless to humans - no human can even observe this amount of data not to mention say anything intelligible on it.
 Even manually design tools to use this amount of data is not possible.
 The need of automated ways to create tools that will handle the growing amount of data is immanent.   
@@ -22,7 +22,7 @@ Sadly there is another side of the story, inference in GM is usually hard - all 
 Hence approximate inference play important rule in GM research.
 
 One of the most used algorithm for approximate inference is Belief Propagation \cite{pearl1986fusion}.
-It is algorithm that is exact on trees (the dependencies graph is a tree) but is used also, in model with cycles with great success \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
+It is an algorithm that is exact on trees (the dependencies graph is a tree) but is also used on models with cycles with great success \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
 Running BP on models with cycles bring up several problems.
 There are cases where it does not converge, the final result depend on the initial state, the quality of the resulted pseudo-marginals (it will be shown that they are not always true marginals) vary.
 After the publication of \cite{yedidia2000generalized}, that connect BP result to the Bethe free energy, a surge of papers was published that try to improve it \cite{elidan2012residual}, change it \cite{welling2001belief,wainwright2003tree,meshi2009convexifying}, analyze its convergence \cite{tatikonda2002loopy,mooij2007sufficient,roosta2008convergence} and understand its results \cite{heskes2002stable,yedidia2005constructing,AlanNips2007,YusukeNips2009,RuozziNips2012}.
@@ -31,15 +31,15 @@ As the above imply, the required ability is to: automatically create the tools, 
 Most of the research on learning GM focus on learning the exact model - a model as close as possible to reality.
 If the objective is to learn model that will be used for inference it may not be, the correct goal.
 In a world without computation restriction learning the exact model will be optimal since exact inference will be used as an inference algorithm.
-Unfortunately, this is usually not the case, as mentioned above only approximate inference is practical.
+Unfortunately this is usually not the case, as mentioned above, only approximate inference is practical.
 But when an approximation algorithm is used as the inference algorithm, its characteristics must be taken into account when learning.
 
 Maximum Likelihood (ML) is the common objective for learning the model parameters.
-maximizing this objective is usually done by gradient descent, while inference is needed for calculating the derivative (see \secref{sec:max_likelihood}).
-In \cite{wainwright2006estimating} is argued that using the same inference algorithm in learning as when the learned model is used improve the results outcome.
+Optimization is usually done by gradient descent, which require inference for calculating the derivative (see \secref{sec:max_likelihood}).
+In \cite{wainwright2006estimating} it is argued that using the same inference algorithm in learning as when the learned model is used improve the results outcome.
 In our paper \cite{heinemann2014inferning} we take another direction, our goal is to guarantee the quality of the resulted marginals - the marginals that are the output of the inference algorithm when run on the learned model.
 BP is known to be exact on trees, this result can be extended by using parameter that measure how locally tree is the model.
-In our paper, an algorithm for learning models (structure and parameters) is given such that the size of this parameter is bound - hence the size of the error of BP.
+In our paper, an algorithm for learning models (structure and parameters) is given such that the size of this parameter is bound - hence bounding the error of the results.
 
 As written above, when maximizing ML with gradient descent an inference algorithm must be used.
 BP, as a good approximation inference algorithm, is a plausible choice.
@@ -47,22 +47,22 @@ In \cite{heinemann2012cannot} we show that when maximizing the ML in that way, o
 Another characteristics of BP was found - not all the marginal can be a result of BP.
 In other words, there are marginal (inside the marginal polytope) that will never be (for all parameters) the a stable result of BP\footnote{ The paper \cite{pitkow2011learning} return our result.}.
 Combining these two facts, it could be concluded that for some empirical marginals ( see definition \eqref{eq:empirical_mar}) no parameter will result with moment matching \footnote{ A property of learned model that insure equivalence between the empirical marginals and the model marginals see \secref{sec:max_likelihood}}, hence gradient descent will never converge \footnote{This explain the failure of BP as inference algorithm in gradient descent as in \cite{wainwright2006estimating} and others}.
-Moreover, since Bethe ML is the real objective the canonical parameters is proved to be optimal when moment matching is achievable.
+Moreover, since Bethe ML is the real objective, the canonical parameters is proved to be optimal when moment matching is achievable.
 
-In recent years the success of deep networks was overwhelming\footnote{not all thinks it the to the \href{https://www.linkedin.com/pulse/computer-vision-research-my-deep-depression-nikos-paragios?trk=hp-feed-article-title-like}{best}}
-In machine vision \cite{}, natural language processing \cite{} and speech  recognition state of the art results come from deep learning.
+In recent years the success of deep networks was overwhelming\footnote{not all thinks it the to the \href{https://www.linkedin.com/pulse/computer-vision-research-my-deep-depression-nikos-paragios?trk=hp-feed-article-title-like}{best}}.
+In machine vision \cite{krizhevsky2012imagenet}, natural language processing \cite{mikolov2013efficient} and speech recognition \cite{mohamed2009deep, hinton2012deep} state of the art results come from deep learning.
 A complex non-linear function is generated by stacking simple non-linear functions.
 Gradient descent is used for optimization, but some parameters needed to be tune along with few tricks that are needed to achieve top results.
 Thus it could be concluded that deep networks is a good family of functions - hypothesis class, while their optimization techniques are still more an art than solid science.
 %This however is not yet back up by a theoretical understanding of their success.
 %Moreover, the optimization process required tuning, with only a collection of rolls of thumb of how to set the parameters,  given a new problem.
 On the other hand, support vector machine - the former machine learning community trend, is a well understood technique.
-Using kernels non-linear classifier can be learned by quadratic programming\cite{}.
+Using kernels, non-linear classifier can be learned by quadratic programming\cite{scholkopf2002learning}.
 Hence a kernel that will induce the deep networks hypothesis class may enjoy both worlds.
 
 In \cite{cho2009kernel} they present a kernel that is relate to infinite networks.
-It was known that the \textit{arc-cosine} function is related to a one layer network with infinite number of units.
-While the \textit{arc-cosine} is related to the zero one activation function they generalized it to a series of activation function where the second is the known ReLu.
+It was known that the \textit{arc-cosine} function is related to a one layer network with infinite number of units \cite{williams1998computation}.
+While the \textit{arc-cosine} is related to the zero one activation function they generalized it to a series of activation functions where the second is the known ReLu.
 Using a nice trick, the infinite networks could be stack one on top of the other with result of deep infinite networks.
 
 In our work \cite{heinemann2016improper} we present a finite network kernel.
@@ -70,4 +70,12 @@ By using the natural dot product between functions, the kernel is define as the 
 For one layer networks our kernel is similar to that of \cite{cho2009kernel}.
 For multi-layer networks however a new kernel is defined for finite number of nodes in each layer.
 
-In what follow, I will give a sort introduction on these two topics - graphical models, deep learning and kernels.
+To summarize, in this I will present $3$ papers.
+The first \cite{heinemann2012cannot}, show that there are empirical marginals that can not be the results of BP. 
+Hence preforming gradient descent in such cases will not converge. 
+On the other hand, the parameters, in cases where the empirical marginals can be result of BP, can be learned by the canonical parameters.
+The second \cite{heinemann2014inferning}, present an algorithm for learning graphical model (both structure and parameters) that take into account the used inference algorithm.
+The algorithm return a model in a family of models where the quality of inference by BP could be bound.
+while the first two papers focus on graphical models the third \cite{heinemann2016improper} connect SVM and deep networks.
+We present a kernel that induce hypothesis class of combination of networks with a fix structure.
+In what follow, I will give a short introduction that will cover the background needed to understand the context of these papers.
