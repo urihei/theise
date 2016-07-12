@@ -33,16 +33,15 @@ It can be shown that $A(\thetav)$ is a convex function of $\thetav$ which lead t
 A(\thetav) &=& \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
 \muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
 \eean
-\eqref{eq:arg_variation_A} and \eqref{eq:variation_A} present a new way to infer  the marginals and  calculate the partition function.
+\eqref{eq:arg_variation_A} and \eqref{eq:variation_A} present a new way to infer the marginals and calculate the partition function.
 Not surprisingly, solving this optimization is hard in itself for two reasons.
 The first, the marginal-polytope is a very complex  body - its description is exponential in $d$ the size of $\muv$.
 The second, calculating the entropy is a hard problem by itself.
 The merit in this representation, is the ability to approximate these two quantities - the entropy and the marginal polytope.
 
-I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ in a way that both are easy to calculate. 
-For example if we select the independent graph it sum down to the mean-field method \cite{peterson1987mean}.
+I will present two method of approximation, the first limit both the marginal-polytope and the entropy to a sub-graph of $G$ in a way that both are easy to calculate - the mean-field method \cite{peterson1987mean}.
 The second method give different approximation to the entropy and marginal polytope.
-For example, the local polytope (defined in \eqref{eq:local_polytope}) is an outer bound  of the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
+For example, the local polytope (defined in \eqref{eq:local_polytope}) will approximate the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
 The resulted approximation is the  Bethe approximation which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
 \subsubsection{Mean Field}
 Mean field is a technique that approximate a complex model by a simpler one.
@@ -60,12 +59,12 @@ In this case, the marginal polytope sum down to,
 \right.\right\}
 \ee
 Note that the dimension of the marginals is with respect to the original graph,
-moreover, $\margpoly^{G_I} \subseteq \margpoly^{G}$.\\
-Now the entropy for this family of models is simply,
+moreover, $\margpoly^{G_I} \subseteq \margpoly^{G}$\footnote{Note that marginals that correspond to the pairwise interaction are constrain to reflect independence a constrain that does not exist in the original marginal polytope.}.\\
+Now the entropy for this family of models is simple,
 \be
 H_{G_I}(\muv) = -\sum_{i}\sum_{x_i} \mu_i(x_i)\log\mu_i(x_i)
 \ee 
-So the partition function can no be written as
+So the partition function can be written as
 \be
 A_{G_I}(\thetav) = \sup_{\muv \in \margpoly^{G_I}}\left \{ \muv \cdot \thetav + H_{G_I}(\muv))) \right\} \label{eq:naive_mean_field} \\
 \ee
@@ -78,23 +77,24 @@ Iterating through \eqref{eq:naive_iter} will converge since \eqref{eq:naive_mean
 
 The above example demonstrate two important feature of the chosen dependency graph.
 First, the entropy should be easy to calculate.
-Second, if the resulted equation is convex, the optimization will be easy.
+Second, the resulted approximated variational equation should be convex - easy to optimized.
 The second feature does not always hold, for example if the dependency graph is a tree. 
 The model entropy is the Bethe entropy (see \eqref{eq:bethe_entropy}) which is not a concave function. 
 Hence, local maximum could occur and the resulted algorithm may not converge\footnote{ This is not BP, to get BP the optimization should be over the local polytope not the tree polytope}.
+This lead as to the next approach - different approximation to the marginal polytope and entropy.
 \subsubsection{Belief Propagation}
 \label{sec:belief}
 Belief-Propagation (BP) is a message passing algorithm.
 In each cycle\footnote{The order of the messages can effect convergence rate see for example \cite{elidan2012residual}.} a message is passed from a vertex to all its neighbors.
 The message reflect the source vertex belief on the destination vertex probability.
 The message is a function of the factor connecting the two vertices and the messages from all neighbors except the destination neighbor.
-It continue to cycle until the difference in the messages is very small or after a fix number of cycles.
+BP continue to cycle until the difference in the messages is very small or after a fix number of cycles.
 The messages can be written as, 
 \be
 \label{eq:belief_propagation}
 m_{i \to j}^{t}(x_j) \propto \sum_{x_i \in\cX} \exp{\theta_{i,j}(x_i,x_j)+\theta_{i}(x_i)}\prod_{k \in \nei{i} \setminus j } m_{k \to i}^{t-1} (x_i)
 \ee 
-Now the resulted pseudo-marginals is calculated by,
+While resulted pseudo-marginals are calculated by,
 \bean
 \tau_i(x_i) &\propto& \exp{\theta_i(x_i)} \prod_{k \in \nei{i}} m^T_{k \to i}(x_i) \label{eq:bp_single_marginal}\\
 \tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)\label{eq:bp_pairwise_marginal}
