@@ -47,7 +47,7 @@ In \cite{heinemann2012cannot} we show that when maximizing the ML in that way, o
 Another characteristics of BP was found - not all the marginal can be a result of BP.
 In other words, there are marginal (inside the marginal polytope) that will never be (for all parameters) the a stable result of BP\footnote{ The paper \cite{pitkow2011learning} return our result.}.
 Combining these two facts, it could be concluded that for some empirical marginals ( see definition \eqref{eq:empirical_mar}) no parameter will result with moment matching \footnote{ A property of learned model that insure equivalence between the empirical marginals and the model marginals see \secref{sec:max_likelihood}}, hence gradient descent will never converge \footnote{This explain the failure of BP as inference algorithm in gradient descent as in \cite{wainwright2006estimating} and others}.
-Moreover, since Bethe ML is the real objective, the canonical parameters is proved to be optimal when moment matching is achievable.
+Moreover, since Bethe ML is the real objective, the canonical parameters (\eqref{eq:canonical}) is proved to be optimal when moment matching is achievable.
 
 In recent years the success of deep networks was overwhelming\footnote{not all thinks it the to the \href{https://www.linkedin.com/pulse/computer-vision-research-my-deep-depression-nikos-paragios?trk=hp-feed-article-title-like}{best}}.
 In machine vision \cite{krizhevsky2012imagenet}, natural language processing \cite{mikolov2013efficient} and speech recognition \cite{mohamed2009deep, hinton2012deep} state of the art results come from deep learning.
@@ -73,7 +73,7 @@ For multi-layer networks however a new kernel is defined for finite number of no
 To summarize, in this I will present $3$ papers.
 The first \cite{heinemann2012cannot}, show that there are empirical marginals that can not be the results of BP. 
 Hence preforming gradient descent in such cases will not converge. 
-On the other hand, the parameters, in cases where the empirical marginals can be result of BP, can be learned by the canonical parameters.
+On the other hand, the parameters, in cases where the empirical marginals can be result of BP, can be learned by the canonical parameters (\eqref{eq:canonical}).
 The second \cite{heinemann2014inferning}, present an algorithm for learning graphical model (both structure and parameters) that take into account the used inference algorithm.
 The algorithm return a model in a family of models where the quality of inference by BP could be bound.
 while the first two papers focus on graphical models the third \cite{heinemann2016improper} connect SVM and deep networks.

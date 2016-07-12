@@ -100,17 +100,16 @@ While resulted pseudo-marginals are calculated by,
 \tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)\label{eq:bp_pairwise_marginal}
 \eean
 
-If the model graph is a tree - BP is exact, the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$.
-There are other models families  where the error of BP marginals can be bound
-\footnote{Tree-like model is an example of such family\cite{dembo2010ising}, this fact is used in my second paper\cite{heinemann2014inferning}}. 
+BP is exact when the dependency graph is a tree - the pseudo-marginals are the exact marginals $\tauv^{\thetav} = \muv^{\thetav}$.
+There are other models families  where the error of BP marginals can be bound\footnote{Tree-like model is an example of such family\cite{dembo2010ising}, this fact is used in my second paper\cite{heinemann2014inferning}.}. 
 But in the general case the quality of the pseudo-marginals is unknown. 
-Moreover, there are cases where BP  does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\boldsymbol{m}^0$.
+Moreover, there are cases where BP does not converge and even when it does the resulted pseudo-marginals may depend on the initial messages $\boldsymbol{m}^0$.
 Despite the above BP give good results in practice \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
 
 The first step in understanding BP is to give meaning to the resulted pseudo-marginals.
 This was done by \cite{yedidia2000generalized, yedidia2003understanding} they found that the fix point of BP are local minima of the Bethe free energy of the system\footnote{Later \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are  local minima of the Bethe approximation}.
 Not only that this result gave meaning to BP fix points, it allow theoretical analysis of BP. 
-I will now present this result.
+I will now present this result but before that we need some definitions.
 
 As mention earlier, the approximation of \eqref{eq:variation_A} include two parts:
 first lets defined the Bethe entropy - an approximation of the true entropy,
@@ -125,7 +124,7 @@ Second  the approximation of the marginal-polytope with the local-polytope.
 \begin{array}{lr}
 \forall i \in V & \sum_{x_i} \tau_i(x_i) = 1\\
 \forall i \in V, \forall x_i \in \cX,\ \forall j \in \nei{j}& \sum_{x_j}\tau_{ij}(x_i,x_j) = \tau_i(x_i)\\
-\forall i \in V,\ \forall ij \in E,\ x_i,x_j \in \cX & \tau_i(x_i) \geq 0,\ \tau_{ij}(x_i,x_j) \geq 0
+\forall i \in V,\ \forall ij \in E,\ x_i,x_j \in \cX &\tau_{ij}(x_i,x_j) \geq 0% \tau_i(x_i) \geq 0,\ 
 \end{array}\right.\right\}
 \ee 
 We are now able to write the Bethe approximation to the partition function.
@@ -139,22 +138,28 @@ This however come with a price.
 First the result does not necessarily belong to the marginal-polytope hence not a ``real'' marginal.
 Second, the resulted optimization is no longer convex - the Bethe entropy is non-convex function while the true one is convex.
 Hence the complexity of optimizing this objective is not clear - I am not aware on any result on the time complexity of Bethe approximation\footnote{In \cite{weller2012bethe} a polynomial algorithm is suggested that approximate the Bethe free energy up to arbitrary precision under some models constrains.}.
+
+We can now quote \cite{yedidia2000generalized} claim:
+\begin{claim}
+\label{thm:bp_bethe}
+Let  $\mm$ be a set of messages as in \eqref{eq:belief_propagation} and let $\tauv$ be the calculated pseudo-marginal as in \eqref{eq:bp_pairwise_marginal}.
+Than the pseudo-marginal are fix-point of BP if and only if they are zero gradient points of the Bethe Free energy \eqref{eq:bethe_approximation}.
+\end{claim}
 %So the importance of \eqref{eq:bethe_approximation} to inference, is its connection to BP.
 
-After defining the Bethe energy , to see the connection to BP we just need to write the Lagrangian of this optimization,
+The proof is very simple, writing the Lagrangian of this optimization,
 \bea
 \mathcal{L}(\thetav,\tauv,\lambdav) &=& -\thetav \cdot \tauv - H_B(\tauv) \\
-&+& \sum_i \lambda_i \left(1-\sum_{x_i} \tau_i(x_i)\right) + \sum_{ij}\lambda_{ij}\left(1-\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\right)\\
-&+& \sum_{i} \sum_{j \in \nei{i}}\sum_{x_i}\lambda_{j \to i, x_i}\left(\tau_i(x_i)-\sum_{x_j} \tau_{ij}(x_i,x_j)\right)
+&+& \sum_i \lambda_i \left(1-\sum_{x_i} \tau_i(x_i)\right) + \sum_{i} \sum_{j \in \nei{i}}\sum_{x_i}\lambda_{j \to i, x_i}\left(\tau_i(x_i)-\sum_{x_j} \tau_{ij}(x_i,x_j)\right)
 \eea
 Using \eqref{eq:bethe_entorpy_information} for the Bethe entropy and remembering the derivative of $x\log\frac{x}{a}$ is $\log\frac{x}{a}+1$ the derivatives compare to zero give\footnote{And using the constrain $\sum_{x_i}\tau_{ij}(x_i,x_j) = \tau_j(x_j)$},
 \bea
 \log{\tau_i(x_i)} &=& \theta_i(x_i)+ \sum_{j \in \nei{i}} \lambda_{j \to i,x_i}-(d_i-1)+\lambda_i\\
-\log{\tau_{ij}(x_i,x_j)} &=&  \theta_{ij}(x_i,x_j) - \lambda_{j \to i,x_i} -  \lambda_{i \to j,x_j} +\log \tau_{i}(x_i) +\log \tau_{j}(x_j) -1 +\lambda_{ij}
+\log{\tau_{ij}(x_i,x_j)} &=&  \theta_{ij}(x_i,x_j) - \lambda_{j \to i,x_i} -  \lambda_{i \to j,x_j} +\log \tau_{i}(x_i) +\log \tau_{j}(x_j) -1
 %\frac{\partial \mathcal{L}(\thetav,\tauv,\lambdav)}{\partial \tau_i(x_i)} &=& \theta_i(x_i) - \log{\tau_i(x_i)}-1 - \sum_{j \in \nei{i}} \lambda_{i \to j,x_i}\\
 %\frac{\partial \mathcal{L}(\thetav,\tauv,\lambdav)}{\partial \tau_{ij}(x_i,x_j)} &=& \theta_{ij}(x_i,x_j) + \log{\tau_{ij}(x_i,x_j)} + 1 + \lambda_{i \to j,x_i} + \lambda_{j \to i,x_j}
 \eea
-taking the exponent and rearranging\footnote{$\lambda_{ij}$,and$\lambda_i$ are part of the normalization a long with the constants.} we have,
+taking the exponent and rearranging\footnote{$\lambda_i$ are part of the normalization a long with the constants.} we have,
 \bea
 \tau_i(x_i) &\propto& \exp{\theta_i(x_i)}\prod_{j \in \nei{i}} \exp{\lambda_{j \to i,x_i}}\\
 \tau_{ij}(x_i,x_j) &\propto&  \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} \exp{\lambda_{k \to i,x_i}} \prod_{k \in \nei{j}\setminus i} \exp{\lambda_{k \to j,x_j}}
@@ -162,32 +167,29 @@ taking the exponent and rearranging\footnote{$\lambda_{ij}$,and$\lambda_i$ are p
 Which is exactly as \eqref{eq:bp_single_marginal} and \eqref{eq:bp_pairwise_marginal} when BP converges.
 Hence, BP fix points are local minima of the Bethe energy.
 
-This result give us some insight to the results BP may return and to how BP should be used.
+\claimref{thm:bp_bethe} promote a wide research.
+The research can be divided to three categories.
+Extensions of BP, convergence of BP and bounding the error of BP.
+I will now give short survey to each category but will start with simple implication of this claim.
+
 As was written before, BP could have  more than one fix point.
 This empirical fact has now have theoretical reasoning. 
-Since local minima of the Bethe free energy is a stable fix point of BP.
-The Bethe free energy is a non-convex function hence multiple minima may exist.
-Hence BP may have multiple stable fix point.
+\claimref{thm:bp_bethe} state that local minima of the Bethe free energy is a stable fix point of BP.
+Adding the fact that the Bethe free energy is a non-convex function result in multiple minima may exist - BP may have more than one fix point.
 Note that not all fix point have the same quality (at least regarding the solution of \eqref{eq:bethe_approximation}).
 Two fix points where one have lower Bethe free energy should not be treated the same - the one of the lower energy could be a solution to \eqref{eq:bethe_approximation} while the other could not.
 This imply against a common practice of initializing the massages $\boldsymbol{m}^0$ to uniform distribution and running BP only once.
-The above imply that random initialization and multiple running of BP may improve the quality of BP results.
+Multiple running of BP with random initialization may improve the quality of BP results (at least when calculating partition function)\footnote{How to use the resulted pseudo-marginals of BP when multiple maximum exist can be an interesting research direction.}.
 
-The connection between BP and the Bethe energy promote a wide research.
-The research can be divided to three categories.
-Extensions of BP, convergence of BP and bounding the error of BP.
-I will now give short survey to each category.  
-
-The most immediate extension to BP using the above, was the Generalized Belief Propagation \cite{yedidia2000generalized}. 
+The most immediate extension to BP using \claimref{thm:bp_bethe}, was the Generalized Belief Propagation \cite{yedidia2000generalized}. 
 Instead of maximizing the Bethe energy it maximize the Kikuchi free energy - an extension from only pairwise interaction to larger areas.
-
 One of the draw backs of the Bethe approximation is the fact that the Bethe entropy is not a concave function.
 Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree} suggest a surrogate entropy  which is concave.
 This is done by giving weights to the information part (the second summation) in \eqref{eq:bethe_entorpy_information}.
 It's name come from the interpretation of these weights.
 The model parameter can be decomposed: $\thetav=\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}$ such that each $\thetav^{\mathfrak{t}}$ is sub-model\footnote{$\theta^{\mathfrak{t}}_{ij}$ is either $0$ or $\theta_{ij}$ and $\theta^{\mathfrak{t}}_i =\theta_i$} which its structure is a tree, and $t_{\mathfrak{t}}\geq 0$, $\sum_{\mathfrak{t}} t_{\mathfrak{t}} = 1$.
-Such probability induce a probability for each edge to appear in any one of the trees.
-These probabilities are the weights of the information part.
+The probability on trees induce a probability for each edge to appear in any one of the trees.
+These probabilities are  weights of the information part.
 This gave another advantage to TRW, the resulted log partition function is an upper bound to the true partition function. 
 This easily can be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = Z\left(\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}\right) \leq \sum_{\mathfrak{t}} t_{\mathfrak{t}} Z(\thetav^{\mathfrak{t}})$ which is exactly the TRW approximation to the partition function.
 Both algorithms suggest a variation of BP messages to fit the change in energy.
@@ -198,27 +200,28 @@ For the binary case \cite{welling2001belief} and later \cite{shin2012complexity}
 A general algorithm was given by \cite{yuille2002cccp} which use CCP\cite{yuille2002concave} to optimize the Bethe or Kikuchi energies.
 
 One of the basic requirements of any algorithm is to know that after some time it will return a result.
-In BP case, it mean that the messages will converges.
-A model that BP does not converge on is easy to build.
-so the question remain, can convergence be guaranteed under some model's constrains.
-The first work to so was \cite{tatikonda2002loopy} where a bound on the pairwise interaction was given to insure convergence.
+In BP case, it means that the messages will converges.
+Since a model that BP does not converge on is easy to build, for BP this translate in to finding model constrains that guarantee BP convergence. 
+%So the question remain, can convergence be guaranteed under some model's constrains.
+The first work to do so was \cite{tatikonda2002loopy} where a bound on the pairwise interaction was given to insure convergence.
 For proving the bound the computation tree of BP was used.
 The computation tree, describe the running of BP where each time is a level in the tree.
-The root value is the pseudo-marginal of specific vertex at time $t$ , its children are the neighbors that send it a message with values of the messages at time $t-1$.
+The root value is the pseudo-marginal of specific vertex at time $t$ , its children are the neighbors that send it a message $t-1$ their values are the pseudo-marginal at that time.
 It continue to go back at time, until the leaves which are the initial messages at time $0$.
-Considering the time at infinity, If the marginals in time $t$ is independent of the initial messages at time $0$ BP will converge.
-This method come from the physics world where it is called uniqueness of Gibbs measure or independence of boundary conditions.
+Taking the time to infinity, If the marginals in time $t$ is independent of the initial messages at time $0$ BP will converge.
+This method come from the physics world where it is called uniqueness of Gibbs measure or independence of boundary conditions\footnote{These notion are important to understanding our second paper \cite{heinemann2014inferning} where each marginals should be independent of nodes in distance $l$.}.
 
-In \cite{heskes2004uniqueness} the connection between Bethe and BP help us to find convergence guarantees.
-Finding conditions that insure the convexity of Bethe energy, imply finding condition to the convergence of BP. 
-For BP to converge,  the distance (in some measure) between the current messages and the previous one should get smaller and smaller.
-If this change can be bound by a constant (strictly smaller than one) the convergence of BP can be guaranteed.
+\claimref{thm:bp_bethe} is used in \cite{heskes2004uniqueness} for finding convergence guarantees.
+Since insuring the convexity of Bethe energy imply convergence of BP.
+They define a set of condition that guarantee the convexity of the Bethe free energy.
+Another method to guarantee BP convergence,  is the ability to bound the speed in which the messages get closer to each other.
+In other words, if the rate in which the distance (in some measure) between the current messages and the previous one can be bound by a constant (strictly smaller than one) than convergence of BP can be guaranteed.
 In both papers \cite{mooij2007sufficient}, \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
 Note that all these method do not find conditions to BP convergence but that BP will have a single fix point.
 This fact will be important in my paper \cite{heinemann2012cannot}.
 
-The relation between the Bethe partition function and the exact is till an open question.
-It is clear that a relation can not be given in the general case - it sometimes bigger and sometimes smaller than the exact partition function.
+The relation between the Bethe partition function \eqref{eq:bethe_approximation} and the exact one \eqref{eq:variation_A} is till an open question.
+It is clear that a relation can not be given in the general case - The Bethe approximation is sometimes bigger and sometimes smaller than the exact partition function.
 One of the first results was by \cite{AlanNips2007} that prove that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$) the Bethe partition function lower bounds the exact partition function.
 Later \cite{RuozziNips2012},  gave a stronger result, if the pairwise interaction are log sub-modular the Bethe partition function lower bound the exact partition function ( the case of attractive models is an instance of this class).
 In their prove they used the important work of \cite{vontobel2013counting} that gave a combinatorial meaning to the Bethe entropy.
@@ -227,7 +230,6 @@ To conclude, the connection between BP and Bethe contribute to the understanding
 The biggest short coming of this connection is that it say nothing with respect to BP massages before conversion.
 In contrast,  another interpretation of BP is seeing BP is re-parametrization algorithm that try to change the parametrization of $\thetav$ such that it will belong to the local-polytope.
 For full proof please see \cite{wainwright2002stochastic}.
-
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
@@ -263,13 +265,13 @@ The idea is as follow, build a Markov chain with two main features.
 The first, it must be easy to move from one state to another.
 The second, the stationary distribution of the Markov chain is $P(\xx)$.
 
-To define Markov chain one need to define the transition matrix between any two states.
-In MCMC it is a matrix of dimension $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$ where each row sum to one $\sum_j A_{i,j} = 1$.
-The stationary distribution is a distribution to be on a state that satisfy $A\vv=\vv$.
-The distribution needed to be sampled should be the stationary distribution for the MCMC.
+To define a Markov chain one need to define the transition matrix between any two states.
+The matrix rows should sum to one $\sum_j A_{i,j} = 1$ and the coordinate $A_{i,j}$ define the probability to move from  state $i$ to state $j$.
+In MCMC this matrix of dimensions are $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$ which mean that each state is full assignment of the model variables. 
+The stationary distribution $\vv$ is a distribution over the states (over different assignment) that satisfy $A\vv=\vv$.
+In MCMC this distribution should be $P(\xx)$ the model distribution.
 
-
-Metropolis chains is an example how the Markov chain can be built.
+Metropolis chains is an example of how the Markov chain can be built.
 The transition matrix is defined as follow
 \be
 A(\xx,\tilde{\xx}) = \left\{
@@ -298,14 +300,16 @@ A(\xx,\tilde{\xx}) = \left\{
 \ee
 Note that as in the above case We only need to compute the ratio of $P(\xx)$ hence the partition function can be canceled.
 
-The remain question giving an arbitrary $\xx$ start state how fast are we guaranteed to sample from the stationary distribution.
+The remaining question is, how fast are we guaranteed to sample from the stationary distribution when starting from  an arbitrary assignment $\xx$.
 This constant is called the \textit{mixing time}.
-The mixing time is defined as the maximum number of moves needed to take until reaching the stationary distribution while starting from any distribution.
+The mixing time is defined as the maximum number of moves (transitions between states) needed to be done until the visited states distribution is $\epsilon$ close to the stationary distribution while starting from any state.
 \be
 \tau_{\epsilon}  = \min_{\tau \in \naturalNumbers}\sup_{\vv \in \Omega} \left\{\tau | d\left(A^{\tau}\vv,P(\xx)\right) < \epsilon\right\}
 \ee
 where $\Omega = \{ \vv \in [0,1]^{|\cX|^{p}} | \sum_i \vv_i = 1\}$, and $d(\vv,\tilde{\vv})$ is any distance function between probabilities.\footnote{ From the above condition it is easy to see the connection to the spectral gap (the distance between the largest to the second eigenvalue) and the mixing time. For more information see\cite{levin2009markov}}  .
 The mixing time depend on the model features such as interaction strength,  dependency structure etc.
-Hence models with small mixing time can be easily be sampled, inferring the marginals is doable.
-This fact will be important when taking about inferning\ref{}.    
+Hence models with small mixing time can be easily be sampled - inferring the marginals is doable.
+This fact will be important when taking about inferning \secref{sec:inferning}.
+
+The next section cover learning graphical models.
 
