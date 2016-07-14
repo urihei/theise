@@ -142,13 +142,13 @@ Optimizing ML is usually done by gradient descent.
 In order to calculate the derivative, the marginals of the current model are needed.
 BP is a successful algorithm for finding the marginals.
 So using it to find the marginals seem like a good choice.
-But what is optimize exactly?
+But what is it optimize exactly?
 
-Using the variation stand point \eqref{eq:ML} cab be written as
+Using the variation stand point \eqref{eq:ML} can be written as
 \be
 \sup_{\thetav \in \Omega^G} \likelihood{X;\thetav} = \sup_{\thetav \in \Omega^G}\left\{ \mubv \cdot \thetav - \sup_{\muv \in \margpoly} \left\{\muv \cdot \thetav - A^*(\muv)\right\}\right\}
 \ee
-Since BP is used and remembering the result of \cite{yedidia2000generalized}(\claimref{thm:bp_bethe}) the optimization can be written as ,
+Since BP is used and remembering the result of \cite{yedidia2000generalized}(\claimref{thm:bp_bethe}) the optimizing ML with BP can be written as ,
 \be
 \bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
 \ee
@@ -157,8 +157,9 @@ It is a convex function of $\thetav$ since $A_B(\thetav)$ is a convex function o
 Moreover it can be proved that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex. % (see \appref{})
 To summarize, optimize ML by using BP as the inference algorithm in gradient descent will in fact optimize the Bethe likelihood and not the exact one.
 
-Bethe and BP are exact for models with a tree dependency graph, can this kind of models be easily learned.
-The canonical parameter are a closed form equation that learn the parameters of a tree models.
+Bethe and BP are exact for models with a tree dependency graph, and structure learning is easy for such models.
+It is clear that optimizing ML is feasible but can not better be done?  
+The canonical parameters are a closed form equations that learn the exact parameters for a tree models.
 they are defined as,
 \be
 \label{eq:canonical}
@@ -166,71 +167,83 @@ they are defined as,
 \ee
 So if the model graph is a tree the canonical parameters could be used and no gradient descent is necessary.
 
-In \cite{ganapathi2012constrained} the ML is optimize via its dual - maximizing the entropy with moment matching constrain.
+It turn out that the Bethe ML (or close formulation of it) is hiding in other algorithms, for example  \cite{ganapathi2012constrained}.
+In this paper the ML is optimize via its dual - maximizing the entropy with moment matching constrain.
 Since this problem is hard, the problem is relaxed in the same way as the Bethe - using the local marginal polytope  instead of the marginal polytope and using the Bethe entropy instead of the exact one.
 So in fact trying to optimize an objective that similar to the Bethe likelihood \footnote{Note that if no other constrains are found, the moment matching condition in the Bethe entropy maximization fully specifies the solution}.
 To optimize this relaxed objective the Bethe free energy must be found this is done by \cite{yuille2002cccp}.
-Note that as was showed in our paper \cite{heinemann2012cannot} there are empirical marginals that never maximize the Bethe free energy - which result in unfeasible objective.
-To clarify this point lets look at the optimizer of the Bethe likelihood.
 
-Since the Bethe likelihood $\bethelikelihood{X;\thetav}$ is a non-smooth function the optimal conditions sum down to,
+But lets return to the optimization of the Bethe ML.
+The Bethe likelihood $\bethelikelihood{X;\thetav}$ is a non-smooth function hence the optimal conditions sum down to,
 \be
 \mu_{ij}(x_i,x_j) = \convexhull{ \arg \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}}
 \ee
 where $\convexhull{[\tauv_1,\ldots,\tauv_k]}$ is the convex hull of $[\tauv_1,\ldots,\tauv_k]$.
 It is easy to see that if the Bethe energy has only one maximum the moment matching condition \eqref{eq:moment_matching} is satisfied.
-In the case of multiple maximum no moment matching is guaranteed - the learned parameters will not reconstruct the empirical marginals.
+Moreover running ML with BP will converge to this result.
+In contrast, in the case of multiple maximum no moment matching is guaranteed - the learned parameters will not reconstruct the empirical marginals.
+As a result running ML will BP will nor converge but will keep ``jumping'' between the different maximums. 
 A question remain, is such empirical marginals exist?
 
 In the paper \cite{heinemann2012cannot} we prove that such empirical marginals exist, and show that indeed there are marginals in the marginal polytope that will \textbf{never} (for any parameter) be the result of BP.
+Note that this result imply also to the paper of \cite{ganapathi2012constrained} - there are marginals that the results of their algorithm depend on the initialization of the gradient descent.   
 
 We will now consider an approximation to the ML Pseudo-Likelihood.
 \subsubsection{Pseudo-Likelihood}
 Pseudo-Likelihood (PL)\cite{besag1975statistical} is a way to approximate the likelihood.
-It is the first of larger family of likelihood approximation called composite likelihood \cite{lindsay1988composite}.
+It is the first of larger family of likelihood approximations called composite likelihood \cite{lindsay1988composite}.
 Specifically, if we will note that the likelihood can be written as $ p(\xx;\thetav) = \prod_{i=1}^p p(x_i |x_1,\ldots x_{i-1})$
 The PL approximation is
 \be
 pl(\xx;\thetav) = \prod_{i=1}^p p(x_i |\xx_{\setminus i};\thetav) = \prod_{i=1}^p p(x_i |\xx_{\nei{i}};\thetav)
 \ee
-Note that with using model \eqref{eq:basic_model}, we can write:
-\bea
+\ignore{
+Using model \eqref{eq:basic_model}, the probability of a vertex given its neighbors can be written as,
+\be
+\label{eq:pl_condition}
 p(x_k |\xx_{\setminus k};\thetav) 
 %&=& \frac{p(\xx;\thetav)}{p(\xx_{\setminus k};\thetav)}\\
-&=& \frac{p(\xx;\thetav)}{\sum_{x_k \in \cX }p(\xx;\thetav)}\\
+%&=& \frac{p(\xx;\thetav)}{\sum_{x_k \in \cX }p(\xx;\thetav)}\\
 %&=&\frac{\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{ i \in V} \theta_i(x_i)}}{\sum_{ \tilde{x}_{k} \in \cX }\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}}\\
-&=&\frac{\exp{\sum_{j \in \nei{k}} \theta_{kj}(x_k,x_j) + \theta_k(x_k)}}{\sum_{\tilde{x}_k \in \cX}\exp{\sum_{j \in \nei{k}} \theta_{kj}(\tilde{x}_k,x_j) + \theta_k(\tilde{x}_k)}}\\
-\eea
-%Now if all we want is to find the parameters we can just maximize the conditional likelihood namely:
-Now we can write PL as,
-\bea
-&&\frac{1}{N} \log \left(\prod_{n=1}^N \prod_{i \in V} p(x^n_i | \xx^n_{\nei{i};\thetav})\right) \\ 
+%&=&\frac{\exp{\sum_{j \in \nei{k}} \theta_{kj}(x_k,x_j) + \theta_k(x_k)}}{\sum_{\tilde{x}_k \in \cX}\exp{\sum_{j \in \nei{k}} \theta_{kj}(\tilde{x}_k,x_j) + \theta_k(\tilde{x}_k)}}\\
+=\frac{\exp{\sum_{j \in \nei{k}} \theta_{kj}(x_k,x_j) + \theta_k(x_k)}}{\sum_{\tilde{x}_k \in \cX}\exp{\sum_{j \in \nei{k}} \theta_{kj}(\tilde{x}_k,x_j) + \theta_k(\tilde{x}_k)}}\\
+\ee
+}
+Normalizing and taking the log, the optimization of PL can be written as,
+\bean
+\label{eq:pl_maximization}
+\max_{\thetav} \frac{1}{N} \log{\left(\prod_{i=1}^Npl(\xx^i;\thetav)\right)}
+%&&\frac{1}{N} \log \left(\prod_{n=1}^N \prod_{i \in V} p(x^n_i | \xx^n_{\nei{i};\thetav})\right) \\ 
 %&=&\sum_{i \in V}\frac{1}{N}\sum_{n=1}^N \sum_{j \in \nei{i}} \theta_{ij}(x^n_i,x^n_j) + \theta_i(x^n_i)\\
 %&&-\log\left(\sum_{\tilde{x}_i \in \cX}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x^n_j) + \theta_i(\tilde{x}_i)}\right) \\
-&=& \sum_{i \in V} \sum_{j \in \nei{i}}\sum_{x_i,x_j \in \cX} \mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{x_i \in \cX}\mub_i(x_i)\theta_i(x_i)\\
-&&-\sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}})\log\left(\sum_{\tilde{x}_i \in \cX}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x_j) + \theta_i(\tilde{x}_i)}\right) \\
-\eea
-And the derivatives are,
-\bea
-\frac{\partial pl(X^n;\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=&
-2 \mub_{ij}(x_i,x_j) \\
-&&- \sum_{\xx_{\nei{i}\setminus j} \in \cX^{|\nei{i}-1|}} \mub_{\nei{i}}(x_j,  \xx_{\nei{i}\setminus j}) p(x_i|x_j, \xx_{\nei{i}\setminus j};\thetav)\\
-&& - \sum_{\xx_{\nei{j}\setminus i} \in \cX^{|\nei{j}-1|}} \mub_{\nei{j}}(x_i,  \xx_{\nei{j}\setminus i}) p(x_j|x_i, \xx_{\nei{i}\setminus j};\thetav)\\
-\frac{\partial pl(X^n;\thetav)}{\partial \theta_{i}(x_i)} &=& 
-\mub_i(x_i) - \sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}}) p(x_i|\xx_{\nei{i}};\thetav)
-\eea
-Note first that it is easy to calculate $ p(x_i|\xx_{\nei{i}};\thetav)$ since the partition function is summation only on the values of $x_i$.
-Hence optimizing by gradient descent is plausible.  
-Second, this condition is similar to the moment matching condition of \eqref{eq:moment_matching}.
-Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
-But if we consider the result by \cite{bresler2014hardness,montanari2015computational} to have any time efficient  algorithm we will need moments with higher dimensions hence pay in sample complexity. 
-Other characteristic of PL, such as $\thetav$ is asymptotically normally distributed,  can be derived from the more general family of composite likelihood see \cite{varin2011overview}.
+&=& \sum_{i \in V} \sum_{j \in \nei{i}}\sum_{x_i,x_j \in \cX} \mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{x_i \in \cX}\mub_i(x_i)\theta_i(x_i)\\ 
+&&-\sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}})\log\left(\sum_{\tilde{x}_i \in \cX}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x_j) + \theta_i(\tilde{x}_i)}\right)\nonumber
+\eean
+And the derivatives are\footnote{The pairwise derivatives are similar.},
+\be
+\label{eq:pl_derivative}
+%\frac{\partial pl(X^n;\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& 2 \mub_{ij}(x_i,x_j) \\
+%&&- \sum_{\xx_{\nei{i}\setminus j} \in \cX^{|\nei{i}|-1}} \mub_{\nei{i}}(x_j,  \xx_{\nei{i}\setminus j}) p(x_i|x_j, \xx_{\nei{i}\setminus j};\thetav)\\
+%&& - \sum_{\xx_{\nei{j}\setminus i} \in \cX^{|\nei{j}|-1}} \mub_{\nei{j}}(x_i,  \xx_{\nei{j}\setminus i}) p(x_j|x_i, \xx_{\nei{i}\setminus j};\thetav)\\
+%\frac{\partial pl(X^n;\thetav)}{\partial \theta_{i}(x_i)} &=& 
+%\mub_i(x_i) - \sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}}) p(x_i|\xx_{\nei{i}};\thetav)
+\frac{\partial pl(X^n;\thetav)}{\partial \theta_{i}(x_i)} =  \mub_i(x_i) - \sum_{\xx_{\nei{i}} \in \cX^{|\nei{i}|}} \mub_{\nei{i}}(\xx_{\nei{i}}) p(x_i|\xx_{\nei{i}};\thetav)
+\ee
 
+The first thing to note is that \eqref{eq:pl_maximization} is easy to optimize since both it and its derivative (\eqref{eq:pl_derivative}) sum over the neighbors variables not the whole models.
+As a consequence optimizing by gradient descent is plausible.
+Second note that \eqref{eq:pl_derivative} give us similar condition to the moment matching condition \eqref{eq:moment_matching} ML.
+The difference come from the fact that only the conditional probability is estimated hence the need to sum over all neighbors values.
+This give intuition why PL is less sample efficient - it need to approximate not only the factors marginals but marginals of the factor and its neighbors.
+%Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
+If we consider the result by \cite{bresler2014hardness,montanari2015computational} this is not surprising - to have any time efficient algorithm higher moments are needed to be used.
+Other characteristic of PL, such as $\thetav$ is asymptotically normally distributed,  can be derived from the more general family of composite likelihood see \cite{varin2011overview}.
+\ignore{
 Another view point of PL is, that instead of approximating the likelihood, it just preforming ML on the conditional marginals. 
 We are looking for the parameters that maximize the conditional probability for each vertex separately.
 The derivative of the singleton parameter is the same.
 While the pairwise change, so it include only one of the summation - hence a more moment matching like equation.
-
+}
 
 The first reason to use PL and not ML is time complexity.
 While PL parameters can easily be computed via gradient descent.
@@ -240,11 +253,12 @@ In the well specified case (the model structure and factors are exact) it was sh
 While in the miss specified case (the more realistic case) it is not clear which method is better(see \cite{varin2011overview} for discussion).
 An interesting direction for research is to design an inference algorithm for PL.
 Meaning, design an efficient inference algorithm such that it is promised to return the empirical marginals when the model parameters was learned using PL.
-   
+This may have great importance as I will show in \secref{sec:inferning}.
+
 \subsubsection{Other Methods}
-Contrastive Divergance (CD) \cite{hinton2002training}  was designed for models where part of the variables are hidden ( variables that there are no samples include them), but it could be used to general models.
+Contrastive Divergance (CD) \cite{hinton2002training}  was designed for models where part of the variables are hidden (variables that there are no samples include them), but it could be used to general models.
 The idea is simple, re-call from \eqref{eq:ml_derv_single} and \eqref{eq:ml_derv_pairs}, that the reason gradient-descent is impractical,  is  the hardness of evaluating the marginals according to the parameters $p(x_i,x_j;\thetav)$. 
-One way to approximate these marginals  is by MCMC \secref{sec:sampling}.
+One way to approximate these marginals  is by MCMC (see \secref{sec:sampling}).
 If we only preform small number of steps (usually one) to evaluate $p(x_i,x_j;\thetav)$ we result with CD.
 Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive} but it success in learning Restricted Boltzmann Machine (RBM) gain her its importance.
 
@@ -278,15 +292,15 @@ Other methods like \cite{mizrahi2014icml} just cut off each clique with its neig
 
 To conclude, ML is provably the most sample complexity efficient,   but no time efficient algorithm is known.
 Moreover, it was proven by \cite{bresler2014hardness,montanari2015computational} that no algorithm that use only the sufficient statistics in the clique order can optimize ML.
-On the other hand there is PL that is time efficient but its sample complexity is worst that that of PL.
+On the other hand PL is time efficient but its sample complexity is worst that that of ML.
 Methods like composite likelihood can give better sample complexity results while still be time efficient.
 
 \subsection{Inferning}
 \label{sec:inferning}
-In a world without computation limitation learning the exact model is optimal.
+In a world without computation limitation learning the exact model is always optimal.
 In our world however it is not always the case.
-The quality of the learning process is with respect to the outcome of the approximate inference  algorithm.
-Hence, the learned model should be selected such the inference algorithm will return good results, not such it be close to the real model.
+If the quality of the learning process is with respect to the outcome of the approximate inference  algorithm.
+The learned model should be selected such the inference algorithm will return good results, not such it be close to the real model.
 In \cite{wainwright2006estimating} bring up this point and empirically demonstrate that indeed when TRW is the inference algorithm the parameters should be the TRW parameters (there is a close form equations). 
 Note that in this paper the structure of the model was given.
 An interesting question remain, who learning should be preform when the structure is not given and the goal is preforming inference on the learned model.
@@ -300,11 +314,11 @@ Another class of interesting  models is where the inference algorithm is not exa
 As mention earlier (see here \ref{sec:belief} ) running BP on model that are tree-like can be proved to return good approximation \cite{dembo2010ising}.
 Tree-like models are models that are locally trees, but allow far away cycles.
 The meaning of far away in models, is translated to $\epsilon$ influence of the assignment of two vertices on each other (or on group of vertices to a vertex).
-In other words, in models were in the influential surrounding  are trees inference is possible.
-In our paper \cite{heinemann2014inferning} the structure and parameters are learned such it will belong to such model group.
+In other words, in models were in the influential surrounding  are trees, inference is possible.
+In our paper \cite{heinemann2014inferning} the structure and parameters are learned such they will belong to such model group.
 
 Fast mixing models are another model family that  is known to have good approximation inference algorithm.
-As explained above  \secref{sec:sample}, if the mixing time is small, sampling from the distribution is feasible - good approximation inference. 
+As explained above  \secref{sec:sampling}, if the mixing time is small, sampling from the distribution is feasible - good approximation inference. 
 In the paper \cite{domke2015maximum} learned models such the resulted models is guaranteed to belong to the fast mixing model family.
 
  

@@ -1,0 +1,23 @@
+\chapter{Conclusion} % Main chapter title
+\label{con} % For referencing the chapter elsewhere, use \ref{con} 
+\subsection{Learning graphical models with approximate inference}
+In the paper \cite{heinemann2012cannot} we were looking at the implication of the optimization of ML objective while the inference is BP.
+As was explain before \secref{sec:Bethe_ML} it turn out that the optimized objective is the Bethe ML \eqref{eq:bethe_like} and no ML \eqref{eq:ML}.
+Bethe ML is a convex function of the optimized parameter $\thetav$ but not a smooth one so optimization should be feasible.
+Writing the equation for the optimality of the parameters \eqref{eq:bethe_opt} gave similar condition to the moment matching equations \eqref{eq:moment_matching}.
+There is, however, one big different - were there are more than one pseudo-marginals that maximize the Bethe likelihood there is no guarantees that moment matching exist.
+
+The importance of moment matching can be thought by loss of information.
+In ML running inference on the learned parameters result in the empirical marginals hence by learning all the information was saved.
+On the other hand, where there is no moment matching the empirical marginals can not be inferred from the model which reveal loss of information by the learning process.
+Hence moment matching is a crucial characteristic of learning GM.
+But is there such empirical marginals - marginals that for all parameters will never be the only pseudo-marginal that minimize the Bethe free energy?
+Can such marginals be characterize?
+
+The surprising answer is yes.
+There are marginals inside the marginal polytope(\eqref{eq:margpoly}) that for all parameters they are not the sole minimizer of the Bethe free energy - could not be stable fix point of BP.
+But even if a marginal minimize the Bethe free energy, if there is no parameter that it is the only one, this parameter is l
+This encourage the definition of a new set of marginals - Bethe learn-able.
+A marginal is Bethe learn-able if there exist a parameter that this marginal is the only pseudo-marginal that minimize the Bethe free energy for this parameter.
+Can a bounds to this 
+
