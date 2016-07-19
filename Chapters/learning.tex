@@ -1,3 +1,4 @@
+% !TEX root =../main.tex
 \subsection{Learning Graphical Models}
 \label{sec:learning}
 Understanding why you are doing something before doing it, is good practice in life. 
@@ -150,6 +151,7 @@ Using the variation stand point \eqref{eq:ML} can be written as
 \ee
 Since BP is used and remembering the result of \cite{yedidia2000generalized}(\claimref{thm:bp_bethe}) the optimizing ML with BP can be written as ,
 \be
+\label{eq:bethe_like}
 \bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
 \ee
 This will be called the Bethe maximum likelihood.
@@ -176,6 +178,7 @@ To optimize this relaxed objective the Bethe free energy must be found this is d
 But lets return to the optimization of the Bethe ML.
 The Bethe likelihood $\bethelikelihood{X;\thetav}$ is a non-smooth function hence the optimal conditions sum down to,
 \be
+\label{eq:bethe_opt}
 \mu_{ij}(x_i,x_j) = \convexhull{ \arg \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}}
 \ee
 where $\convexhull{[\tauv_1,\ldots,\tauv_k]}$ is the convex hull of $[\tauv_1,\ldots,\tauv_k]$.

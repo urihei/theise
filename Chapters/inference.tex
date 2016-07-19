@@ -1,3 +1,4 @@
+% !TEX root =../main.tex
 \subsection{Approximate inference}
 \label{sec:approx}
 Graphical models is a powerful tool.
@@ -14,6 +15,7 @@ I will follow in this section the excellent work by \cite{wainwright2008graphica
 The goal of the inference is to find $\muv$ the model marginals.
 Hence the first thing to define is the space of $\muv$ - the marginal-ploytope $\margpoly^G$.
 \be
+\label{eq:margpoly}
 \margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
 \begin{array}{lr}
   \exists \thetav \in \Omega^G\ s.t. \\
@@ -50,6 +52,7 @@ More specifically, it replace the marginal polytope (of the true dependencies gr
 I will illustrate this technique by choosing the simplest graph - the independent graph denote by $G_I$.
 In this case, the marginal polytope sum down to,
 \be
+\label{eq:margpoly}
 \margpoly^{G_I} = \left\{\muv \in \Re^{d}\left|
 \begin{array}{lr}
 \forall i \in V,\ \forall x_i \in \cX & 0\leq \mu_i(x_i)\\

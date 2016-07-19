@@ -1,23 +1,57 @@
+% !TEX root =../main.tex
 \chapter{Conclusion} % Main chapter title
 \label{con} % For referencing the chapter elsewhere, use \ref{con} 
-\subsection{Learning graphical models with approximate inference}
-In the paper \cite{heinemann2012cannot} we were looking at the implication of the optimization of ML objective while the inference is BP.
-As was explain before \secref{sec:Bethe_ML} it turn out that the optimized objective is the Bethe ML \eqref{eq:bethe_like} and no ML \eqref{eq:ML}.
-Bethe ML is a convex function of the optimized parameter $\thetav$ but not a smooth one so optimization should be feasible.
+\section{Results summery}
+\subsection{What cannot be learned with Bethe approximations}
+A common  practice is to use BP as the approximate inference algorithm when optimizing likelihood by gradient descent .
+%In the paper \cite{heinemann2012cannot} we were looking at the implication of the optimization of ML objective while the inference is BP.
+As was explain before \secref{sec:Bethe_ML}, it turn out that the optimized objective is the Bethe ML \eqref{eq:bethe_like} and not ML \eqref{eq:ML}.
+Bethe ML is a convex function of the optimized parameter $\thetav$, although not a smooth one, so optimization should be feasible.
 Writing the equation for the optimality of the parameters \eqref{eq:bethe_opt} gave similar condition to the moment matching equations \eqref{eq:moment_matching}.
 There is, however, one big different - were there are more than one pseudo-marginals that maximize the Bethe likelihood there is no guarantees that moment matching exist.
 
-The importance of moment matching can be thought by loss of information.
-In ML running inference on the learned parameters result in the empirical marginals hence by learning all the information was saved.
-On the other hand, where there is no moment matching the empirical marginals can not be inferred from the model which reveal loss of information by the learning process.
+The importance of moment matching can be stressed by loss of information.
+Running inference on a model learned by ML result in the empirical marginals the model was learned from. 
+Hence in learning no information was lost\footnote{This is only exact with infinite data - where the learned parameters are exact. In the finite case the parameters are inexact and higher moments of the learned model may differ from the empirical ones.}.
+On the other hand, where there is no moment matching the empirical marginals can not be inferred from the model.
+ This reveal a loss of information by the learning process.
 Hence moment matching is a crucial characteristic of learning GM.
 But is there such empirical marginals - marginals that for all parameters will never be the only pseudo-marginal that minimize the Bethe free energy?
 Can such marginals be characterize?
 
-The surprising answer is yes.
-There are marginals inside the marginal polytope(\eqref{eq:margpoly}) that for all parameters they are not the sole minimizer of the Bethe free energy - could not be stable fix point of BP.
-But even if a marginal minimize the Bethe free energy, if there is no parameter that it is the only one, this parameter is l
+In the paper \cite{heinemann2012cannot} we give the surprising answer is of yes.
+There are marginals inside the marginal polytope(\eqref{eq:margpoly}) that for all parameters they are not the sole minimizer of the Bethe free energy.
+This imply, that if the empirical marginals are such, the parameters that maximize the Bethe likelihood can not reconstruct the empirical marginals - no moment matching.
+Note, that in this case optimizing by gradient descent will have difficulty to converge since BP may return marginals that are far a way from each other in each iteration.
 This encourage the definition of a new set of marginals - Bethe learn-able.
 A marginal is Bethe learn-able if there exist a parameter that this marginal is the only pseudo-marginal that minimize the Bethe free energy for this parameter.
-Can a bounds to this 
+I our paper bounds to this set is given.
 
+Lets start from inner bounds.
+As mentioned above, convergence of BP is a topic of active research moreover the found conditions not only guarantee convergence but convergence to a sole marginals.
+This is very close to what is needed for inner bound, but the conditions are the other way around - they constrains the \textit{parameters} such a sole minimizer is guaranteed.
+We close this gap using the canonical parameters \eqref{eq:canonical} which can be thought as a map between empirical marginals to parameters.
+Using the fact that the marginals are always a fix point of BP, not necessarily stable, for their canonical marginals.
+The inner bound is define as all the marginals that their canonical parameters satisfy one of the convergence conditions.
+
+Discovery of the outer bounds is more of a challenge since their very existence being proof to the existence of the unbelievable marginals \cite{pitkow2011learning}\footnote{This paper was published after to publication of our paper.}.
+The canonical parameters can be used to define such bounds as well.
+Any marginals that running BP on its canonical parameters do not always return the same marginals are not Bethe learn-able.
+This indeed define an outer bound but is such marginals exists? can an explicit bound be found.
+In the paper we define a closed form bounds using the Hessian of the Bethe likelihood.
+Close look at the Hessian will reveal that it is a function of the marginals a lone.
+Hence if the Hessian of the marginals is not negative semi-definite these marginals are not Bethe learn-able.
+This, though a clear function of the marginals, is not closed form equation.
+For this end, we restrict our model to be binary and homogeneous. 
+A closed form equation is given that give a condition for the pairwise marginals given the singleton marginals and the number of edges in the graph.
+Note that this is the first proof (to my knowledge) that there are marginals that will never be a stable point of BP - which mean, in some way, that BP is biased.
+
+To conclude, we defined a set of marginals that could be learned with Bethe ML and achieve moment matching.
+We gave inner and outer bounds for this set and prove that there are marginals outside this set.
+Note that for marginals in this set the canonical marginals are optimal.  
+
+\subsection{Inferning with high girth graphical models}
+Learning models when our goal is to use the model for inference is different than trying to reconstruct the exact model.
+The quality of the learning process is asses by the quality of the inference and not by how close the model is close to the real one.
+In \cite{heinemann2014inferning} we present an algorithm that guarantee to return a model where the inference quality can be assured.
+ 
