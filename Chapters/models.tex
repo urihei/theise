@@ -1,43 +1,43 @@
 \section{Graphical Models - Learning and Inference}
 \subsection{Notations and Definitions}
 \label{sec:def}
-Probability is the chance that a certain event will take place.
-So the first thing needed to be defined is  all the possible events.
-We will denote an event by $x \in \cX$, and we will restrict it to be discrete $ |\cX| \in \naturalNumbers$
-\footnote{Through out this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models are very useful models}.
-An event can be a composite of simpler $p \in \naturalNumbers$ sub events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
-After defining the event the probability is  a function from the space of events to a number between zero and one $\pr:\cX^{p} \to (0,1]$ with an important restriction that $\sum_{\xx \in \cX^{p}} \pr(\xx) = 1$\footnote{Note that we exclude zero since we require positive distribution.}\footnote{Without loss of generality for ease of notation we assumed that all variables have the same domain. This assumption can be easily removed.}.
+Probability is the chance of a certain event taking place.
+Therefore, the first step is to define all the possible events.
+An event will be denoted by $x \in \cX$, and restricted to be discrete $ |\cX| \in \naturalNumbers$
+\footnote{Throughout this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models are very useful models}.
+An event can be a composite of simpler $p \in \naturalNumbers$ sub-events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
+After defining the event, the probability is a function from the space of events to a number between zero and one $\pr:\cX^{p} \to (0,1]$ with an important restriction that $\sum_{\xx \in \cX^{p}} \pr(\xx) = 1$\footnote{Note thatzero is excluded, since we a positive distribution is required.}\footnote{Without loss of generality, for ease of notation, all variables were assumed to have the same domain. This assumption may be easily removed.}.
 
-In many real world situations each variable (sub-event) is directly depend on only small subset of other variables.
-In probability terminology this sum down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of variable's indexes.
-We will denote by $\nei{i}$ the smallest set of vertices indexes that satisfy this relation and by $d_i = |\nei{i}|$ the number of neighbors of variable $i$ - its degree.  
+In many real-world situations, each variable (sub-event) is directly dependent on a small subset of other variable only.
+In probability terminology, this sums down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of the variable's indices.
+$\nei{i}$ denotes the smallest set of vertices indexes satisfying this relation, and $d_i = |\nei{i}|$ denotes the number of neighbors of variable $i$ - its degree.  
 % $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
-This dependency relation can be describe by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ is the graph edges.
-Each variable $x_i$ will be assign a vertex $v_i$. 
-An edge between $v_i$ and $v_j$ exist if  $j \in \nei{i}$\footnote{if $i \in \nei{j}$ than $j \in \nei{i}$ otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which result in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ in contradiction to $j \in \nei{i}$}.
-Now by the Hammersley–Clifford theorem\cite{hammersley1971markov}\footnote{We defined the probability as positive}, we can write out the probability as
+This dependency relation may be described by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ are the graph edges.
+Each variable $x_i$ will be assigned a vertex $v_i$. 
+An edge between $v_i$ and $v_j$ exists if  $j \in \nei{i}$\footnote{If $i \in \nei{j}$ than $j \in \nei{i}$, otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which results in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ - in contradiction to $j \in \nei{i}$}.
+Now, according to the Hammersley – Clifford theorem \cite{hammersley1971markov}\footnote{ the probability being defined as positive}, the probability may be written as
 \be
 \label{eq:ciluqe_prob}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}
 \ee
-Where $\theta_{c}(\xx_{c}): \cX^{|c|} \to \reals$  is a function, $\cC$ is the set of all maximal cliques\footnote{a clique is a set of vertices that have an edge to all vertices in the set. A maximal clique mean that no other vertex can be added to the clique and it still be a clique.} in $G$ and $Z = \sum_{\xx \in \cX^p} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}$ is the normalization constant called the partition function.
-Even from the ability to describe the probability in this compact form\footnote{the naive description length is $O(|\cX|^p)$ while with this representation it is $O(\sum_{c \in \cC} |\cX|^{|c|})$}the merit of connecting probability and graph is clear, in other words the potential of graphical models \cite{koller2009probabilistic}.
+where $\theta_{c}(\xx_{c}): \cX^{|c|} \to \reals$  is a function, $\cC$ is the set of all maximal cliques\footnote{a clique is a set of vertices that have an edge to all vertices in the set. A maximal clique means that no other vertex can be added to the clique and it still be a clique.} in $G$ and $Z = \sum_{\xx \in \cX^p} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}$ is the normalization constant called the partition function.
+From the ability to describe the probability in this compact form\footnote{The naive description length is $O(|\cX|^p)$ while with this representation it is $O(\sum_{c \in \cC} |\cX|^{|c|})$} in itself, the merit of connecting probability and graph - or in other words, the potential of graphical models\cite{koller2009probabilistic} - is clear.
 
 
-In this thesis we will assume that $|c| = 2$, this in itself does not restrict the probability function but it can increase the cardinality of $\cX$\footnote{Basically each clique is assigned to a variable and an edge exist with cliques sharing some variables. Note that new cardinality of the variable is the product the cardinalities of the clique variables }.
-With this restriction the probability can be written as
+In this thesis I will assume that $|c| = 2$; this in itself does not restrict the probability function, but it may increase the cardinality of $\cX$\footnote{Basically each clique is assigned to a variable, and an edge exists between cliques sharing some variables. Note that new cardinality of the variable is the product the cardinalities of the clique variables.}.
+With this restriction, the probability can be written as
 \be
 \label{eq:basic_model}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-were we define $\thetav \in \Omega^G $\footnote{In times when the dependence in $G$ is clear it will be drooped.}  as concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$. 
-So, $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in specific way $\Omega^G \subseteq \Re^{d}$.\footnote{I will assume (if not said otherwise) that $\thetav$ is unique - some of the vectors values are fixed to zero.}
-The normalization constant $Z(\thetav)$ - the partition function, is defined as, 
+where $\thetav \in \Omega^G $\footnote{At times when the dependence in $G$ is clear, it will be dropped.} is defined as a concatenation of $\theta_i(x_i)$ and $\theta_{ij}(x_i,x_j)$ for all $i \in V$ $ij \in E$ and $x_i,x_j \in \cX$. 
+So, $\Omega^G$ is the space of real vectors with dimension $d = |V||\cX|+ |E||\cX|^2$ ordered in a specific way $\Omega^G \subseteq \Re^{d}$.\footnote{I will assume (unless otherwise stated) that $\thetav$ is unique - some of the vectors' values are fixed to zero.}
+The normalization constant $Z(\thetav)$ - the partition function, is defined as 
 \be
 \label{eq:partition_function}
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-In what follow the log of the partition function will be of importance, hence it will be denoted as $A(\thetav) = \log(Z(\thetav)$. Moreover the derivative of it has an interesting characteristic \cite{wainwright2008graphical},
+In what follows, the log of the partition function will be of importance, hence it will be denoted as $A(\thetav) = \log(Z(\thetav)$. Furthermore, the derivative of it has an interesting characteristic \cite{wainwright2008graphical},
 \bea
 \label{eq:pratition_derivative}
 \frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\\
@@ -45,64 +45,65 @@ s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j
 \frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& \mu^{\thetav}_{ij}(x_i, x_j)\\
 \eea
 Where we define the marginals as $\mu_i^{\thetav}(x_i) \equiv P(x_i;\thetav)$ and $\mu_{ij}^{\thetav}(x_i,x_j) \equiv P(x_i,x_j;\thetav)$.
-Note that when clear, the dependence in $\thetav$ will be drooped. 
-Moreover ordering the marginals the same way as $\thetav$ will result in a vector $\muv$.
+Note that when clear, the dependence in $\thetav$ will be dropped. 
+Moreover, ordering the marginals the same way as $\thetav$ will result in a vector $\muv$.
 
 The fact that the derivative of $A(\thetav)$ by $\thetav_{ij}(x_i,x_j)$ equals the marginal probability of these variables,
-illustrate its importance. 
-Other feature of it would be presented at \secref{sec:variational_methods}.
+illustrates its importance. 
+Other features of the log partition function will be presented at \secref{sec:variational_methods}.
 \subsubsection{What can we do with it?}
-There are two basic questions that are of interest.
-The most basic question is which event is the most likely, in other words: what is the assignment that is most probable (MAP - maximum a posteriori).
+Two basic questions are of interest.
+The first and most fundamental question is, which event is the most likely - or in other words, finding the assignment that is most probable (MAP - maximum a posteriori).
 \be
 \label{eq:MAP}
 \xx_{MAP} = \arg \max_{\xx \in \cX^p} P(\xx; \thetav) 
 \ee
-Now sometimes we are not interested in the whole event but only in small fraction of its variables.
-We are looking for the marginal probability of some sub-event $\xx_{\cI}$.
-This can be calculated by summing over all the rest of variables:
+
+Secondly, there are settings in which not the whole event is of interest, but rather only a small fraction of its variables.
+The marginal probability of a certain sub-event $\xx_{\cI}$ in then sought
+This can be calculated by summing over all the rest of the variables:
 \be
 \label{eq:MAR}
 P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX^{P}\\
  s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz;\thetav)
 \ee
-Note that these two problems can be asked when part of the variables was seen, this result in exponential number of different queries on the same model. 
-Both inference tasks can easily be infer by going over all the possible event.
-This however is too expensive since it is exponential in the number of variables.
-And indeed in the general case MAP\cite{shimony1994finding} is NP complete problem while MAR\cite{cooper1990computational} is \#P complete (MAR is even hard to approximate \cite{roth1996hardness}).
+Note that these two questions may be asked also when some part of the variables was observed, thereby resulting in an exponential number of different queries on the same model. 
+Both inference tasks can easily be inferred by going over all possible events.
+This, however, is too expensive since it is exponential in the number of variables.
+Indeed, in the general case MAP\cite{shimony1994finding} is an NP complete problem, while MAR\cite{cooper1990computational} is \#P complete (MAR is hard to even approximate \cite{roth1996hardness}).
 
 The situation is not as hopeless as was described.
-First, the complexity parameter is not the number of variables but a feature of the graph called tree-width\cite{robertson1983graph,robertson1994quickly}.
-The tree width of the graph is usually smaller than the number of vertices, but given a graph it is NP-complete to determine if the graph has tree-width smaller than $k$\cite{Arnborg:1987}.
-Hence inference (both MAP and MAR) is easy on models with dependency structure of a tree since the tree-width of a tree is one.
-There are others model restriction that is known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
-However in general case the inference problem is hard and approximate algorithm must be used.
+First, the complexity parameter is not the number of variables but rather a feature of the graph called tree-width\cite{robertson1983graph,robertson1994quickly}.
+The tree width of the graph is usually smaller than the number of vertices, but given a graph, it is NP-complete to determine if the graph has tree-width smaller than $k$\cite{Arnborg:1987}.
+Hence inference (both MAP and MAR) is easy on models with the dependency structure of a tree, since the tree-width of a tree is one.
+There are other model restrictions that are known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
+However, in the general case, the inference problem is hard and an approximate algorithm must be used.
 I will discuss approximation algorithms in \secref{sec:approx} . 
 \subsubsection{Pros and cons}
-We just claim that inference is hard so why should one use a model which can not be used.
+As illustrated above, inference is hard; why, then, should one use a model which cannot be used?
 %I will now go over the reasons why one should use graphical models.
-One may answer is that it is optimal - in classification for example, if we know the exact conditional distribution and can infer the MAP we will have the optimal solution. 
-This situation is very unrealistic: the true model is usually unknown moreover the inference is still NP hard.
-So the question still stand, when should we use it?
+One may answer that it is optimal - for example in classification, if the exact conditional distribution is known and the MAP can be inferred, the optimal solution can be found. 
+This situation is very unrealistic: the true model is usually unknown, moreover the inference is still NP hard.
+So the question still stands, when should we use it?
 
-In many situations we need to understand our model.
-In biology, we learn the structure of the model to better understand the learned biology system.
+In many situations one needs to understand the studied model.
+In biology, the structure of the model is learned in order to better understand the studied biology system.
 Moreover, in many cases, such as user misuse, an explanation of the decision is needed. 
-In other words, the ability to explain the factors that influence the decision is a must, you can not take action against a costumer with out any ability to explain your decision. 
-In graphical models each variable has meaning hence understanding the learned model is easier then in other models - SVM for example.
+In other words, the ability to explain the factors that influence the decision is a must, one cannot take action against a customer without any ability to explain the decision. 
+In graphical models, each variable has meaning, hence understanding the learned model is easier then in other models (such as SVM, for example).
 
-The model in graphical models usually lack the distinction between features and outcome.
-In situation that such separation is artificial graphical model give power that is not found else where.
-Different queries can be asked on the same model and have consist answers.
+The model in graphical models usually lacks the distinction between features and outcome.
+In situations in which such separation is artificial, graphical models give power that is not found elsewhere.
+Different queries may be asked on the same model and have consistent answers.
 Medical diagnosis is an example where each time a different set of variables are seen.
-Moreover, for each patient the variables of interest - symptoms or diseases can change, hence different queries.
+Moreover, for each patient the variables of interest - symptoms or diseases - may change, hence different queries.
 
-This bring us to the next two important features, handling missing values and structured output.
-In many situations not all of the variables are seen.
-Graphical models, handle missing values inherently and such cases do not need any special treatment (as is the case in other models).
-Lastly, the queries result is not necessarily a single variable.
+This brings us to the next two important features, handling missing values and structured output.
+In many situations not all of the variables are observed.
+Graphical model handle missing values inherently, and such cases do not need any special treatment (as is the case in other models).
+Finally, each of the queries' results are is not necessarily a single variable.
 Queries on several variables are possible and will take into account the relation between these variables.
 
-To conclude, graphical models is a very powerful toll.
-This power come with a price,  inferring and learning (as we will see in \secref{sec:learning})are hard and approximation algorithm must be used in most cases.
-I will now present the basic approximate inference algorithm and than learning graphical models.
+To conclude, graphical models is a very powerful tool.
+This power comes with a price, inferring and learning (as we will be shown in \secref{sec:learning}) are hard, and approximation algorithms must be used in most cases.
+I will now present the basic approximate inference algorithm, and then learning graphical models.
