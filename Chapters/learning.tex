@@ -2,12 +2,11 @@
 \subsection{Learning Graphical Models}
 \label{sec:learning}
 Understanding why you are doing something before doing it, is good practice in life. 
-So I will start by presenting two reasons why we learned graphical models.
-In many domains the main interest in learning is to understand the model.
-For example, we want to know what is the minimum set of variables that can explain specific variable - which variables are its neighbors.
-Or which variable has the greatest effect on another variable etc.
-For this purpose learning the exact models is of intrest - a model that is as similar as possible to the ``real'' model is the goal of learning\footnote{
-In structure learning this sum-down the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
+Therefore I will start by presenting two reasons why we learn graphical models.
+In many domains, the main interest in learning is to understand the model.
+For example, one wishes to know what the minimum set of variables that can explain specific variables is - for example which variables are its neighbors, or which variable has the greatest effect on another variable, etc.
+For this purpose, learning the exact models is of intrest - a model that is as similar as possible to the ``real'' model is the goal of learning\footnote{
+In structure learning this sums down to the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
 When learning the parameters, the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
 This feature is know as reparameterization and it play important roll in Belief Propagation as was presented in \secref{sec:belief}}.
 
