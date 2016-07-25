@@ -1,10 +1,10 @@
 % !TEX root =../main.tex
 \chapter{Conclusion and Discussion } % Main chapter title
 \label{con} % For referencing the chapter elsewhere, use \ref{con} 
-The name "learning using an approximate inference"  try to cover two aspect of the learning process.
+The name ``learning using an approximate inference''  try to cover two aspect of the learning process.
 The first, in the process of learning one use an approximation inference.
-The second after learning the model will be used with approximate inference and the quality of learning will be with measured by the quality of the inference.
-The first paper \secref{sec:lwbethe} we were clarifying the meaning of using BP as the approximate inference in the learning process.
+The second after learning the model will be used with approximate inference and the quality of learning will be measured by the quality of the inference.
+The first paper \secref{sec:lwbethe} clarify the implication of using BP as the approximate inference in the learning process.
 It turn out that the optimized objective is the Bethe ML \eqref{eq:bethe_like} and not ML \eqref{eq:ML}.
 We showed that although Bethe ML is a convex function (but not smooth) learning must be done with care.
 
@@ -12,13 +12,14 @@ More specifically, we define a set of marginals that could safely be learned by 
 Moreover, for empirical marginal in this set, we showed that the canonical parameters \eqref{eq:canonical}  maximize the Bethe ML - no gradient descent is needed.
 While for marginals outside this set, there are no parameter that will guarantee moment-matching \eqref{eq:moment_matching}  which translate to parameters with debatable use.
 We gave an inner and outer bound for this set.
-The existence of outer bounds inside the marginal polytope prove the existence of marginals that will never be a sole fix point of BP (or stable fix point at all).
+The existence of outer bounds to this set which cross the marginal polytope prove the existence of marginals that will never be a sole fix point of BP (or even a stable fix point at all).
 
-The second paper address the second aspect, how one should learn when knowing the approximate inference that will be used on the model.
+The second paper address the second aspect, how one should learn when knowing that the model will be used for inference by a known approximate inference.
 %Remembering the fact that the quality of the learning process is asses by the quality of the results of the approximate inference and not by how close the model is to the real one.
-When the quality of the learning process will be measured by the quality of the result of the approximate algorithm. 
-The inference quality needed to be assured  - the learned  model must belong to a family of models where the inference is known to give good approximation.
-In \secref{sec:lg} we present an algorithm that guarantee to return a model in a model family that BP return good approximations, the family of High Girth Correlation Decay (HGCD).
+%In cases where the model will be used for inference after learning the quality of the learning process should be measured by the quality of the result of the approximate inference algorithm.
+In such cases the quality of the learning process will be measured by the quality of the result of the approximate algorithm. 
+Hence inference quality needed to be assured  - the learned  model must belong to a family of models where the inference is known to give good approximation.
+In \secref{sec:lg} an algorithm that guarantee to return a model in a model family that BP return good approximations, the family of High Girth Correlation Decay (HGCD).
 HGCD models are models that for every vertex its surrounding is a tree, where a vertex belongs to other surrounding if a change in its assignment effect it marginals in non-negligible way.
 
 In the paper we present an algorithm to learn the structure and parameters of the model.
@@ -37,9 +38,9 @@ I will now suggest interesting direction for future work.
 The variational point of view show that the argument that minimize the free energy are indeed the marginal of the model.
 From here it is concluded that the pseudo-marginals that minimize the Bethe free energy are approximations to the marginal. 
 The question what happened in case of multiple minimum - the resulted marginals should not be thought as approximation of the true marginals (they are usually very bad ones)
-A simple way to calculate a single marginal is to note that $\mu_i^{\thetav}(x_i) = \frac{Z(x_i;\thetav)}{\sum_{\hat{x}_i}Z(\hat{x}_i;\thetan)$  where $Z(x_i;\thetav)$% = \sum_{\hat{\xx}, \hat{\xx}_i = x_i}  
+A simple way to calculate a single marginal is to note that $\mu_i^{\thetav}(x_i) = \frac{Z(x_i;\thetav)}{\sum_{\hat{x}_i}Z(\hat{x}_i;\thetav)}$  where $Z(x_i;\thetav)$% = \sum_{\hat{\xx}, \hat{\xx}_i = x_i}  
 is the partition function where the $i$ variable is set to $x_i$.
-Now, the approximation will be $\tau_i^{\thetav} = \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetan)}$.
+Now, the approximation will be $\tau_i^{\thetav} = \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetav)}}$.
 The problem with this approximation is that for each variable assignment one should run BP.
 But can the previous runs be used to accelerate BP convergence so BP will run for only few iterations.
   

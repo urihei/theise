@@ -182,7 +182,7 @@ In addition, the Bethe free energy is a non-convex function, therefore multiple 
 Taken together, this brings to the result that BP may have more than one fix point.
 Note that not all fix points have the same quality, at least regarding the solution of \eqref{eq:bethe_approximation}.
 Two fix points where one has a lower Bethe free energy should not be treated the same - the one with the lower energy could be a solution to \eqref{eq:bethe_approximation} while the other could not.
-This implies against the common practice of initializing the messages $\boldsymbol{m}^0$ to uniform distribution and running BP only once.
+This suggests against the common practice of initializing the messages $\boldsymbol{m}^0$ to uniform distribution and running BP only once.
 Multiple running of BP with random initialization may improve the quality of BP results, at least when calculating the partition function)\footnote{How to use the resulted pseudo-marginals of BP when multiple maximum exist can be an interesting research direction.}.
 
 The most immediate extension to BP using \claimref{thm:bp_bethe}, was the Generalized Belief Propagation \cite{yedidia2000generalized}. 
@@ -199,7 +199,7 @@ This can easily be seen by using Jensen inequality\footnote{Remember that the pa
 Both algorithms suggest a variation of BP messages to fit the change in energy.
 A unified view of these two algorithms (and others) may be found in \cite{meshi2009convexifying}.
 
-Another line of inference algorithms try to optimize the Bethe free energy directly.
+Another line of inference algorithms attempts to optimize the Bethe free energy directly.
 For the binary case, \cite{welling2001belief} and later \cite{shin2012complexity} give a similar algorithm, but the latter gives time complexity guarantees.
 A general algorithm was given by \cite{yuille2002cccp}, which uses CCP\cite{yuille2002concave} to optimize the Bethe or Kikuchi energies.
 
@@ -213,27 +213,26 @@ The computation tree describes the running of BP where each time is a level in t
 The root value is the pseudo-marginal of a specific vertex at time $t$ , its direct descendents are the neighbors that send it a message $t-1$, and their values are the pseudo-marginal at that time.
 It continues to go back in time, until arriving at the leaves which are the initial messages at time $0$.
 Taking the time to infinity, if the marginals in time $t$ are independent of the initial messages at time $0$, BP will converge.
-This method comes from the physics world, where it is called uniqueness of Gibbs measure, or independence of boundary conditions\footnote{These notions are important to the understanding of our second paper \cite{heinemann2014inferning}, where each marginal should be independent of nodes which are distance $l$.}.
+This method comes from the physics world, where it is called uniqueness of Gibbs measure, or independence of boundary conditions\footnote{These notions are important to the understanding of our second paper \cite{heinemann2014inferning}, where each marginal should be independent of nodes which are at distance $l$.}.
 
 \claimref{thm:bp_bethe} is used in \cite{heskes2004uniqueness} for finding convergence guarantees.
-Since insuring the convexity of Bethe energy imply convergence of BP.
-They define a set of condition that guarantee the convexity of the Bethe free energy.
-Another method to guarantee BP convergence,  is the ability to bound the speed in which the messages get closer to each other.
-In other words, if the rate in which the distance (in some measure) between the current messages and the previous one can be bound by a constant (strictly smaller than one) than convergence of BP can be guaranteed.
-In both papers \cite{mooij2007sufficient}, \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
-Note that all these method do not find conditions to BP convergence but that BP will have a single fix point.
+Since insuring the convexity of Bethe free energy implies convergence of BP, they define a set of conditions that guarantee this convexity.
+Another method to guarantee BP convergence, is the ability to bound the speed at which the messages get closer to each other.
+In other words, if the distance (in any distance measure) between any two vectors of messages at time $t+1$ is smaller than the distance at time $t$ by a rate that is always strictly smaller than one, then convergence of BP can be guaranteed $ K d(\mm^{t+1}, \hat{\mm}^{t+1}) \leq d(\mm^t, \hat{\mm}^t)$ where $0\leq K<1$ and $d(\xx,\yy)$ is some distance function.
+In both papers \cite{mooij2007sufficient} and \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
+Note that all the listed methods do not find conditions to BP convergence, but rather that BP will have a single fix point.
 This fact will be important in my paper \cite{heinemann2012cannot}.
 
-The relation between the Bethe partition function \eqref{eq:bethe_approximation} and the exact one \eqref{eq:variation_A} is till an open question.
-It is clear that a relation can not be given in the general case - The Bethe approximation is sometimes bigger and sometimes smaller than the exact partition function.
-One of the first results was by \cite{AlanNips2007} that prove that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$) the Bethe partition function lower bounds the exact partition function.
-Later \cite{RuozziNips2012},  gave a stronger result, if the pairwise interaction are log sub-modular the Bethe partition function lower bound the exact partition function ( the case of attractive models is an instance of this class).
-In their prove they used the important work of \cite{vontobel2013counting} that gave a combinatorial meaning to the Bethe entropy.
+The relation between the Bethe partition function \eqref{eq:bethe_approximation} and the exact one \eqref{eq:variation_A} is still an open question.
+It is clear that a relation cannot be given in the general case - the Bethe approximation is sometimes bigger and sometimes smaller than the exact partition function.
+One of the first results was by \cite{AlanNips2007}, proving that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$), then the Bethe partition function lower bounds the exact partition function.
+Later, \cite{RuozziNips2012} gave a stronger result, showing that if the pairwise interactions are log sub-modular, then the Bethe partition function lower bounds the exact partition function (the case of attractive models is an instance of this class).
+In their proof, they used the important work of \cite{vontobel2013counting}, in which a combinatorial meaning was given to the Bethe entropy.
 
-To conclude, the connection between BP and Bethe contribute to the understanding of BP and help improve it.
-The biggest short coming of this connection is that it say nothing with respect to BP massages before conversion.
-In contrast,  another interpretation of BP is seeing BP is re-parametrization algorithm that try to change the parametrization of $\thetav$ such that it will belong to the local-polytope.
-For full proof please see \cite{wainwright2002stochastic}.
+To conclude, the connection between BP and Bethe contributes to the understanding of BP and helps improve it.
+The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.
+Another interpretation of BP is seeing it as a re-parametrization algorithm, that tries to change the parametrization of $\thetav$ such that it will belong to the local-polytope.  
+For full proof please refer to \cite{wainwright2002stochastic}.
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
@@ -257,26 +256,23 @@ s.t. \hat{\xx}_{\nei{k}} = \xx_{\nei{k}}}}  e^{\sum_{i \in V \setminus k}\theta_
 }
 \subsection{Sampling}
 \label{sec:sampling}
-Sampling in a first glance seem the perfect solution for finding the marginals.
-The marginals can be estimated as the mean of bounded random variable.
-Using Hoeffding bound the probability of mistake greater than $\epsilon$ can be bound by $P(|p(x_i) - \frac{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}{M}| > \epsilon) < 2\exp{-\frac{2\epsilon^2M}{|\cX|^2}}$.
-This mean we have a time complexity of $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$\footnote{With probability greater than $1-\delta$ the estimation error will be less than $\epsilon$}.
-The problem in the above is, that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This is easly be seen from redction to q-coloring for example \cite{levin2009markov,bordewich2016mixing}}.
-So how can we sample.
+At first glance, sampling seems like the perfect solution for finding the marginals.
+The marginals may be estimated as the mean of bounded random variables.
+Using the Hoeffding bound, the probability of mistake greater than $\epsilon$ can be bound by $P(|p(x_i) - \frac{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}{M}| > \epsilon) < 2\exp{-\frac{2\epsilon^2M}{|\cX|^2}}$; meaning, the time complexity is $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$\footnote{With a probability greater than $1-\delta$, the estimation error will be less than $\epsilon$.}.
+The problem in this is, that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This can be easily seen from redction to q-coloring, for example \cite{levin2009markov, bordewich2016mixing}}.
+How, then, can a model be sampled?
 
-Markov Chain Mote Carlo(MCMC) is a method to sample from a distribution $P(\xx)$ while have the ability to sample only from distribution $Q(\xx)$.
-The idea is as follow, build a Markov chain with two main features.
-The first, it must be easy to move from one state to another.
-The second, the stationary distribution of the Markov chain is $P(\xx)$.
+Markov Chain Monte Carlo (MCMC) is a method of sampling from a distribution $P(\xx)$ while being able to sample only from distribution $Q(\xx)$.
+In this, a Markov chain with two main features is constructed: first, it must be easy to move from one state to another; secondly, the stationary distribution of the Markov chain is $P(\xx)$.
 
-To define a Markov chain one need to define the transition matrix between any two states.
-The matrix rows should sum to one $\sum_j A_{i,j} = 1$ and the coordinate $A_{i,j}$ define the probability to move from  state $i$ to state $j$.
-In MCMC this matrix of dimensions are $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$ which mean that each state is full assignment of the model variables. 
-The stationary distribution $\vv$ is a distribution over the states (over different assignment) that satisfy $A\vv=\vv$.
-In MCMC this distribution should be $P(\xx)$ the model distribution.
+To define a Markov chain, one needs to define the transition matrix between any two states.
+The matrix rows should sum to one $\sum_j A_{i,j} = 1$, the coordinate $A_{i,j}$ defining the probability to move from state $i$ to state $j$.
+In MCMC, this matrix of dimensions is $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$, meaning that each state is a full assignment of the model variables. 
+The stationary distribution $\vv$ is a distribution over the states (over different assignments) that satisfies $A\vv=\vv$.
+In MCMC, this distribution should be $P(\xx)$ - the model distribution.
 
-Metropolis chains is an example of how the Markov chain can be built.
-The transition matrix is defined as follow
+Metropolis chains is an example of how the Markov chain can be constructed.
+The transition matrix is defined as follows:
 \be
 A(\xx,\tilde{\xx}) = \left\{
 \begin{array}{lr}
@@ -284,14 +280,12 @@ Q(\tilde{\xx}|\xx)\min\{1,\frac{Q(\xx|\tilde{\xx})P(\tilde{\xx})}{Q(\tilde{\xx}|
 1 - \sum_{\hat{\xx} \neq \xx} Q(\hat{\xx}|\xx)\min\{1,\frac{Q(\xx|\hat{\xx})P(\hat{\xx})}{Q(\hat{\xx}|\xx)P(\xx)}\} & \text{else}
 \end{array} \right.
 \ee
-Note that $Q(\xx|\tilde{\xx})$ must only be irreducible\footnote{Irreducible defined by, for  all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$ such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it not necessarily be symmetric.
-Hence it could be the distribution over a tree or any easy to sample distribution.
-Moreover, we only need to compute $\frac{P(\xx)}{P(\tilde{\xx})} $ hence the partition function canceled and the quantity is easy to calculate.
+Note that $Q(\xx|\tilde{\xx})$ must only be irreducible\footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
+Moreover, we need only to compute $\frac{P(\xx)}{P(\tilde{\xx})} $, hence the partition function is canceled, and the quantity is easy to calculate.
 
-Glauber chains or Gibbs sampler is another method to define the Markov transition matrix.
-The idea is simple, in each iteration only a small number of variables will change, denote this group by $\cI \subseteq [1,\ldots,p]$, $|\cI| = k$.
-Than the possible next states are the ones that differ from the current state $\xx$ only in the indices in $\cI$.
-Denote this set by $\mathcal{D}(\xx,\cI) = \left\{\tilde{\xx} \in \cX^p | \forall i \notin \cI,\ \xx_i = \tilde{\xx}_i \right\}$.
+Glauber chains, or Gibbs sampler, is another method to define the Markov transition matrix.
+The idea is simple, in each iteration only a small number of variables will change, this group denoted by $\cI \subseteq [1,\ldots,p]$, $|\cI| = k$.
+Then, the possible next states are the ones that differ from the current state $\xx$ only in the indices in $\cI$, this set denoted by $\mathcal{D}(\xx,\cI) = \left\{\tilde{\xx} \in \cX^p | \forall i \notin \cI,\ \xx_i = \tilde{\xx}_i \right\}$.
 The set $\mathcal{D}^k(\xx)= \cup_{\cI, |\cI|=k} \mathcal{D}(\xx,\cI)$ denotes the set of all $\tilde{\xx}$ that differ from $\xx$ only in $k$ entries.
 Now the transition matrix is defined as,
 \be
@@ -302,18 +296,18 @@ A(\xx,\tilde{\xx}) = \left\{
 \frac{(p-k)!k!}{p!}\sum_{\cI, |\cI|=k}\frac{P(\xx)}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})}& \xx = \tilde{\xx}
 \end{array} \right.
 \ee
-Note that as in the above case We only need to compute the ratio of $P(\xx)$ hence the partition function can be canceled.
+Note that as in the case above, only the ratio of $P(\xx)$ needs to be computed, hence the partition function can be canceled.
 
-The remaining question is, how fast are we guaranteed to sample from the stationary distribution when starting from  an arbitrary assignment $\xx$.
+The remaining question is, how fast are we guaranteed to sample from the stationary distribution when starting from an arbitrary assignment $\xx$.
 This constant is called the \textit{mixing time}.
-The mixing time is defined as the maximum number of moves (transitions between states) needed to be done until the visited states distribution is $\epsilon$ close to the stationary distribution while starting from any state.
+The mixing time is defined as the maximum number of moves (transitions between states) necessary until the visited states distribution is $\epsilon$ close to the stationary distribution while starting from any state.
 \be
 \tau_{\epsilon}  = \min_{\tau \in \naturalNumbers}\sup_{\vv \in \Omega} \left\{\tau | d\left(A^{\tau}\vv,P(\xx)\right) < \epsilon\right\}
 \ee
 where $\Omega = \{ \vv \in [0,1]^{|\cX|^{p}} | \sum_i \vv_i = 1\}$, and $d(\vv,\tilde{\vv})$ is any distance function between probabilities.\footnote{ From the above condition it is easy to see the connection to the spectral gap (the distance between the largest to the second eigenvalue) and the mixing time. For more information see\cite{levin2009markov}}  .
-The mixing time depend on the model features such as interaction strength,  dependency structure etc.
-Hence models with small mixing time can be easily be sampled - inferring the marginals is doable.
-This fact will be important when taking about inferning \secref{sec:inferning}.
+The mixing time depends on the model features, such as interaction strength, dependency structure etc.
+Hence, models with a small mixing time can be easily sampled, and inferring the marginals is doable.
+This fact will be important when talking about inferning \secref{sec:inferning}.
 
-The next section cover learning graphical models.
+The next section covers learning graphical models.
 
