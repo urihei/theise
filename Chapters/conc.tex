@@ -14,54 +14,70 @@ While for marginals outside this set, there are no parameter that will guarantee
 We gave an inner and outer bound for this set.
 The existence of outer bounds to this set which cross the marginal polytope prove the existence of marginals that will never be a sole fix point of BP (or even a stable fix point at all).
 
-The second paper address the second aspect, how one should learn when knowing that the model will be used for inference by a known approximate inference.
+The second paper address the second aspect, how should one learn when knowing that the model will be used for inference by a known approximate inference.
 %Remembering the fact that the quality of the learning process is asses by the quality of the results of the approximate inference and not by how close the model is to the real one.
 %In cases where the model will be used for inference after learning the quality of the learning process should be measured by the quality of the result of the approximate inference algorithm.
-In such cases the quality of the learning process will be measured by the quality of the result of the approximate algorithm. 
-Hence inference quality needed to be assured  - the learned  model must belong to a family of models where the inference is known to give good approximation.
-In \secref{sec:lg} an algorithm that guarantee to return a model in a model family that BP return good approximations, the family of High Girth Correlation Decay (HGCD).
-HGCD models are models that for every vertex its surrounding is a tree, where a vertex belongs to other surrounding if a change in its assignment effect it marginals in non-negligible way.
+In such cases the quality of the learning process will be measured by the quality of the results of the approximate algorithm. 
+Hence inference quality needed to be assured - the learned  model must belong to a family of models where the inference is known to give good approximation.
+In \secref{sec:lg} we present an algorithm that guarantee to return a model that belong to the family of High Girth Correlation Decay (HGCD)  a model family that BP is guaranteed to return good approximations .
+HGCD models are models that for every vertex its surrounding is a tree, where a vertex belongs to other vertex surrounding if a change in its assignment effect the other vertex marginals in non-negligible way.
 
 In the paper we present an algorithm to learn the structure and parameters of the model.
-The structure learning algorithm is a natural extension to \cite{chowLiu} where we replace the tree constrain with the constrain of the girth\footnote{The girth of a graph is the length of its shortest cycle. The girth of a tree is infinite.}.
-Parameters are the canonical parameters but to insure correlation decay the empirical marginals strength may needed to be clamp down\footnote{We know how to do it only in the binary pairwise case. In the general case I am not aware on a good way to measure the interaction strength between the variables.}.
-We prove that if the sample are generated from a model from this family.
-Under some conditions, the models can be reconstruct.
+The structure learning algorithm is a natural extension to \cite{chowLiu} where we replace the tree constrain with the constrain on the girth\footnote{The girth of a graph is the length of its shortest cycle. The girth of a tree is infinite.}.
+Parameters are the canonical parameters but to insure correlation decay the empirical marginals strength may be necessary to clam them down\footnote{We know how to do it only in the binary pairwise case. In the general case I am not aware of a good way to measure the interaction strength between the variables.}.
+We prove that if the sample are generated from a model from this family, under some conditions, the models can be reconstruct.
 More importantly, we showed that if the number of samples are big enough the error of the inference algorithm can be bounded.
 
-In the third paper \secref{sec:impnet} we present a kernel that its hypothesis class is a combination of deep networks with a given network structure. This work follow the work of \cite{cho2009kernel} but while they gave kernel for only inifinite networks we gave kernel for networks with finite number of nodes.
+In the third paper \secref{sec:impnet} we present a kernel that its hypothesis class is a combination of deep networks with a given network structure. This work follow the work of \cite{cho2009kernel} but while their kernel relate to inifinite networks ours realte to finite number of nodes.
 
 \subsection{Future Work}
 I will now suggest interesting direction for future work.
 
 \claimref{thm:bp_bethe} give meaning to the fix point of BP - they are the pseudo-marginals that minimize the Bethe free energy.  
-The variational point of view show that the argument that minimize the free energy are indeed the marginal of the model.
-From here it is concluded that the pseudo-marginals that minimize the Bethe free energy are approximations to the marginal. 
-The question what happened in case of multiple minimum - the resulted marginals should not be thought as approximation of the true marginals (they are usually very bad ones)
+The variational point of view shows that the argument that minimize the free energy are indeed the marginal of the model.
+From here it is concluded that the pseudo-marginals that minimize the Bethe free energy are approximations to the true marginal.
+This conclution is not clear in case of multiple minimum - the resulted marginals sould not be thought as approximation of the true marginals (they are usually very bad ones)
+So how can the marginals can be estimated in these cases?
 A simple way to calculate a single marginal is to note that $\mu_i^{\thetav}(x_i) = \frac{Z(x_i;\thetav)}{\sum_{\hat{x}_i}Z(\hat{x}_i;\thetav)}$  where $Z(x_i;\thetav)$% = \sum_{\hat{\xx}, \hat{\xx}_i = x_i}  
 is the partition function where the $i$ variable is set to $x_i$.
 Now, the approximation will be $\tau_i^{\thetav} = \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetav)}}$.
 The problem with this approximation is that for each variable assignment one should run BP.
 But can the previous runs be used to accelerate BP convergence so BP will run for only few iterations.
-  
+Is this method could be effieceint enough for use.
+
+The hardness results of learning and infernce of GM imply that maybe a more direct approch is in order.
+The desired model should be able to answer different queries, for structure output.
+The richness of models with correlation decay suggest that even when only a small number of variabels effect  each other reach models can be desgin.
+Another related fact is that in many cases running BP for only small number of iterations results in good approximation to the marginals.
+Can a model be defined that mimic the behavior of running BP of small number of iteration.
+One way to implemnte it is by a model where for each variable build its computation tree of BP of depth $l$.
+While the parameters of between any two variables are tied through out the trees.
+The inference will be defined as recalculating the computation tree for any assignment (when a variable is observed all its instances should be assigned).
+
+
 Pseudo-Likelihood (PL) has many appealing features.
-Opposed to ML the optimization is feasible, it is less sample efficient but it is consist.
-This work argue that one should take into account the inference algorithm that will be used on the learned model when learning.
+Learning is feasible, though it is less sample efficient ML it is still consist.
+This work argue, that the inference algorithm that will be used on the learned model should  be take into account when learning.
 Can an algorithm be found that insure PL inference quality.
-This could not be done since PL is consist, but can an efficient algorithm be found that will guarantee moment matching.
-Note that the moment in PL mean not only the factor itself but it include its neighbourhood as well.
+Such algorithm is unlikely to be found since PL is consist.
+So, can an efficient algorithm be found that will guarantee moment matching.
+Note that a moment in PL mean not only the factor itself but it include its neighbourhood as well.
 
 PL is an example of a larger set of methods composite likelihood.
 While PL break down the probability to each vertex and its neighbours composite breaking it down to larger sets.
 As long as each set is easy to calculation the time complexity does not change much - tough sample complexity depended on the larger set and its neighbours.
 An interesting direction will be to optimize, during learning, how the model should be break down - what are the best sets.
 
+Using approximate infernce in learning is a practice that will not stop in the near future.
+Hence, its implication needed a farther research for both aspects: using the approximate algorithm in the learning process and the use of the model will be with specific approximate algorithm.
+I hope that when GM will come back to fashion these aspect will not be over looked.
+
+\ignore{
 The research of structure learning algorithm is now at a turning point.
 In the general case the time complexity lower bounds and known algorithm are very close but both impractical (exponential in the maximum degree).
 So, in my opinion, the interesting direction is to defined a class that structure can be learned efficiently.
 The challenge is to go beyond the pairwise case finding other criteria that will allow structure learning.
 
-\ignore{
 \section{Results summery}
 \subsection{What cannot be learned with Bethe approximations}
 A common  practice is to use BP as the approximate inference algorithm when optimizing likelihood by gradient descent .
