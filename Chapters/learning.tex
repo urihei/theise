@@ -7,87 +7,85 @@ In many domains, the main interest in learning is to understand the model.
 For example, one wishes to know what the minimum set of variables that can explain specific variables is - for example which variables are its neighbors, or which variable has the greatest effect on another variable, etc.
 For this purpose, learning the exact models is of intrest - a model that is as similar as possible to the ``real'' model is the goal of learning\footnote{
 In structure learning this sums down to the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
-When learning the parameters, the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate since two parameters $\thetav \neq \tilde{\thetav}$ while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
-This feature is know as reparameterization and it play important roll in Belief Propagation as was presented in \secref{sec:belief}}.
+When learning the parameters that are the functions $\theta_{ij}(x,y)$, defining similarity become more elaborate, since two parameters $\thetav \neq \tilde{\thetav}$, while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$.
+This feature is know as re-parameterization and it plays an important roll in Belief Propagation, as was presented in \secref{sec:belief}}.
 
 On the other hand, in many domains the learned model is designated to answering queries.
-When asking our model a query we want the result to be similar as if it is the result of the real process.
-For example, if we learned a model of digits in an image (the variables are the image pixels and the digit in the picture).
-We are looking for a model that given a new image infer the correct digit - the digit that is in the image.
+When asking a model a query, one wants the result to be as similar as possible to the result of the real process.
+For example, if one was to learn a model of digits in an image (the variables are the image pixels and the digit in the picture),
+the sought model is one that given a new image will infer the correct digit - the digit that is in the image.
 This is regardless of how much the graph structure or the parameters are close to the real model.
-In a world with no computations limitation this two objective are the same - we will learned the exact model and preform exact inference.
-Unfortunately, exact inference is NP-hard in many cases, hence we will be forced to use approximate inference (see \secref{sec:approx}).
-Remember that our objective is to correctly answer queries, taking into account the performance of the inference algorithm is a must.
+In a world with no computation limitations these two objectives are the same - to learn the exact model and to preform exact inference.
+Unfortunately, exact inference is NP-hard in many cases, one is forced to use approximate inference (see \secref{sec:approx}).
+Remember that the objective is to correctly answer queries, and taking into account the performance of the approximation inference algorithm is a must.
 
-Most of the research on learning graphical models(GM) seek to reconstruct the real model.
+Most of the research on learning graphical models (GM) seeks to reconstruct the real model.
 I will give a short survey on learning when the objective is reconstruction of the exact model.
-It will be divided into the two main stages of the learning.
-First is learning the dependency graph - the edges of the graph $E$.
-Than learning the parameters of the model $\thetav$.
+It will be divided into the two main stages of the learning:
+First is learning the dependency graph, the edges of the graph $E$,
+then learning the parameters of the model $\thetav$.
 \subsection{Structure learning}
-First lets define what exactly is our goal.
-Having a probability $P(\xx;\exact{\thetav})$ defined as in \eqref{eq:ciluqe_prob}.
-We are looking to find the exact edge set $\exact{E}$ given a data set of $N$ identical independent distributed (i.i.d) samples from $P(\xx;\exact{\thetav})$.
+Let us define exactly what the goal is.
+Having a probability $P(\xx;\exact{\thetav})$ defined as in \eqref{eq:ciluqe_prob},
+we are looking to find the exact edge set $\exact{E}$, given a data set of $N$ identical independent distributed (i.i.d) samples from $P(\xx;\exact{\thetav})$.
 
-I will start by presenting the sample and time complexity of the above problem. 
-First if the graph is known to be a tree, the exact structure can be found by maximum spanning tree.  Where the  weights are the empirical information between any two vertices \cite{chowLiu}. 
-Later \cite{tan2011learning} prove sample complexity for trees is $\Omega(\log(p))$.
-In the global setting, there seem to be four parameters that govern the complexity of structure learning.
-The first is  the number of vertices $p$.
+I will start by presenting the sample and time complexity of the problem stated above. 
+If the graph is known to be a tree, the exact structure can be found by maximum spanning tree, where the weights are the empirical information between any two vertices. This was shown by \cite{chowLiu}. 
+Later, \cite{tan2011learning} prove that sample complexity for trees is $\Omega(\log(p))$.
+In the general case, there seem to be four parameters governing the complexity of structure learning.
+The first is the number of vertices $p$.
 The second is the maximum degree in the graph - $\dmax = \max_{i \in V} d_i$.
-The third and the forth parameters quantify the strength of the interaction between the variables.
-In the Ising model\footnote{ The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$} this parameters are easily expressed.
-For example in \cite{santhanam2012information} they defnie $\lambda = \min_{ij} |\theta_{ij}|$ and $\omega = \max_i \sum_{j \in \nei{i}} |\theta_{ij}|$.
-While in other models (where the cardinality is greater than $|\cX|>2$ or the size of factors greater than $\exists c \in \cC, |c|>2$) it is unknown how to express this quantities - the strength of the interaction between the variables as a function of the model parameters.
-Hence lower bounds  on non-binary models ignore these two factors\footnote{In proving upper bounds some conditions on the probability instead of the model is given. In my opinion the above two parameters hide inside the condition see for example \cite{bresler2008reconstruction}}.
+The third and the fourth parameters quantify the strength of the interaction between the variables.
+In the Ising model\footnote{ The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$}, these last two parameters are easily expressed; for example, in \cite{santhanam2012information} the authors define $\lambda = \min_{ij} |\theta_{ij}|$ and $\omega = \max_i \sum_{j \in \nei{i}} |\theta_{ij}|$.
+However, in other models (where the cardinality is greater than $|\cX|>2$ or the size of factors greater than $\exists c \in \cC, |c|>2$), it is unknown how to express these quantities - the strength of the interaction between the variables as a function of the model parameters, and hence lower bounds on non-binary models ignore these two factors\footnote{In proving upper bounds, some conditions on the probability, instead of the model, is given. In my opinion, the above two parameters hide inside the condition; see for example \cite{bresler2008reconstruction}.}.
 
-The sample complexity bounds are $N > \Omega(\dmax \log p)$ in the general case and for the Ising model $N > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log p)$\footnote{Note that the bound is looser in the general case. This is a result of droping some model dependent factors - these factors may depend on $d$. see \cite{bresler2008reconstruction} for details}.
-This mean that we need at least $N$ samples in order to guarantee recovery of $\exact{E}$ in probability more that $0.5$.
-Lower bound on time complexity of $\Omega(p^{\frac{\dmax}{2}})$ was given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithm that use an oracle that return the expectation of any function - no direct access to the data}.
+The sample complexity bounds are $N > \Omega(\dmax \log p)$ in the general case, and for the Ising model $N > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log p)$\footnote{Note that the bound is looser in the general case. This is a result of dropping some model dependent factors - these factors may depend on $d$. See \cite{bresler2008reconstruction} for details}.
+This means that at least $N$ samples are necessary in order to guarantee recovery of $\exact{E}$ with probability more than $0.5$.
+Lower bound on time complexity of $\Omega(p^{\frac{\dmax}{2}})$ were given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithms using an oracle that returns the expectation of any function - no direct access to the data}.
 
-Algorithm for structural graph are abundant, I will give only a short list.
-Moreover the algorithms differ what is assumed to be given as input , what is the underline model and other assumption so compression is hard.
-I will denote by $a$ parameters (other than $p$, $\dmax$) that depend on the model - usually $a$ express bounds on interaction strength.
+Algorithms for structure learning are abundant, and I will give only a partial list.
+Moreover, the algorithms differ in what is assumed to be given as input, what is the underlying model, and other assumptions, so compression is hard.
+In the following, $a$ will denote parameters (other than $p$, $\dmax$) that depend on the model, usually expressing bounds on interaction strength.
 
-Gaussian multivariate distributions  is an example where it is clear that the problem is easier since it  is equivalent to the estimation of the non-zeros cell in the inverse of the covariance matrix. An example of algorithm solving this problem are \cite{meinshausen2006high,yuan2007model, friedman2008sparse}. 
+Gaussian multivariate distributions is an example where it is clear that the problem is easier, since it is equivalent to the estimation of the non-zeros cell in the inverse of the covariance matrix. Examples of algorithms solving this problem are \cite{meinshausen2006high, yuan2007model, friedman2008sparse}. 
 
-As seen before $\dmax$ the maximum degree, play an important role in the lower bounds. Many algorithms \cite{bresler2008reconstruction, abbeel2006learning} assume  $\dmax$ is given as  part of the algorithm input. Knowing this quantity, an exhaustive search over all subsets of size $\dmax$(or a function of it) is preformed in-order to find each vertex neighbors.  In\cite{bresler2008reconstruction} their algorithm's time complexity is $O(p^{2\dmax+1}\log p)$ and sample complexity is $O(\dmax a \log p)$ . While in \cite{abbeel2006learning} their algorithm does not guarantee to reconstruct the model (edge set), but to be as close as needed in a Kullback–Leibler divergence manner to the true one. Its time complexity bounds are $O(p^{a d})$ and sample complexity $O(\dmax a \log p)$. Another paper in this class is \cite{wu2013learning},  instead of the max degree as an input they require two quantities that bound the cardinalities of sets that insure detection of dependencie. 
+As seen before, $\dmax$ - the maximum degree, plays an important role in the lower bounds. Many algorithms \cite{bresler2008reconstruction, abbeel2006learning} assume $\dmax$ is given as part of the algorithm input. Knowing this quantity, an exhaustive search over all subsets of size $\dmax$ (or a function of it) is preformed, in order to find each vertex's neighbors.  In\cite{bresler2008reconstruction} their algorithm's time complexity is $O(p^{2\dmax+1}\log p)$ and sample complexity is $O(\dmax a \log p)$. In contrast, in \cite{abbeel2006learning} their algorithm does not guarantee to reconstruct the model (edge set), but rather to be as close as necessary in a Kullback- Leibler divergence manner to the true one; its time complexity bounds are $O(p^{a d})$ and sample complexity $O(\dmax a \log p)$. Another paper in this class is \cite{wu2013learning} in which, instead of the max degree as an input, they require two quantities that bound the cardinalities of sets which insure detection of dependencies. 
 %The quantities are the maximum cardinality of two groups. The first $D_1$ insure that for all pairs of vertices that there is no edge between them there exist a set of cardinality less than $D_1$ such given this set the information between the two variables are less than $\epsilon$. The other quantity $D_2$ say exactly the apposite, for all edges there exist a set of cardinality less that $D_2$ such that the information     Conditioning on some sets with size smaller or equals to the given quantities insure dependence . 
-The quantities $D_1$ and $D_2$ are define as follows, for all  $ij \not \in E$ the following take place $\exists S \subset V, |S|< D_1, \forall T \subset V, |T|<D_2$ $I(X_i;X_j | X_T, X_S)<\epsilon$ and for all $ij \in E$ $\exists T \subset V, |T|< D_2, \forall S \subset V, |S|<D_1$ $I(X_i;X_j | X_T, X_S)>4\epsilon$\footnote{In the Ising model $D_1 = \dmax$ and $D_2 = \dmax -1$. When allowing factors with higher cardinality two variables can be independent (and any test will indicate they are so) but given another variable they can be dependent - there exit an edge between the two variables. These two quantities bound the size of such sets. }. 
+The quantities $D_1$ and $D_2$ are defined as follows: for all $ij \not \in E$ the following take place: $\exists S \subset V, |S|< D_1, \forall T \subset V, |T|<D_2$ $I(X_i;X_j | X_T, X_S)<\epsilon$ and for all $ij \in E$ $\exists T \subset V, |T|< D_2, \forall S \subset V, |S|<D_1$ $I(X_i;X_j | X_T, X_S)>4\epsilon$\footnote{In the Ising model $D_1 = \dmax$ and $D_2 = \dmax -1$. When allowing factors with higher cardinality, two variables may be independent (and any test will indicate they are so), but given another variable they may be dependent - there exists an edge between the two variables. These two quantities bound the size of such sets.}. 
 
-Focusing on Ising models when a threshold (the minimum difference of the probability when one of its neighbors change its assignment) is given as an input,  \cite{bresler2015efficiently} give an algorithm with time complexity of $O(p^2\log p)$ and sample complexity of $O( a \log p)$. In the paper a more accurate bound is given  which take into account the interaction strength . Their algorithm has two stages,  first it collect pseudo-neighborhood for specific vertex - a set that include the correct neighborhood. Than by iterating over all this set, it remove vertices that does not change the conditional probability. Note that this algorithm can not be extended to non pairwise models.
+Focusing on Ising models, when a threshold (the minimum difference of the probability when one of its neighbors changes its assignment) is given as an input, \cite{bresler2015efficiently} give an algorithm with time complexity of $O(p^2\log p)$ and sample complexity of $O( a \log p)$. In the paper, the authors give a more accurate bound, which takes into account the interaction strength. Their algorithm has two stages: First it collects a pseudo-neighborhood for a specific vertex - a set that includes the correct neighborhood. Then by iterating over all this set, it removes vertices that do not change the conditional probability. Note that this algorithm cannot be extended to non-pairwise models.
 
-In \cite{ravikumar2010high} another flavor of algorithm is given. The algorithm is based on the optimization of the conditional likelihood of a vertex given all the other vertices with $l_1$ regularization - $\max_{\thetav} \frac{1}{N}\sum_n^N \log p(x^n_i| \xx^n_{\setminus i};\thetav) - \lambda \sum_{ij} |\theta_{ij}|$. Having the optimal $\thetav$ the neighborhood set is defined by $\nei{i} = \{\theta_{ij} : |\theta_{ij} > \alpha\}$ where $\alpha$ is a threshold based on the graph parameters. Under certain conditions the algorithm reconstruct $E$ in high probability with time complexity of $O(p^4)$  and sample complexity of $O( d^3 \log p)$. Note that this algorithm is not very sensitive to the selection of $\alpha$ (They suggest how to approximate it) and very practical. Its main draw back is (to my opinion), that the conditions (or parameters) that guarantee its success are not directly connected to the model parameters. Hence it is very hard to compare it to other such algorithms. Another problem is the assumption of pairwise interaction.     
+In \cite{ravikumar2010high} another flavor of algorithm is given. This algorithm is based on the optimization of the conditional likelihood of a vertex, given all the other vertices with $l_1$ regularization - $\max_{\thetav} \frac{1}{N}\sum_n^N \log p(x^n_i| \xx^n_{\setminus i};\thetav) - \lambda \sum_{ij} |\theta_{ij}|$. Having the optimal $\thetav$, the neighborhood set is defined by $\nei{i} = \{\theta_{ij} : |\theta_{ij} > \alpha\}$, where $\alpha$ is a threshold based on the graph parameters. Under certain conditions, the algorithm reconstructs $E$ at a high probability, with time complexity of $O(p^4)$ and sample complexity of $O( d^3 \log p)$. Note that this algorithm is not very sensitive to the selection of $\alpha$ - and furthermore, they suggest how to approximate it - and is very practical. Its main drawback, in my opinion, is that the conditions (or parameters) that guarantee its success are not directly connected to the model parameters; hence it is very hard to compare it to other such algorithms. Another problem is the assumption of pairwise interaction.     
 
-Correlation decay is an important concept in structure learning \cite{montanari2009graphical}. The idea is simple, Let denote by $B_{\tau}(i)$ all the vertices that are within distance(a formal definition will be given later) $\tau$ from vertex $i$ and denote by $\partial B_{\tau}(i)$ the boundary of that group. We will require that the assignment of $\partial B_{\tau}(i)$ have negligible effect on the probability of variable $x_i$ for all $i \in V$. It is now clear, if the learned model have this characteristic when deciding what are the neighbors of vertex $i$ only a subset of vertices needed to be considered. By adding this condition \cite{bresler2008reconstruction} improved its time complexity to $O(d^{ad})$. If we further assume that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree) we can apply greedy algorithms \cite{netrapalli2010greedy, anandkumar2013learning}. In \cite{anandkumar2013learning} they preform a greedy algorithm with time complexity of $O(d^{2d}p)$ and sample complexity of $O(d^2\log p)$ but focused only on pairwise case.  
+Correlation decay is an important concept in structure learning. In \cite{montanari2009graphical} the idea is simple: Let $B_{\tau}(i)$ denote all the vertices that are within distance (for which a formal definition will be given later) $\tau$ from vertex $i$, and denote by $\partial B_{\tau}(i)$ the boundary of that group. The assignment of $\partial B_{\tau}(i)$ is required to have negligible effect on the probability of variable $x_i$ for all $i \in V$. It is now clear, that if the learned model has this characteristic, when deciding what the neighbors of vertex $i$ are, only a subset of vertices need to be considered. By adding this condition, \cite{bresler2008reconstruction} improved its time complexity to $O(d^{ad})$. If it is further assumed that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree), then greedy algorithms such as \cite{netrapalli2010greedy, anandkumar2013learning} may be applied. In \cite{anandkumar2013learning}, the authors preform a greedy algorithm with time complexity of $O(d^{2d}p)$ and sample complexity of $O(d^2\log p)$, but focus only on the pairwise case.  
 
-We can summarize the current state as follows. 
-In the general case the maximum degree must be given. Having it as an input, the sample and time complexity are very close to the known lower bounds. 
-Hence the next challenge is to define the necessary assumptions in order to allow efficient structure learning. 
-Correlation decay was considered as an option\cite{montanari2009graphical} but \cite{bresler2014structure} shows that it indeed not a necessary one. 
-Another difficulty (which is sometimes ignored) is the jump of difficulty when the factor size is not bounded (or as large as $\dmax$). 
-I believe this can be a very interesting research direction, under what conditions  a model with bounded factor size and unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}.
+To summarize: 
+In the general case, the maximum degree must be given. Having it as an input, the sample and time complexity are very close to the known lower bounds. 
+Hence, the next challenge is to define the necessary assumptions in order to allow efficient structure learning. 
+Correlation decay was considered as an option in \cite{montanari2009graphical}, but \cite{bresler2014structure} shows that it, in fact, is not a necessary one. 
+Another problem (which is sometimes ignored) is the additional step-up in difficulty when the factor size is not bounded (or is as large as $\dmax$). 
+I believe that the conditions under which a model with a bounded factor size and an unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}, may constitute a very interesting research direction.
 
 \subsection{Parameters Learning}
-As in the previous section I will start with the problem definition. 
-In parameters learning it is assumed that the structure is given (but not necessarily the exact one).
+As in the previous section, I will start with the problem definition. 
+In parameters learning, it is assumed that the structure is given, although not necessarily the exact one.
 The most trivial objective will be to find $\exact{\thetav}$.  
-This  objective is not well define,  since two parameters can differ $\hat{\thetav} \neq \tilde{\thetav}$ but still induce the same probability $\forall\ \xx \in \cX^p\ p(\xx;\hat{\thetav}) = p(\xx;\tilde{\thetav})$.
-Hence the objective is finding a parameter that induce the same probability: given a set of i.i.d observations, sampled from $p(\xx;\exact{\thetav})$ find $\thetav$ such that for all input $\forall \xx \in \cX^{p}$ the two return the same (or as close as possible) probability $p(\xx;\thetav) = p(\xx;\exact{\thetav})$.
-Note that even to check this requirement is exponential of the size of $\xx$.
-So other objective, or other way to achieve this goal is required.
+This objective is not well-defined, since two parameters may differ $\hat{\thetav} \neq \tilde{\thetav}$ but still induce the same probability $\forall\ \xx \in \cX^p\ p(\xx;\hat{\thetav}) = p(\xx;\tilde{\thetav})$.
+Hence, the objective is finding a parameter that induces the same probability: given a set of i.i.d observations, sampled from $p(\xx;\exact{\thetav})$, find $\thetav$ such that for all input $\forall \xx \in \cX^{p}$ the two return the same (or as close as possible) probability $p(\xx;\thetav) = p(\xx;\exact{\thetav})$.
+Note, that to even check this requirement is exponential to the size of $\xx$.
+So another objective, or another way to achieve this goal, is required.
 I will start with the  most intuitive approach - maximum likelihood(ML).
 
 \subsubsection{Maximum Likelihood}
 \label{sec:max_likelihood}
-In ML we are looking for the parameters that will maximize the probability to sample the seen data-set.
-Note, that just giving probability of $\frac{1}{N}$ to each of the samples is the maximum likelihood solution, but it suffer from extreme overfitting.
-So some regularization is need , in GM it usually done by forcing a certain structure (forcing independence assumptions) and bound on size of the factors.
-I will now define the maximum likelihood objective and than discuss its merits and drawbacks.
+In ML, one is looking for the parameters that will maximize the probability to sample the observed data-set.
+Note, that simply giving probability of $\frac{1}{N}$ to each of the samples is the maximum likelihood solution, but it suffers from extreme overfitting.
+Therefore some regularization is needed, and in GM this is usually done by forcing a certain structure (thereby forcing independence assumptions) and a bound on the size of the factors.
+I will now define the maximum likelihood objective and then discuss its merits and drawbacks.
 
-It is more convenient to maximize the log of the likelihood and to normalize it by the sample size $N$, this does not change the parameters that maximize the function since $\arg \max_x\frac{1}{N}\log(f(x)) = \arg\max_x f(x)$. 
-Denote by $X = [\xx^1, \ldots, \xx^N]$ the data-set.
-With this the ML objective can be  formally defined  by  using the model in \eqref{eq:basic_model} as, 
+It is more convenient to maximize the log of the likelihood and to normalize it by the sample size $N$; this does not change the parameters that maximize the function, since $\arg \max_x\frac{1}{N}\log(f(x)) = \arg\max_x f(x)$. 
+Denote the data-set by $X = [\xx^1, \ldots, \xx^N]$.
+With this, the ML objective can be formally defined by using the model in \eqref{eq:basic_model} as, 
 \bean
 \likelihood{X;\thetav} &=& \frac{1}{N}\log\left(\prod_{n=1}^N p(\xx^n;\thetav)\right) \nonumber \\
 &=& \frac{1}{N}\sum_{n=1}^N\log\left(p(\xx^n;\thetav)\right)\nonumber\\
@@ -96,7 +94,7 @@ With this the ML objective can be  formally defined  by  using the model in \eqr
 &=& \sum_{ij \in E} \sum_{x_i,x_j \in \cX}\mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{i \in V} \sum_{x_i \in \cX}\mub_i(x_i)\theta_i(x_i) -A(\thetav)\nonumber\\
 &=&  \mubv \cdot \thetav - A(\thetav) \label{eq:ML}
 \eean
-Where $\mubv$ is the empirical marginals
+where $\mubv$ is the empirical marginals
 \be
 \label{eq:empirical_mar}
 \mub_i(x_i) = \frac{1}{N}\sum_{n=1}^{N} \deltaF{x_i=x_i^n },\ \
@@ -104,23 +102,23 @@ Where $\mubv$ is the empirical marginals
 \ee
 ordered in a vector in the same way as $\thetav$.
 
-We are looking for $\thetav$ that maximize ML. 
-So taking the derivative and compare to zero is the prompted step:
+Since the $\thetav$ that maximizes ML is sought,
+taking the derivative and comparing to zero is the called-for step:
 \bean
 \label{eq:ml_derv_single}
 \frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{i}(x_i)} &= \mub_{i}(x_i) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{i}(x_i)} =& \mub_{i}(x_i) - p(x_i;\thetav) \\
 \label{eq:ml_derv_pairs}
 \frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{ij}(x_i,x_j)} &= \mub_{ij}(x_i,x_j) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} =& \mub_{ij}(x_i,x_j) - p(x_i,x_j;\thetav)
 \eean
- Where the derivative of the partition function is given by \eqref{eq:pratition_derivative}.
-We can conclude that the ML parameter $\ml{\thetav}$ must satisfy the moment matching characters - the marginals of the model must equals to the empirical marginals.
+ where the derivative of the partition function is given by \eqref{eq:pratition_derivative}.
+It may be concluded, that the ML parameter $\ml{\thetav}$ must satisfy the moment matching characters - the marginals of the model must equal to the empirical marginals.
 \be
 \label{eq:moment_matching}
 \mub_i(x_i) = p(x_i;\thetav), \ \ \ \mub_{ij}(x_i,x_j) = p(x_i,x_j;\thetav)
 \ee
-This feature is very intuitive, we want the resulted probability to be able to re-generate the sample's marginals.
+This feature is very intuitive, as the resulted probability is required to be able to re-generate the sample's marginals.
 ML has other desirable qualities (under some conditions): 
-It is consist - when $N \to \infty$, we will recover the exact parameters $\lim_{N \to \infty} \arg \max_{\thetav} p(X^N;\theta) =  \exact{\thetav}$\footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$.}. 
+It is consistent - when $N \to \infty$, the exact parameters $\lim_{N \to \infty} \arg \max_{\thetav} p(X^N;\theta) =  \exact{\thetav}$ will be recovered\footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$.}. 
 It is efficient - in the limit no other consist estimator has lower mean square error than ML.   
 Asymptotic Normality: with sufficient data, the ML estimator mean will be the true parameter with added Gaussian noise, the probability to get very wrong parameter go down exponentially fast.
 
