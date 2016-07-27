@@ -1,22 +1,23 @@
+% !TEX root =../main.tex
 \section{Deep Learning and Kernels}
 This section try to use two facts.
 The first is that kernels allow SVM to produce non-linear classifiers in the input space.
 In other words, the use of kernels change the hypothesis class from linear in the input space to linear in the kernel reproduced Hilbert space.
-The second fact is  the success of deep learning drive the a believe that deep learning describe good hypothesis class.
+The second fact is that the success of deep learning drive to the a believe that deep networks describe a good hypothesis class.
 Combining the two seem the logical next step.
-Can a kernel be found such the reproduced Hilbert space define an hypothesis class that is the same as the hypothesis class deep learning induce.
-I will now give short introduction to the some ideas in the two fields which will allow us to discuss relevant work.
+Can a kernel be found such that the reproduced Hilbert space define a hypothesis class that is the same as the hypothesis class deep networks induce.
+I will now give short introduction to some of the ideas in the two fields which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
 One basic problem in machine learning is classification.
 Given features of an instance we want the ability to classify - assign one label out of small discrete group.
-Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=q \in \naturalNumbers$  - it take as input the instance to classify and the parameters of $f$  and return a label.
+Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=o,q \in \naturalNumbers$  - it take as input an instance to classify and parameters of $f$  and return a label.
 Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
 
 The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
 First, we usually do not know the real distribution, but only have a sample of it: given $N$ samples $D = \{(\xx^i,y_i)\}_{i=1}^N$  where $\xx^i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
 We will want to minimize our objective on this sample - minimizing the empirical loss\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
-Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation, here by giving the instance of group $\cL$ and its index the same notation}.
+Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation by giving the instance of group $\cL$ and its index the same notation}.
 Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
 This function is very hard to optimize since it is non-convex.
 One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
@@ -31,17 +32,17 @@ Taking the dual and some algebra gives:
 \max_{A \in \Re^{N,|\cL|}}&& -\sum_{i,j}^N(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^N\alphav_i \cdot \bold{1}_{y_i}\\
 \text{subject to}:&& \forall i\ \ \alphav_i \leq \bold{1}_i, \text{ and } \alphav_i \cdot \bold{1} = 0
 \eea
-Where $\lambda$ is the relularization parameter, $\bold{1}_i$ is the all zero vector except the $i$ coordinate and $\bold{1}$ is the all one vector.
+Where $\lambda$ is the regularization parameter, $\bold{1}_i$ is the all zero vector except the $i$ coordinate and $\bold{1}$ is the all one vector.
 Note that in this form it is enough to calculate the dot product between any two samples - no need to calculate the map $\phi$.
 This is know as the kernel trick \cite{hofmann2008kernel}.
 
 \subsubsection{Kernels}
-I will present the ideas with an example.
+I will present the idea of kernels with an example.
 Consider, a two dimension input $p=2$ and a feature map $\phi([x_1, x_2]) = [x_1^2, x_2^2, x_1x_2, x_1, x_2, 1]$ ($q =6$).
 Note that a linear classifier in $\Re^6$ induce non-linear classifier in $\Re^2$, in our example a classifier $f = \deltaF{x_1x_2 < 1}$ is clearly linear in the range of $\phi([x_1, x_2])$ while a circle in $\Re^2$.
 Define the polynomial kernel as $K_{c,d}(\xx,\xx') = (\xx \cdot \xx'+c)^d$.
-It is easy to see that the dot product between two feature maps equals to the polynomial kernel $K_{c,2}(\xx, \xx') \approx \phi([x_1, x_2]) \cdot \phi([x'_1, x'_2])$\footnote{For equality $\phi([x_1, x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2c}x_1, \sqrt{2c}x_2, \sqrt{c}]$}.
-As mention above, in SVM only the result of the inner product can used - instead of explicitly calculating $\phi(\xx)$ for each sample only the kernel can be calculated. 
+It is easy to see that the dot product between any two feature maps ( as defined above) equals to the polynomial kernel $K_{c,2}(\xx, \xx') \approx \phi([x_1, x_2]) \cdot \phi([x'_1, x'_2])$\footnote{For equality $\phi([x_1, x_2]) = [x_1^2, x_2^2, \sqrt{2}x_1x_2, \sqrt{2c}x_1, \sqrt{2c}x_2, \sqrt{c}]$}.
+As mention above, in SVM only the result of the inner product can be used - instead of explicitly calculating $\phi(\xx)$ for each sample only the kernel can be calculated. 
 If the kernel is used while learning (and not the explicit feature maps) the resulted classifier will have the form of $\deltaF{f(\xx) >0}$ where $f(\xx) = \sum_{i=1}^N \alpha_{i}K(\xx,\xx^i)$ \footnote{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. 
 Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.
 This degrade the learning time complexity to $O(N^3)$ and the classification time complexity to $O(Np)$. Many paper try to solve this shortcoming for example \cite{williams2001using,rahimi2007random}}.
@@ -50,7 +51,7 @@ Even for this kernel, for a big $p$ using only the kernel instead of full calcul
 The importance of kernel though, came from feature maps where $\phi(\xx)$ map to an infinite space $q=\infty$ (Note that its is not necessarily even countable).
 For example, the feature map of the Radial Basis Function (RBF) $K_{\sigma}(\xx,\xx') = \exp{\frac{-\|\xx-\xx'\|^2}{2\sigma}}$  has infinite dimension see \cite{shashuaNotes}.
 It turn out, that whenever the kernel is positive definite\footnote{A kernel is positive definite if for all $\xx^1, \ldots, \xx^M \in \Re^p$ the matrix $K_{i,j} = K(\xx^i,\xx^j)$ is positive definite see \cite{hofmann2008kernel}} it induce a Hilbert space - kernel reproduced Hilbert space.
-The elements of the Hilbert space are any function that can be written as $f\left(\xx;\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i K(\xx,{\xx'}^i)$ for some $\alpha_i \in \Re$ and ${\xx'}^i \in \Re^p$, and the inner product is defined as $f \cdot g = \sum_{i=1}^n\sum_{j=1}^{n'} \alpha_i\alpha_i' K(\xx^i,{\xx'}^j)$.
+The elements of the Hilbert space are any functions that can be written as $f\left(\xx;\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i K(\xx,{\xx'}^i)$ for some $\alpha_i \in \Re$ and ${\xx'}^i \in \Re^p$, and the inner product is defined as $f \cdot g = \sum_{i=1}^n\sum_{j=1}^{n'} \alpha_i\alpha_i' K(\xx^i,{\xx'}^j)$.
 So by using positive definite kernel in SVM, one find linear classifier in the reproduced Hilbert space the kernel induce.
 
 Using kernels allow us to change the hypothesis class from linear function in the original space $\Re^p$ to linear classifier in the reproduced Hilbert space.
@@ -59,15 +60,17 @@ The Representer theorem\cite{scholkopf2002learning} answer this question with af
 The function $f \in \mathcal{H}_K$ in the kernel reproduced Hilbert space which minimize the regularized empirical loss can be expressed as a linear combination  of the samples maps $f(\xx) = \sum_i^M \alpha_i K(\xx,x_i)$.
 In the SVM case it translate to the fact that the resulted classifier $f\left(\xx;\{\alpha_i, \xx^i\}_{i=1}^N\right)$ minimize the empirical hinge loss with $l_2$ regularization for a given $\lambda$.
 
-\ignore{One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. 
+\ignore{
+One big draw back of the kernel method is the dependence of the classification time complexity in the sample size $N$. 
 Moreover, all samples with non-zero $\alpha_i$ needed to be saved as a part of the classifier.
 This degrade the learning time complexity to $O(N^3)$ and the classification time complexity to $O(Np)$.
 There where many papers trying to solve this problem, I will mention only two.
-The first \cite{williams2001using} show that the kernel matrix could be approximated by }
+The first \cite{williams2001using} show that the kernel matrix could be approximated by 
+}
 \subsubsection{Kernelize models}
 \label{sec:elad_trick}
 The above imply that using kernels enable learning of non linear function.
-Having the above the question is on importance.
+Having the above the following question is of importance.
 Giving a hypothesis class or more specifically function that their parameters needed to be learned, could a kernel be defined such a linear classifier in its reproduced Hilbert space will represent the same hypothesis class.
 I will now describe a method that by enlarging the hypothesis class defined such a kernel.
 
@@ -75,13 +78,13 @@ Learning a function from hypothesis class translate most of the times to learnin
 This can be translated to finding a delta function for the following integral $ f(\xx;\thetav^*) = \int{f(\xx;\ww)\delta(\ww-\bar{\ww}) d\ww}$.
 Where $\delta(\thetav)$ is the Dirac delta function and the learned parameter is $\bar{\ww}$.
 Lets relax the above and allow any function - not only the Dirac delta function $ f(\xx;\ww^*) = \int{f(\xx;\ww)\alpha(\ww) d\ww}$
-where $\alpha \cX^q \to \Re^{+}$ is some function\footnote{Note that by that we enlarge the hypothesis class to include any combination of classifiers.}.
+where $\alpha \cX^q \to \Re^{+}$ is some function\footnote{Note, that by that the hypothesis class was enlarged to include any combination of classifiers.}.
 But how can such function can be learned, or in our context can a kernel be defined such SVM learned such a function.
 
-Lets define the map $\Phi(\xx) = f(\xx,\ww)$\footnote{Note that here we treat $\ww$ as variable and not parameter} it take as an input a sample and return a function of the parameters $g : \Re^q \to \Re$.
+Define the map $\Phi(\xx) = f(\xx,\ww)$\footnote{Note that here we treat $\ww$ as variable and not a parameter} it take as an input a sample and return a function of the parameters $g : \Re^q \to \Re$.
 Lets define the following kernel $K(\Phi(\xx),\Phi(\xx')) = \int{f(\xx,\ww) f(\xx',\ww) d \ww}$\footnote{This is the basic integral for $L^2$.}.
 An element of the reproduced Hilbert space is $g\left(\Phi(\xx);\{\alpha_i,{\xx'}^i\}_{i=1}^n\right) = \sum_{i=1}^n \alpha_i \int{f(\xx,\ww) f(\xx',\ww) d \ww}$\footnote{Note that the Dirac delta function is not in the reproduced Hilbert space since $\int \delta(\ww)\delta(\ww) d\ww \nless \infty$. However it could be approximate by functions inside the Hilbert space to any requested accuracy}.
-Having this, using this kernel in SVM result with classifier that by the Representer theorem\cite{scholkopf2002learning} it guaranteed to minimize \eqref{eq:svm_obj_dual} (no other element of this Hilbert space result with a lower value of \eqref{eq:svm_obj_dual}).
+Having this, using this kernel in SVM result with a classifier that by the Representer theorem\cite{scholkopf2002learning} it guaranteed to minimize \eqref{eq:svm_obj_dual} (no other element of this Hilbert space results with a lower value of \eqref{eq:svm_obj_dual}).
 
 Summarizing, giving any function $f(\xx;\ww)$ the kernel $K(\xx,\xx')=\int{f(\xx,\ww) f(\xx',\ww) d \ww}$ is defined.
 Using this kernel in SVM will result in a convex optimization of the learning problem.
@@ -98,7 +101,7 @@ Moreover in both linear and kernel SVM, there is no principle way to integrate p
 }
 \subsection{Neural Networks}
 Neural networks, as SVM, try to solve classification problems.
-But instead of restricting  the function class to linear function, it choose a different class of cassification functions that we will now describe.
+But instead of restricting  the function class to linear function, it choose a different class of classification functions that we will now describe.
 Remember that a classification function is a function $f: \Re^p \times \Re^q \to \cL$ so a neural networks have the form:\bea
 \label{eq:neural_networks}
 f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
@@ -107,7 +110,7 @@ f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
 \eea
 Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$, $\wparamsi{k} = W_1,\ldots,W_k$, $W_i in \Re^{l_i,l_{i-1}}$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network and $l_i$ is the size of layer $i$ with $l_0 = p$.
 The $\sgn{x}$ function is known as the activation function a simple non linear function.
-Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}.
+Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (Sigmund)\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}.
 
 This functions class result in a non convex function hence non convex optimization problem.
 But it allow for a quick calculation of the derivative using the chain role and optimization by back propagation\cite{williams1986learning}.
@@ -122,7 +125,7 @@ Lets return with the simple case of one layer network.
 Kernel define an inner product in some space.
 So the intuitive definition for the wanted kernel will be a dot product of the network output,
 \be
-\label{eq:saul_ker_motviation}
+\label{eq:saul_ker_motivation}
 K(\xx, \xx';W_1) = \frac{1}{l_1}\sgn{W_1\xx} \cdot \sgn{W_1\xx'} = \frac{1}{l_1}\sum_{i=0}^{l_1} \sgn{\ww_1^i \xx}\sgn{\ww_1^i \xx')}
 \ee
 Where $\ww_1^i$ is the $i$ row of the matrix $W_1$, $\sgn{x}$ is some activation function  and $l_1$ is the number of neurons in the first hidden layer.
@@ -139,7 +142,7 @@ While the ReLu activation function induce the following $K(\xx,\xx') = \frac{1}{
 
 So far the kernel describe one layer networks (with infinite number of nodes).
 Can a kernel be found to deeper networks.
-Returning to \eqref{eq:saul_ker_motviation} a kernel for network with depth $L$ will look like (using \eqref{eq:neural_networks} notations)
+Returning to \eqref{eq:saul_ker_motivation} a kernel for network with depth $L$ will look like (using \eqref{eq:neural_networks} notations)
 \bea
 K_L(\xx,\xx') &=& \zz_{L}(\xx, \wparamsi{L}) \cdot \zz_{L}(\xx', \wparamsi{L})\\
  &=& K\left(\zz_{L-1}(\xx, \wparamsi{L-1}), \zz_{L-1}(\xx', \wparamsi{L-1})\right)
@@ -153,4 +156,8 @@ K_{L+1}(\xx,\xx') = \frac{1}{\pi}\|\xx\|\|\xx'\|\left(\sin \theta_L +(\pi-\theta
 \ee
 where $\theta_L = \cos^{-1}\left(K_L(\xx,\xx')\right)$\footnote{General equation is given for all $n$}.
 
- 
+The main draw back of this method is that it deal only with infinite networks - each layer has an infinite number of variables.
+Another point to note that it assume the parameters are normally distributed.
+In our paper \secref{} we deal with these two drawbacks.
+First, we present a kernel for networks with finite number of nodes in each level.
+Second, we assume the parameters are uniformly sampled from the unit ball a less restricted distribution.
