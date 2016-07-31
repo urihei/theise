@@ -1,15 +1,50 @@
 \section{Graphical Models - Learning and Inference}
+We begin with an introduction to graphical models, with a particular focus on inference and learning algorithms. For a comprehensive coverage of the topic see for example \atodo{cite koller book}.
 \subsection{Notations and Definitions}
 \label{sec:def}
-Probability is the chance of a certain event taking place.
-Therefore, the first step is to define all the possible events.
-An event will be denoted by $x \in \cX$, and restricted to be discrete $ |\cX| \in \naturalNumbers$
-\footnote{Throughout this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models are very useful models}.
-An event can be a composite of simpler $p \in \naturalNumbers$ sub-events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
-After defining the event, the probability is a function from the space of events to a number between zero and one $\pr:\cX^{p} \to (0,1]$ with an important restriction that $\sum_{\xx \in \cX^{p}} \pr(\xx) = 1$\footnote{Note thatzero is excluded, since we a positive distribution is required.}\footnote{Without loss of generality, for ease of notation, all variables were assumed to have the same domain. This assumption may be easily removed.}.
+Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will focus on the case where all these variables are discrete,  so that each $X_i$ can take one of the values $\cX_i = \{1,\ldots,n_i\}$. Similarly $\cX_{i,j}$ will denote the set of $n_i n_j$ values that $X_i,X_j$ can take. More generally for any subset $c\subseteq \{1,\ldots,\nvars\}$ we will use $\cX_c$ to denote the set of values the variables in this subset can take, and $\cX$ will denote all possible assignments.\footnote{Namely, the size of $\cX$ is $\prod_{i=1}^{\nvars} n_i$} A specific assignment to all the variables will be denoted by $x_1,\ldots,x_{\nvars}$ or for brevity $\xx$. 
 
-In many real-world situations, each variable (sub-event) is directly dependent on a small subset of other variable only.
-In probability terminology, this sums down to saying that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of the variable's indices.
+%Probability is the chance of a certain event taking place.
+%Therefore, the first step is to define all the possible events.
+%An event will be denoted by $x \in \cX$, and restricted to be discrete $ |\cX| \in \naturalNumbers$
+%\footnote{Throughout this thesis I will focus only on discrete Graphical models, even though continuous Graphical Models are very useful models}.
+%An event can be a composite of simpler $p \in \naturalNumbers$ sub-events, having $\xx = [x_1, \ldots, x_{p}] \in \cX^p$ to be the event.
+A probabilistic model is a function $\pr(\xx)$ from assignments $\xx$ to their probabilities. It is thus constrained to be non-negative and sum to one: $\sum_{\xx \in \cX} \pr(\xx) = 1$.
+%\footnote{Note that zero is excluded, since we a positive distribution is required.}\footnote{Without loss of generality, for ease of notation, all variables were assumed to have the same domain. This assumption may be easily removed.}.
+
+Specifying a model as defined above requires $|\cX|$ numbers, which is exponential in $n$, and is typically too large from both modeling and computational standpoints. Thus, it is natural to seek more compact models, which can be described by less parameters, but can still capture probabilstic dependencies that are practically useful.
+
+A graphical model of a distribution $P(\xx)$ makes the assumption that $P(\xx)$ can be expressed as a product of ``simple'' functions which depend only on a subset of the variables. The simplest graphical model is of the form:
+\be
+P(\xx) = \prod_i q_i(x_i)
+\ee
+where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i n_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
+
+A much more useful graphical model is the Pairwise Markov Random Field (MRF) model, which we will focus on in this thesis\atodo{In footnote, give citations for uses, e.g., in vision}.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
+\begin{itemize}
+\item An undirected graph $G=(V,E)$ with $\nvars$ nodes and edges $E$. We will denote the neighbors of $i$ in $G$ by $\nei{i}$.
+\item For each edge $(i,j)\in E$ and assignment $x_i,x_j$ a parameter $\theta_{ij}(x_i,x_j)$. Similarly for each $i\in V$ and assignment $x_i$ a parameter $\theta_i(x_i)$. 
+\end{itemize}  
+
+Given the above, the MRF model is given by:
+\be
+\label{eq:basic_model}
+P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
+\ee
+where $Z(\thetav)$ is a normalization constant, also known as the partition function, and is defined as 
+\be
+\label{eq:partition_function}
+Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
+\ee
+
+From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighrbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independcies in such models are a result of the one specified above, and also known as the local Markov property. See e.g., \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks, can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
+
+\ignore{
+In many real-world situations, each variable is directly dependent on a small subset of other variables only. To formalize this notion, consider a random variable $X_i$, and the dependent set of variables by $X_{\cI}$, where $\cI \subset \{1,\ldots,n\}$. Then direct depdnence of $X_i$ on $X_{\cI}$ can be captured by requiring that $X_i$ is conditionally indepndent of the rest of the variables given $X_{\cI}$. This is equivalent to requiring $P(x_i |\xx_{\cI}) = P(x_i|\xx_{\{1,\ldots,i-1,i+1,\ldots, \nvars\}})$ for all assignments $\xx$.
+
+In probabilistic terminology, this is equivalent to requiring that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of the variable's indices.
+}
+\ignore{
 $\nei{i}$ denotes the smallest set of vertices indexes satisfying this relation, and $d_i = |\nei{i}|$ denotes the number of neighbors of variable $i$ - its degree.  
 % $\nei{i} = \arg\min \{|\cI| : \cI \subseteq \{1,\ldots,p\}, P(x_i|\xx_{[1,\ldots,p] \setminus i}) = P(x_i |\xx_{\cI}) \}$.
 This dependency relation may be described by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ are the graph edges.
@@ -37,49 +72,76 @@ The normalization constant $Z(\thetav)$ - the partition function, is defined as
 \label{eq:partition_function}
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
-In what follows, the log of the partition function will be of importance, hence it will be denoted as $A(\thetav) = \log(Z(\thetav)$. Furthermore, the derivative of it has an interesting characteristic \cite{wainwright2008graphical},
+}
+In what follows, the log of the partition function will be of key importance, and will be denoted by $A(\thetav) = \log(Z(\thetav))$ for brevity. The gradient of $A(\thetav)$ is closely related to the marginal distirbutions of $P$, as follows: (e.g., see \cite{wainwright2008graphical}),
 \bea
 \label{eq:pratition_derivative}
 \frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\\
-s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = \mu^{\thetav}_i(x_i)\\
-\frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& \mu^{\thetav}_{ij}(x_i, x_j)\\
+s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = P(x_i;\thetav)  \equiv \mu^{\thetav}_i(x_i)\\
+\frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& P(x_i,x_j;\thetav) \equiv \mu^{\thetav}_{ij}(x_i, x_j)\\
 \eea
-Where we define the marginals as $\mu_i^{\thetav}(x_i) \equiv P(x_i;\thetav)$ and $\mu_{ij}^{\thetav}(x_i,x_j) \equiv P(x_i,x_j;\thetav)$.
-Note that when clear, the dependence in $\thetav$ will be dropped. 
-Moreover, ordering the marginals the same way as $\thetav$ will result in a vector $\muv$.
+Note that when clear, the dependence on $\thetav$ will be dropped. The set of all marginals (singleton and pairwise)
+has the same dimensionality as $\thetav$. We will use $\muv^{\thetav}$ to denote this vector.
 
-The fact that the derivative of $A(\thetav)$ by $\thetav_{ij}(x_i,x_j)$ equals the marginal probability of these variables,
-illustrates its importance. 
-Other features of the log partition function will be presented at \secref{sec:variational_methods}.
-\subsubsection{What can we do with it?}
-Two basic questions are of interest.
-The first and most fundamental question is, which event is the most likely - or in other words, finding the assignment that is most probable (MAP - maximum a posteriori).
+Other properties of the log partition function will be presented in \secref{sec:variational_methods}.
+
+%\atodo{I dropped the $\muv$ notation which seems unnecessary at this point. The stacking of $\muv$ into a vector should be explained in context}
+%Moreover, ordering the marginals the same way as $\thetav$ will result in a vector $\muv$.
+
+%The fact that the derivative of $A(\thetav)$ with respect to $\thetav_{ij}(x_i,x_j)$ equals the marginal probability of these variables, illustrates its importance. 
+
+\subsection{Inference in Graphical Models}
+The utility of probabilsic models lies in their ability to answer probabilistic queries. Namely, queries of the form: what is
+the probability of event $A$ given event $B$, or what is the most likely event $A$ given event $B$. The process
+of answering such queries is known as probabilistic inference. In what follows we define key inference problems. 
+
+%Given a probabilistic model specified by an MRF\footnote{We shall address learning such models in \secref{sec:learning}.}, using it in practice 
+%Two basic questions are of interest.
+The first problem, known as the maximum a posteriori (MAP), is to find the assignment $\xx$ with maximal probability. Namely to solve:
 \be
 \label{eq:MAP}
-\xx_{MAP} = \arg \max_{\xx \in \cX^p} P(\xx; \thetav) 
+\xx_{MAP} = \arg \max_{\xx \in \cX} P(\xx; \thetav) 
 \ee
 
-Secondly, there are settings in which not the whole event is of interest, but rather only a small fraction of its variables.
-The marginal probability of a certain sub-event $\xx_{\cI}$ in then sought
-This can be calculated by summing over all the rest of the variables:
+Secondly, there are settings in which all random variables are of interest, but rather only a small subset. In this case, it makes sense to query the marginal probability of these variables. Formally, we define the marginalization (MAR) inference task as calculating:
 \be
 \label{eq:MAR}
-P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX^{P}\\
+P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX \\
  s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz;\thetav)
 \ee
-Note that these two questions may be asked also when some part of the variables was observed, thereby resulting in an exponential number of different queries on the same model. 
-Both inference tasks can easily be inferred by going over all possible events.
-This, however, is too expensive since it is exponential in the number of variables.
-Indeed, in the general case MAP\cite{shimony1994finding} is an NP complete problem, while MAR\cite{cooper1990computational} is \#P complete (MAR is hard to even approximate \cite{roth1996hardness}).
+A natural generalization of the above queries is to solve them conditioned on a subset of the variables being set to some value.\footnote{This in fact is more compatible with the term maximum a posteriori, which implies considering a posterior after observing some variables. However, in recent graphical models literature MAP refers to maximizing over all assignments.} One can 
+consider such queries for any subset of observed variables and their values. There are thus exponentially many possible queries, all of which may be of interest. We touch upon this in \cite{heinemann2014inferning}. 
 
-The situation is not as hopeless as was described.
-First, the complexity parameter is not the number of variables but rather a feature of the graph called tree-width\cite{robertson1983graph,robertson1994quickly}.
-The tree width of the graph is usually smaller than the number of vertices, but given a graph, it is NP-complete to determine if the graph has tree-width smaller than $k$\cite{Arnborg:1987}.
-Hence inference (both MAP and MAR) is easy on models with the dependency structure of a tree, since the tree-width of a tree is one.
-There are other model restrictions that are known to allow polynomial inference, such as planar graph \cite{jaakkola2007approximate} and fast mixing models\cite{jerrum1993polynomial}.
-However, in the general case, the inference problem is hard and an approximate algorithm must be used.
-I will discuss approximation algorithms in \secref{sec:approx} . 
-\subsubsection{Pros and cons}
+We now turn to the algorithmic aspects of solving the above tasks. Both MAR and MAP can be solved by enumerating over
+the set of assignments (maximizing over them in MAP and summing over them in MAR). This, however, is too expensive since it takes time exponential in the number of variables. Indeed, in the general case MAP \cite{shimony1994finding} is an NP complete problem, while MAR \cite{cooper1990computational} is \#P complete (MAR is hard to even approximate \cite{roth1996hardness}).
+
+However, in practice, the situation is often not hopeless. First, worst case run times are actually not exponential in the number of variables, but rather in a feature of the graph called tree-width \cite{robertson1983graph,robertson1994quickly}.
+The tree width of the graph is usually smaller than the number of vertices. For graphs without cycles (i.e., tree shaped graphs) the tree width is in fact one. On the other hand, for a complete graph it is the number of vertices. Furthermore, it is NP-complete to determine if the graph has tree-width smaller than $k$ \cite{Arnborg:1987}.
+Given the above inference (both MAP and MAR) is easy on models where $G$ a tree. As mentioned ealier, this is percisely the case where BP is exact.
+
+There are other model restrictions that are known to allow polynomial
+inference, such as certain instances of planar graph models \cite{jaakkola2007approximate} and
+fast mixing models \cite{jerrum1993polynomial}.  However, in the
+general case, the inference problem is hard and an approximate
+algorithm must be used. Approximation algorithms will be further discussed in
+\secref{sec:approx}.
+
+\subsubsection{Why use Graphical Models?}
+\atodo{Not sure if this is the right place for this section but I've reorganized it in any case}
+ 
+Given the apparent hardness of inference in graphical models (even ``simple'' ones like MRFs as presented above), why should
+one study them at all. There are several compelling reasons as we outline below.
+
+First, despite the theoretical hardness of inference, there are many approximation algorithms which work very well in practice (we survey some below). It is of course interesting to understand why these algorithms work in practice, and there is ongoing research in this direction.\atodo{Give results on LDPC from Urbanke. Maybe also for community detection be Lenka and others} But this empirical success on its own merits the use of these models. Furthermore, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
+
+Second, graphical models have certain key representational advantages:
+\begin{itemize}
+\item Interpretability: The relation between graph structure and statistical properties allows one to learn much about a distribution from the structure of its MRF. Indeed, this is one reason why such models have found widespread use in computational biology.\atodo{Citation to Segal module networks}
+\item Query flexibility: As mentioend earlier, one can use a graphical model to ask an exponential number of possible queries (namely, what is the probaiblity of a given subset of variables given another subset). In applications such as medical diagnostics this is key.
+\item Missing values: Probabilistic models can easily handle missing values by marginalizing over them. This is again key in many application domains. 
+\end{itemize}
+
+\ignore{
 As illustrated above, inference is hard; why, then, should one use a model which cannot be used?
 %I will now go over the reasons why one should use graphical models.
 One may answer that it is optimal - for example in classification, if the exact conditional distribution is known and the MAP can be inferred, the optimal solution can be found. 
@@ -90,7 +152,7 @@ In many situations one needs to understand the studied model.
 In biology, the structure of the model is learned in order to better understand the studied biology system.
 Moreover, in many cases, such as user misuse, an explanation of the decision is needed. 
 In other words, the ability to explain the factors that influence the decision is a must, one cannot take action against a customer without any ability to explain the decision. 
-In graphical models, each variable has meaning, hence understanding the learned model is easier then in other models (such as SVM, for example).
+In graphical models, each variable has meaning, hence understanding the learned model is easier than in other models (such as SVM, for example).
 
 The model in graphical models usually lacks the distinction between features and outcome.
 In situations in which such separation is artificial, graphical models give power that is not found elsewhere.
@@ -103,7 +165,8 @@ In many situations not all of the variables are observed.
 Graphical model handle missing values inherently, and such cases do not need any special treatment (as is the case in other models).
 Finally, each of the queries' results are is not necessarily a single variable.
 Queries on several variables are possible and will take into account the relation between these variables.
+}
 
-To conclude, graphical models is a very powerful tool.
-This power comes with a price, inferring and learning (as we will be shown in \secref{sec:learning}) are hard, and approximation algorithms must be used in most cases.
-I will now present the basic approximate inference algorithm, and then learning graphical models.
+%To conclude, graphical models is a very powerful tool.
+%This power comes with a price, inferring and learning (as we will be shown in \secref{sec:learning}) are hard, and approximation algorithms must be used in most cases.
+These advantages have motivated researchers to tackle the hardness of learnign and inference in graphical models. We next discuss present some standard approximate inference algorithms, followed by methods for learning graphical models.
