@@ -1,5 +1,5 @@
 \section{Graphical Models - Learning and Inference}
-We begin with an introduction to graphical models, with a particular focus on inference and learning algorithms. For a comprehensive coverage of the topic see for example \atodo{cite koller book}.
+We begin with an introduction to graphical models, with a particular focus on inference and learning algorithms. For a comprehensive coverage of the topic see for example\cite{koller2009probabilistic}.
 \subsection{Notations and Definitions}
 \label{sec:def}
 Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will focus on the case where all these variables are discrete,  so that each $X_i$ can take one of the values $\cX_i = \{1,\ldots,n_i\}$. Similarly $\cX_{i,j}$ will denote the set of $n_i n_j$ values that $X_i,X_j$ can take. More generally for any subset $c\subseteq \{1,\ldots,\nvars\}$ we will use $\cX_c$ to denote the set of values the variables in this subset can take, and $\cX$ will denote all possible assignments.\footnote{Namely, the size of $\cX$ is $\prod_{i=1}^{\nvars} n_i$} A specific assignment to all the variables will be denoted by $x_1,\ldots,x_{\nvars}$ or for brevity $\xx$. 
