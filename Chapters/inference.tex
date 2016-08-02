@@ -1,19 +1,26 @@
 % !TEX root =../main.tex
 \subsection{Approximate inference}
 \label{sec:approx}
-Graphical models is a powerful tool.
-In order for it to be of use, an algorithm should be found that could answer queries based on the model, or, in other words, preform inference.
-As written above, exact inference in general is NP-complete,
-hence the importance of finding an approximate inference.
-In this introduction, I will focus only on the problem of finding the marginals (not the MAP problem), since in learning it is of more use, as will later be shown.
+In order to use graphical models in practice, one must solve the inference tasks
+described in Section \ref{sec:inference}. As mentioned earlier, in the general case
+this is an ``intractable'' task (by which we mean it has no known polynomial time algorithm). This has prompted much exciting research on approximate inference algorithm, combining
+tools from combinatorial optimization, convex optimization and graph theory. 
 
-The approximate inference algorithm may be divided into two main categories: variational inference, and sampling.
-The main principles of the two categories will now be reviewed.
+Below, we will provide a brief overview of approximate inference approaches, and describe two of the most widespread paradigms: variational methods and sampling based methods.  
+We will focus only on the problem of finding the marginals, since it is more relevant for 
+the learning problem, which is the focus of this thesis.
+
 \subsection{Variational Methods}
 \label{sec:variational_methods}
-In this section, I will follow the excellent work by \cite{wainwright2008graphical}.
-The inference's goal is to find $\muv$ - the model marginals.
-Hence, the first thing to define is the space of $\muv$ - the marginal-ploytope $\margpoly^G$.
+Variational methods are a large class of approximate inference algorithms. The key
+underlying approach in all of these is casting inference as a continuous (as opposed to discrete) optimization problem. Our review below largely follows the excellent and rigorous introduction to the topic in \cite{wainwright2008graphical}. 
+
+The goal of marginal inference is to calculate the marginals of the model $P(\xx;\thetav)$. Here we focus on calculating singleton marginals $\mu_i^{\thetav}(x_i)$ and pairwise marginals  $\mu^{\thetav}_{ij}(x_i, x_j)$ (see \eqref{eq:pratition_derivative}). In what follows we will denote by $\muv$ the vector constructed from concatenating all these marginals, and denote its dimension by $d$.\footnote{For example, in the case of binary variables we will have $d = 2|V| + 4|E|$.} 
+
+The variational approach proceeds by defining some function $g(\muv)$ of the marginals, and maximizing this function, subject to some constraints, to obtain the approximate marginals. A first step to realizing such an approach is to understand which values of $\muv$ are possible. In other words, which vectors $\muv$ are marginals of some model $P(\xx;\thetav)$. Clearly we need not consider vectors $\muv$ that cannot be marginals of any model.
+
+The above point leads to the definition of the ``Marginal Polytope''  \cite{wainwright2008graphical}. The Marginal Polytope, which we denote by $\margpoly^G$,  is a set of $\muv$ vector, which are the marginals of
+``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:\atodo{The definition here should not include $\thetav$ but instead a general distribution on $\xx$} 
 \be
 \label{eq:margpoly}
 \margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
@@ -23,68 +30,96 @@ Hence, the first thing to define is the space of $\muv$ - the marginal-ploytope 
   \forall ij \in E \land \forall x_i, x_j \in \cX &P(x_i,x_j;\thetav) = \mu_{ij}(x_i,x_j)
 \end{array} \right. \right\}
 \ee
-Having this, the conjugate dual of the log partition function could be defined
+
+Next, we define a continuous optimization problem whose maximizer will be $\muv^{\thetav}$, and whose maximum value will be the log partition function $A(\thetav)$ (see \eqref{eq:partition_function}). 
+
+Since $A(\thetav)$ is a convex function, it has a conjugate convex function $A^*(\muv)$, defined as follows \atodo{Add citation to Boyd convex optimization book}: \atodo{Including $\Omega$ here is also confusing, so best to drop it everywhere}
 \be
 \label{eq:conjugate_partition}
 A^*(\muv) = \sup_{\thetav \in \Omega^G} \left\{\muv \cdot \thetav - A(\thetav)\right\}
 \ee
-Two points should be noted. First, if $\muv \in \margpoly^G$\footnote{This applies only for marginals in the inner part of the marginal polytope. For marginals on the boundaries, more delicate treatment should be given} then $A^*(\muv) = -H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function equals to the entropy of the probability the marginals of are $\muv$.
-Second, \eqref{eq:conjugate_partition} is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
-It can be shown that $A(\thetav)$ is a convex function of $\thetav$, which leads to ${A^{*}}^* = A$. Having that, the variational expression of $A(\thetav)$ may be written as, 
-\bean
-A(\thetav) &=& \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} \\
-\muv^{\thetav}&=& \arg \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
-\eean
-\eqref{eq:arg_variation_A} and \eqref{eq:variation_A} present a new way to infer the marginals and calculate the partition function.
-Not surprisingly, solving this optimization is hard for two reasons.
-The first, the marginal-polytope is a very complex  body - its description is exponential in $d$ the size of $\muv$.
-The second, calculating the entropy is a hard problem in itself.
-The merit in this representation, is the ability to approximate these two quantities.
+Since the conjugate of $A^*(\muv)$ is $A(\thetav)$, we can cast $A(\thetav)$ as the following optimization problem:
+\be
+A(\thetav) = (A^{**}(\thetav) = \sup_{\muv} \left\{\muv \cdot \thetav - A^*(\muv)\right\}
+\label{eq:conjconj}
+\ee
+To further simplify this problem, we note several properties of $A^*(\muv)$. First
+if $\muv\notin\margpoly^G$ then $A^*(\muv) = \infty$. Thus, we can limit optimization to
+$\muv\in\margpoly^G$. Next, for any $\muv$ there exists a set of MRF parameters $\thetav(\muv)$ such that the marginals of $P(\xx;\thetav(\muv))$ are $\muv$.\footnote{The function $\thetav(\muv)$ is sometimes referred to as the mapping from mean parameters to canonical parameters. See \cite{wainwright2008graphical} for a thorough discussion} Denote the entropy of a distribution $P(\xx)$ by $H(P(\xx))$. Then for $\muv\in\margpoly^G$ the function $A^*(\muv)$ turns out to be $H(P(\xx;\thetav(\muv)))$.  
 
-Two methods of approximation will now be presented. In the first, the mean-field method \cite{peterson1987mean}, both the marginal-polytope and the entropy are limited to a sub-graph of $G$ in a way that both are easy to calculate.
-The second method gives different approximations to the entropy and to the marginal polytope.
-For example, the local polytope (defined in \eqref{eq:local_polytope}) will approximate the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
-The resulting approximation is the Bethe approximation, which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
+The above observations imply that \eqref{eq:conjconj} can be written as:
+%Two points should be noted. First, if $\muv$ is in the interior of $\margpoly^G$ \footnote{This applies only for marginals in the inner part of the marginal polytope. For marginals on the boundaries, more delicate treatment should be given} then $A^*(\muv) = -H(P(\xx;\thetav(\muv)))$ the conjugate of the log partition function equals to the entropy of the probability the marginals of are $\muv$.
+%Second, \eqref{eq:conjugate_partition} is similar to the maximum likelihood objective (see \secref{sec:max_likelihood}).
+%It can be shown that $A(\thetav)$ is a convex function of $\thetav$, which leads to ${A^{*}}^* = A$. Having that, the variational expression of $A(\thetav)$ may be written as, 
+\be
+A(\thetav) = \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:variation_A} 
+\ee
+Also, since the gradient of $A(\thetav)$ is $\muv^{\thetav}$, it follows that:
+\be
+\muv^{\thetav}= \arg \sup_{\muv \in \margpoly^G}\left \{ \muv \cdot \thetav + H(P(\xx;\thetav(\muv))) \right\} \label{eq:arg_variation_A}
+\ee
+\eqref{eq:arg_variation_A} and \eqref{eq:variation_A} offer an optimization based view of marginals and partition function calculation. They form the starting point for most
+variational approximations.
+
+
+Not surprisingly, solving the above optimization problem is hard, for two reasons. First,  optimizing over the marginal-polytope $\margpoly^G$ is hard in general (even if the objective is linear). Describing $\margpoly^G$ requires a number of inequalities that is exponential in $d$.  Second, both calculating $\muv^{\thetav}$ is hard, as is calculating the entropy of the resulting MRF.
+
+The advantage of the above representation lies in the simplicity of approximating its constraints and objectives, to obtain a more ``managable'' optimization problem.\footnote{We use the loose term managable, since not all approximations correspond to polynomial time solvable optimization problem. For example mean field attempts to solve a non-convex problem and may obtain sub-optimal solutions}  
+%% Two methods of approximation will next be presented. The first is the mean-field method \cite{peterson1987mean} where both the marginal-polytope and the entropy are restricted to a sub-graph of $G$ such that both are easy to calculate.
+%% The second method gives different approximations to the entropy and to the marginal polytope.
+%% For example, the local polytope (defined in \eqref{eq:local_polytope}) will approximate the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
+%% The resulting approximation is the Bethe approximation, which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
 \subsubsection{Mean Field}
-Mean field is a technique that approximates a complex model by a simpler one.
+Mean field methods have a long history, starting from statistical physics, and later popularized in the machine learning community.\atodo{citation from physics. Can also add \cite{peterson1987mean}} There are various ways of deriving them, and here we will provide one based on the variataional view of \eqref{eq:variation_A}.\footnote{A popular and earlier derivation, casts mean field as finding a simple distribution that approximates $P(\xx;\thetav)$ in a KL divergence sense.} 
+%The term mean field methods (e.g., see \cite{peterson1987mean}) corresponds to approximate inference approaches that that approximate a complex model by a simpler one.
 %In inference, it approximates the real model marginals by marginals of a simpler model.
-More specifically, it replaces the marginal polytope (of the true dependencies graph) and the true entropy, with the marginal polytope and entropy of a simpler dependencies graph.
-I will illustrate this technique by choosing the simplest graph - the independent graph denoted by $G_I$.
-In this case, the marginal polytope sums down to,
+
+%\atodo{It's incorrect ot say mean field uses $\margpoly^{G_I}$ since that contains only singleton marginals}
+We begin by considering all distributions $P(\xx)$ corresponding to a set of $\nvars$ independent variables, as in \eqref{eq:independent}. The pairwise marginals of such distributions will also indepednent, namely given by $\mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)$. Such distribtions are therefore always in $\margpoly^G$. This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (namely $\margpoly^{I} \subseteq \margpoly^{G}$):\atodo{Strictly speaking this is not a marginal polytope...}
+%More specifically, it replaces the marginal polytope (of the true dependencies graph) and the true entropy, with the marginal polytope and entropy of a simpler dependencies graph.
+%I will illustrate this technique by choosing the simplest graph - the independent graph denoted by $G_I$.
+%In this case, the marginal polytope sums down to,
 \be
 \label{eq:margpoly_independent}
-\margpoly^{G_I} = \left\{\muv \in \Re^{d}\left|
+\margpoly^{I} = \left\{\muv \in \Re^{d}\left|
 \begin{array}{lr}
-\forall i \in V,\ \forall x_i \in \cX & 0\leq \mu_i(x_i)\\
+\forall i \in V,\ \forall x_i \in \cX & \mu_i(x_i) \geq 0 \\
 \forall i \in V & \sum_{x \in \cX} \mu_i(x_i) = 1\\
-\forall ij \in G,\ x_i,x_j \in \cX & \mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)
+\forall ij \in E,\ x_i,x_j \in \cX & \mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)
 \end{array}
 \right.\right\}
 \ee
-Note that the dimension of the marginals is with respect to the original graph,
-moreover, $\margpoly^{G_I} \subseteq \margpoly^{G}$\footnote{Note that marginals corresponding to the pairwise interaction are constrained to reflect independence, a constraint that does not exist in the original marginal polytope.}.\\
-Now the entropy for this family of models is simple,
+%Note that the dimension of the marginals is with respect to the original graph,
+%moreover, $\margpoly^{I} \subseteq \margpoly^{G}$\footnote{Note that marginals corresponding to the pairwise interaction are constrained to reflect independence, a constraint that does not exist in the original marginal polytope.}.\\
+
+We next turn to calculating $A^*(\muv)$ for $\muv\in\margpoly^{I}$. It is easy to see that for any $\muv\\margpoly^{I}$  the distribution $P(\xx) = \prod_{i} \mu_i(x_i)$ has pairwse marginals $\mu_{ij}(x_i,x_j) =  \mu_i(x_i)\mu_j(x_j)$. Since $P$ is an MRF, it follows that
+$\thetav(\muv)$ are the parameters specifying $P$. Also, the entropy of $P$ is just the sum of individual entropies:
 \be
-H_{G_I}(\muv) = -\sum_{i}\sum_{x_i} \mu_i(x_i)\log\mu_i(x_i)
+H_{I}(\muv) = -\sum_{i}\sum_{x_i} \mu_i(x_i)\log\mu_i(x_i)
 \ee 
-So the partition function can be written as
+
+Putting all of the above together we have the mean field approximation of the partition function:  
 \be
-A_{G_I}(\thetav) = \sup_{\muv \in \margpoly^{G_I}}\left \{ \muv \cdot \thetav + H_{G_I}(\muv))) \right\} \label{eq:naive_mean_field} \\
+A_{I}(\thetav) = \sup_{\muv \in \margpoly^{I}}\left \{ \muv \cdot \thetav + H_{I}(\muv))) \right\} \label{eq:naive_mean_field}~,
 \ee
-Note that $A(\thetav) \geq A_{G_I}(\thetav)$ since by restricting the marginal polytope the result can only decrease (the entropy is exact on this model family).
-Taking the derivative of the right side of \eqref{eq:naive_mean_field} and comparing to zero gives
+Note that $A(\thetav) \geq A_{I}(\thetav)$ since by restricting the marginal polytope the result can only decrease, and $A^*(\muv)$ is exact.
+
+A nice property of the above approximation is that it leads to a simple coordinate descent algorithm. Fix all $\mu_j(x_j)$ except for $\mu_i(x_i)$ then one can show the following setting for $\mu_i(x_i)$ will maximize the objective \eqref{eq:naive_mean_field}:
 \be
 \mu_i(x_i) \propto \exp{\theta_i(x_i) + \sum_{j\in \nei{i}} \sum_{x_j} \theta_{ij}(x_i,x_j)\mu_j(x_j) } \label{eq:naive_iter}
 \ee
-Iterating through \eqref{eq:naive_iter} will converge, since \eqref{eq:naive_mean_field} is a concave function.
+%Iterating through \eqref{eq:naive_iter} will converge, since \eqref{eq:naive_mean_field} is a concave function.
+\atodo{what you wrote above (in comment) is wrong. it's not concave}
+The above algorithm will converge to a local optimum of $A_{I}(\thetav)$, and often provides good results in practice.
 
-The above example demonstrates two important features of the chosen dependency graph.
-First, the entropy should be easy to calculate.
-Second, the resulting approximated variational equation should be convex, allowing easy optimization.
-The second feature does not always hold, for example when the dependency graph is a tree. 
-The model entropy is the Bethe entropy (see \eqref{eq:bethe_entropy}), which is not a concave function. 
-Hence, local maximum may occur and the resulted algorithm may not converge\footnote{This is not BP; to get BP, the optimization should be over the local polytope, not the tree polytope}.
-This leads us to the next approach - different approximation to the marginal polytope and the entropy.
+%% The above example demonstrates two important features of the chosen dependency graph.
+%% First, the entropy should be easy to calculate.
+%% Second, the resulting approximated variational equation should be convex, allowing easy optimization.
+%% The second feature does not always hold, for example when the dependency graph is a tree. 
+%% The model entropy is the Bethe entropy (see \eqref{eq:bethe_entropy}), which is not a concave function. 
+%% Hence, local maximum may occur and the resulted algorithm may not converge\footnote{This is not BP; to get BP, the optimization should be over the local polytope, not the tree polytope}.
+%% This leads us to the next approach - different approximation to the marginal polytope and the entropy.
+
 \subsubsection{Belief Propagation}
 \label{sec:belief}
 Belief-Propagation (BP) is a message-passing algorithm.
