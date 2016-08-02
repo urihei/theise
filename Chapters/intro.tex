@@ -4,22 +4,22 @@ Factories, medical records and financial markets have all been digitized too.
 But this is only the tip of the iceberg. In an ``Internet of Things'' age, much more of our daily experience will be stored digitally.  
 %Gradually most of our surrounding will be monitored and transformed into bytes.
 %These bytes are sent to central units, where the data is stored and intended to be utilized.
-It is intuitively clear that having access to such vast amounts of data, should lead to tangible improvements in our day to day lives. However, processing these volumes of information requires automated tools, which can extract meaningful patterns and rules (clearly, this course cannot be done manually). This is precisely the goal of the field of Machine Learning, which has experienced tremendous growth over the last decade\cite{Bishop:2006}.
+It is intuitively clear that having access to such vast amounts of data, should lead to tangible improvements in our day to day lives. However, processing these volumes of information requires automated tools, which can extract meaningful patterns and rules (clearly, this course cannot be done manually). This is precisely the goal of the field of Machine Learning, which has experienced tremendous growth over the last decade  \cite{Bishop:2006}.
 
 %Moreover, even manual design of tools to use this amount of data, is not possible.
 %The need for automated ways to create tools that will handle the growing amount of data is immanent.   
 
 %Machine learning is the discipline that tries to bridge over this gap.
-One of the key goals of machine learning is to design algorithms that learn models from past data, and use those to make reason about unseen data observed in the future. A classic example is ``image categorization'' algorithms which use datasets of manually labeled images (e.g., an image of a cat with the label ``cat'') to build a model that labels new images\cite{krizhevsky2012imagenet}. A key consideration in such methods is algorithmic efficiency. Namely, they need to produce results in reasonable time. For example, waiting for than one minute to obtain a label for an image we are looking at is too long. And, waiting for two years to build such a labeling model is also too long. 
+One of the key goals of machine learning is to design algorithms that learn models from past data, and use those to make reason about unseen data observed in the future. A classic example is ``image categorization'' algorithms which use datasets of manually labeled images (e.g., an image of a cat with the label ``cat'') to build a model that labels new images \cite{krizhevsky2012imagenet}. A key consideration in such methods is algorithmic efficiency. Namely, they need to produce results in reasonable time. For example, waiting for than one minute to obtain a label for an image we are looking at is too long. And, waiting for two years to build such a labeling model is also too long. 
 
 In some cases, algorithmic efficiency is guaranteed. For example, most ``deep-learning'' can be evaluated very efficiently. However, in many other cases efficiency is a serious problem. These cases have the following high level structure: we want to use algorithm $A$ for a certain machine learning problem. We know that $A$ has some desirable modeling properties (e.g., it can generalize well to new instances). However, $A$ can take too long to run, and thus we use an approximation $\hat{A}$. Which of the guarantees we had about $A$ can be preserved in such a case? Should other parts of our system be modified as a result (e.g., the way the model is used) etc. 
 
-In this thesis we focus on above efficiency-accuracy questions in the context of two key machine learning problems. The first is graphical models, a key probabilistic modeling framework in machine learning. The second is deep learning, which has recently attracted tremendous attention in the field, especially due to its empirical success on problems like machine vision\cite{krizhevsky2012imagenet} and speech recognition\cite{hinton2012deep}.
+In this thesis we focus on above efficiency-accuracy questions in the context of two key machine learning problems. The first is graphical models, a key probabilistic modeling framework in machine learning. The second is deep learning, which has recently attracted tremendous attention in the field, especially due to its empirical success on problems like machine vision \cite{krizhevsky2012imagenet} and speech recognition \cite{hinton2012deep}.
 
 %Over the years, the field of machine learning has devised multiple algorithmic and theoretical frameworks, which address different aspects of the learning problem. In this work we will focus mostly on one such key framework, namely the field of graphical models. In addition, the final chapter of the thesis will study deep learning, 
 
 Machine Learning algorithms need to describe the statistical dependencies of a large number of random variables. They thus require formal tools for describing
-such dependencies and learning them from data. One of the most successful attempts at such a formalism is the approach known as Graphical Models (GM). Such models make certain simplifying assumptions regarding conditional independencies between random variables, and these can often be described as a graph whose nodes are the variables (hence the term GM). The GM approach has roots in statistical physics and classical statistics, but it has been popularized in the fields of artificial intellignece (AI) and machine learning through the seminal works of Judea Pearl \cite{pearl1986fusion} and Lauritzen \cite{lauritzen1988local}.
+such dependencies and learning them from data. One of the most successful attempts at such a formalism is the approach known as Graphical Models (GM). Such models make certain simplifying assumptions regarding conditional independencies between random variables, and these can often be described as a graph whose nodes are the variables (hence the term GM). The GM approach has roots in statistical physics and classical statistics, but it has been popularized in the fields of artificial intellignece (AI) and machine learning through the seminal works of Judea Pearl  \cite{pearl1986fusion} and Lauritzen  \cite{lauritzen1988local}.
 Much progress has been made since, but key problems regarding algorithmic effiency and learning are still open.
 This dissertation will focus on some of these, as explained next.      
 
@@ -33,34 +33,34 @@ A graphical model seeks to model the statistical behavior of a set of random var
 %Each feature is described by a vertex which is connected to all features that directly effect it.
  The model itself is then simply a mapping from observed values of these variables to the probability of this observation. This gives us a great deal of power. Perhaps most importantly, it allows us to reason about the probability of an unobserved random variable given observed ones (e.g., what is the probability that someone has high risk of cancer given what we know about them). Unfortunately, there is another side to the story. Despite the apparent simplicity of GMs, the above ``inference'' task is computationally hard in many GMs of interest.\footnote{More formally MAP is NP-complete and MAR is \#P is the general case; see \secref{sec:def}} This hardness implies that exact inference is usually intractable, and has prompted much research on approximate inference algorithms.
 
-One of the most commonly-used algorithms for approximate inference is Belief Propagation (BP) \cite{pearl1986fusion}.
-This method is exact when the graph corresponding to the model is a tree. However, surprisingly, it is also quite accurate on models with cycles \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
+One of the most commonly-used algorithms for approximate inference is Belief Propagation (BP)  \cite{pearl1986fusion}.
+This method is exact when the graph corresponding to the model is a tree. However, surprisingly, it is also quite accurate on models with cycles  \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
 %Running BP on models with cycles introduces several problems.
 %There are cases where this algorithm does not converge; the final results depend on the initial state which is arbitrary; and the quality of the resulting pseudo-marginals varies  (to note, it will be shown that they are not always true marginals).
- A first theoretical explanation of this phenomenon appeared in the seminal work of \cite{yedidia2000generalized}, where it was shown that BP is closely related to minimization of the Bethe free energy, a function originally studied in statistical physics. Thereafter came a surge of extensions of this insight, trying to improve on it \cite{elidan2012residual}, studying its variants \cite{welling2001belief, wainwright2003tree, meshi2009convexifying}, analyzing its convergence \cite{tatikonda2002loopy, mooij2007sufficient, roosta2008convergence} and understand its results \cite{heskes2002stable, yedidia2005constructing, AlanNips2007, YusukeNips2009, RuozziNips2012}.
+ A first theoretical explanation of this phenomenon appeared in the seminal work of  \cite{yedidia2000generalized}, where it was shown that BP is closely related to minimization of the Bethe free energy, a function originally studied in statistical physics. Thereafter came a surge of extensions of this insight, trying to improve on it  \cite{elidan2012residual}, studying its variants  \cite{welling2001belief, wainwright2003tree, meshi2009convexifying}, analyzing its convergence  \cite{tatikonda2002loopy, mooij2007sufficient, roosta2008convergence} and understand its results  \cite{heskes2002stable, yedidia2005constructing, AlanNips2007, YusukeNips2009, RuozziNips2012}.
 
 Inference is only useful if one has a good model.
 A natural way to acquire good models is to learn them from data. Indeed, ``learning'' and ``inference'' algorithms are the two fundumental objects of study in the field of graphical models.
 It is clear that these two tasks are closely related.
 The key reason for learning a model is so that it can
 be used to make useful inferences. However, much of the literature on learning and inference does not address this coupling directly.
-In recent years, more attention has been directed towards the learning-inference coupling, which is sometimes referred to as ``inferning''\cite{inferning_cite}.
+In recent years, more attention has been directed towards the learning-inference coupling, which is sometimes referred to as ``inferning'' \cite{inferning_cite}.
 The work described in this thesis makes several contributions to this effort.
 Specifically, we focus on the case where BP is used for inference, and study the implications this has on the learning procedure.
 
-When estimating the parameters of a model, the classical method of Maximum Likelihood (ML) is a typical first choice\cite{degroot1986probability}.
-It enjoys a wide range of attractive properties, such as consistency and asymptotical efficiency, and often works well in practice. However, a textbook implementation of ML for graphical models is not a good idea for several reasons. First, the likelihood function itself is usually intractable to calculate and optimize for most GMs of interest. Second, since approximate inference is to be used, this should somehow be incorporated into the learning objective. This view was first put forth in \cite{wainwright2006estimating}, where it was advocated that learning and approximate inference should be studied jointly.  
+When estimating the parameters of a model, the classical method of Maximum Likelihood (ML) is a typical first choice \cite{degroot1986probability}.
+It enjoys a wide range of attractive properties, such as consistency and asymptotical efficiency, and often works well in practice. However, a textbook implementation of ML for graphical models is not a good idea for several reasons. First, the likelihood function itself is usually intractable to calculate and optimize for most GMs of interest. Second, since approximate inference is to be used, this should somehow be incorporated into the learning objective. This view was first put forth in  \cite{wainwright2006estimating}, where it was advocated that learning and approximate inference should be studied jointly.  
  
-Given the effectivenss of BP as an approximate inference algorithm, it is natual to ask how ML should be changed when BP is used for inference on the learned model. Our first paper \cite{heinemann2012cannot} deals precisely with this problem, and its theoretical and practical consequences. Our analysis provides several surprising results. We show that depending on the true distribution, one of two scenarios is possible. In the first, good scenario, the learned model will be good in the sense that running BP on it will result in correct results. In the second, bad scenario, the learned model will result in incorrect results. Our anlaysis provides some characterizations of these good and bad regimes. Another exciting implication of these results is that certain sets of probabilities can never be the outcome of running BP. They thus characterize an inherent limitation of the BP algorithm, and suggest practical consequences on the settigns in which it should be used.  
+Given the effectivenss of BP as an approximate inference algorithm, it is natual to ask how ML should be changed when BP is used for inference on the learned model. Our first paper  \cite{heinemann2012cannot} deals precisely with this problem, and its theoretical and practical consequences. Our analysis provides several surprising results. We show that depending on the true distribution, one of two scenarios is possible. In the first, good scenario, the learned model will be good in the sense that running BP on it will result in correct results. In the second, bad scenario, the learned model will result in incorrect results. Our anlaysis provides some characterizations of these good and bad regimes. Another exciting implication of these results is that certain sets of probabilities can never be the outcome of running BP. They thus characterize an inherent limitation of the BP algorithm, and suggest practical consequences on the settigns in which it should be used.  
 
-In our second paper \cite{heinemann2014inferning} we focus on an important subclass of graphical models, known as high girth graphs. These have cycles, and thus BP does not provide exact inference. A natural question is then how should high girth models be learned, if BP is to be used for inference. In  \cite{heinemann2014inferning} we study this ``inferning'' setup and provide a learning algorithm whose combination with BP inference results in strong theoretical guarantees. The resulting algorithm is shown to empriically outperform other methods for learning coupled with inference.
+In our second paper  \cite{heinemann2014inferning} we focus on an important subclass of graphical models, known as high girth graphs. These have cycles, and thus BP does not provide exact inference. A natural question is then how should high girth models be learned, if BP is to be used for inference. In   \cite{heinemann2014inferning} we study this ``inferning'' setup and provide a learning algorithm whose combination with BP inference results in strong theoretical guarantees. The resulting algorithm is shown to empriically outperform other methods for learning coupled with inference.
 
-In recent years, deep-learning models have revolutionized the field of machine learning \cite{lecun2015deep}.
-This is largely due to their striking accuracy on machine vision \cite{krizhevsky2012imagenet} and speech recognition \cite{mohamed2009deep, hinton2012deep} benchmarks, often beating previous state of the art by a large margin. A deep learning model is a function generated by combining certain basic operators such as linear functions, rectifying non-linearities, and pooling.
+In recent years, deep-learning models have revolutionized the field of machine learning  \cite{lecun2015deep}.
+This is largely due to their striking accuracy on machine vision  \cite{krizhevsky2012imagenet} and speech recognition  \cite{mohamed2009deep, hinton2012deep} benchmarks, often beating previous state of the art by a large margin. A deep learning model is a function generated by combining certain basic operators such as linear functions, rectifying non-linearities, and pooling.
  Such a model has many parameters, which are learned from training data, in order to optimize some task loss (e.g., minimize the number of errors the model makes on the training data). 
 
 The above learning problem involves finding the minimum of a complex function with many parameters.
-Unfortunately, this task is generally intractable \cite{livni2014computational} since the function may in theory contain many ``bad'' local optima, that an optimization algortihm may converge to.
+Unfortunately, this task is generally intractable  \cite{livni2014computational} since the function may in theory contain many ``bad'' local optima, that an optimization algortihm may converge to.
 In the past, this problem has led to decreased interest in such models.
 However, the recent success of deep learning shows that in some cases, the optimization hardness is not an issue in practice, prompting much theoretical work to understand this phenomenon.
 Yet it should be emphasized, that this theoretical difficulty means deep learning cannot be used ``out of the box'' as in many practical settings optimization hardness will manifest itself.
@@ -82,17 +82,17 @@ techniques are still more an art than solid science.
 %This, however, is not yet backed up by a theoretical understanding of their success.
 %Moreover, the optimization process requires fine-tuning, with only a collection of rules of thumb of how to set the parameters,  given a new problem.
 On the other hand, support vector machine - the former machine learning community trend, is a well-understood technique.
-Using kernels, the non-linear classifier may be learned by quadratic programming\cite{scholkopf2002learning}.
+Using kernels, the non-linear classifier may be learned by quadratic programming \cite{scholkopf2002learning}.
 Hence, a kernel that will induce the deep networks hypothesis class may enjoy both worlds.
 
-In \cite{cho2009kernel} the authors present a kernel that is related to infinite networks.
-It has been shown that the \textit{arc-cosine} function is related to a one-layer network with an infinite number of units \cite{williams1998computation}.
+In  \cite{cho2009kernel} the authors present a kernel that is related to infinite networks.
+It has been shown that the \textit{arc-cosine} function is related to a one-layer network with an infinite number of units  \cite{williams1998computation}.
 While the \textit{arc-cosine} is related to the zero-one activation function, the authors generalized it to a series of activation functions one of which is the known ReLu.
 Using a nice trick, the infinite networks could be stacked one on top of the other, with the result of deep infinite networks.
 
-In our work \cite{heinemann2016improper} we present a finite network kernel.
+In our work  \cite{heinemann2016improper} we present a finite network kernel.
 By using the natural dot product between functions, the kernel is defined as the dot product between the result of a network for the two inputs.
-For one layer networks our kernel is similar to that of \cite{cho2009kernel}.
+For one layer networks our kernel is similar to that of  \cite{cho2009kernel}.
 For multi-layer networks, however, a new kernel is defined for a finite number of nodes in each layer.
 
 In summary, the thesis contains three published papers, studying accuracy-efficiency tradeoffs, with a focus on graphical models. In the first two papers we study the use of the BP algorithm for learning and inference in graphical models. In the third paper we study the use of convex optimization for learning the parmateers of deep learning models. 
@@ -102,13 +102,13 @@ Before presenting the papers themselves, we will provide a short introduction th
 
 \ignore{
 To summarize, in the following work I will present three papers.
-The first, \cite{heinemann2012cannot} studies learning of graphical models when BP is used as an inference algorithm \eqref{eq:bethe_like}.
+The first,  \cite{heinemann2012cannot} studies learning of graphical models when BP is used as an inference algorithm \eqref{eq:bethe_like}.
 We give inner and outer bounds for this set.
 Marginals outside this set are the ones that for all parameters will not be a sole fix point for BP.
 By giving an outer prove, we prove the existence of these marginals.
 On the other hand, if the marginals belong to this set, the learning sums up to a closed form equation - the canonical parameters (\eqref{eq:canonical}).
-The second, \cite{heinemann2014inferning}, presents an algorithm for learning graphical models (both structure and parameters) that takes into account the used inference algorithm.
+The second,  \cite{heinemann2014inferning}, presents an algorithm for learning graphical models (both structure and parameters) that takes into account the used inference algorithm.
 The algorithm returns a model in a family of models where the quality of inference by BP could be bound.
-While the first two papers focus on graphical models, the third, \cite{heinemann2016improper}, connects SVM and deep networks.
+While the first two papers focus on graphical models, the third,  \cite{heinemann2016improper}, connects SVM and deep networks.
 We present a kernel that induces a hypothesis class of combinations of networks with a fixed structure.
 }

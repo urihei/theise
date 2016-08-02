@@ -1,5 +1,5 @@
 \section{Graphical Models - Learning and Inference}
-We begin with an introduction to graphical models, with a particular focus on inference and learning algorithms. For a comprehensive coverage of the topic see for example\cite{koller2009probabilistic}.
+We begin with an introduction to graphical models, with a particular focus on inference and learning algorithms. For a comprehensive coverage of the topic see for example \cite{koller2009probabilistic}.
 \subsection{Notations and Definitions}
 \label{sec:def}
 Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will focus on the case where all these variables are discrete,  so that each $X_i$ can take one of the values $\cX_i = \{1,\ldots,n_i\}$. Similarly $\cX_{i,j}$ will denote the set of $n_i n_j$ values that $X_i,X_j$ can take. More generally for any subset $c\subseteq \{1,\ldots,\nvars\}$ we will use $\cX_c$ to denote the set of values the variables in this subset can take, and $\cX$ will denote all possible assignments.\footnote{Namely, the size of $\cX$ is $\prod_{i=1}^{\nvars} n_i$} A specific assignment to all the variables will be denoted by $x_1,\ldots,x_{\nvars}$ or for brevity $\xx$. 
@@ -12,7 +12,7 @@ Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will foc
 A probabilistic model is a function $\pr(\xx)$ from assignments $\xx$ to their probabilities. It is thus constrained to be non-negative and sum to one: $\sum_{\xx \in \cX} \pr(\xx) = 1$.
 %\footnote{Note that zero is excluded, since we a positive distribution is required.}\footnote{Without loss of generality, for ease of notation, all variables were assumed to have the same domain. This assumption may be easily removed.}.
 
-Specifying a model as defined above requires $|\cX|$ numbers, which is exponential in $n$, and is typically too large from both modeling and computational standpoints. Thus, it is natural to seek more compact models, which can be described by less parameters, but can still capture probabilstic dependencies that are practically useful.
+Specifying a model as defined above requires $|\cX|$ numbers, which is exponential in $N$, and is typically too large from both modeling and computational standpoints. Thus, it is natural to seek more compact models, which can be described by less parameters, but can still capture probabilstic dependencies that are practically useful.
 
 A graphical model of a distribution $P(\xx)$ makes the assumption that $P(\xx)$ can be expressed as a product of ``simple'' functions which depend only on a subset of the variables. The simplest graphical model is of the form:
 \be
@@ -21,7 +21,7 @@ P(\xx) = \prod_i q_i(x_i)
 \ee
 where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i n_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
 
-A much more useful graphical model is the Pairwise Markov Random Field (MRF) model, which we will focus on in this thesis\atodo{In footnote, give citations for uses, e.g., in vision}.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
+A much more useful graphical model is the Pairwise Markov Random Field (MRF) model\footnote{The pairwise MRF ise used in vision \cite{yao2010modeling}, computational-biology \cite{hopf2015quantification}, medical \cite{goodwin2015predictive} and security (anomaly detection) \cite{wang2015ddos}}, which we will focus on in this thesis.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
 \begin{itemize}
 \item An undirected graph $G=(V,E)$ with $\nvars$ nodes and edges $E$. We will denote the neighbors of $i$ in $G$ by $\nei{i}$.
 \item For each edge $(i,j)\in E$ and assignment $x_i,x_j$ a parameter $\theta_{ij}(x_i,x_j)$. Similarly for each $i\in V$ and assignment $x_i$ a parameter $\theta_i(x_i)$. 
@@ -38,7 +38,7 @@ where $Z(\thetav)$ is a normalization constant, also known as the partition func
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
 
-From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighrbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independcies in such models are a result of the one specified above, and also known as the local Markov property. See e.g., \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks, can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
+From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighrbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independcies in such models are a result of the one specified above, and also known as the local Markov property. See e.g.,  \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic  \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks, can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
 
 \ignore{
 In many real-world situations, each variable is directly dependent on a small subset of other variables only. To formalize this notion, consider a random variable $X_i$, and the dependent set of variables by $X_{\cI}$, where $\cI \subset \{1,\ldots,n\}$. Then direct depdnence of $X_i$ on $X_{\cI}$ can be captured by requiring that $X_i$ is conditionally indepndent of the rest of the variables given $X_{\cI}$. This is equivalent to requiring $P(x_i |\xx_{\cI}) = P(x_i|\xx_{\{1,\ldots,i-1,i+1,\ldots, \nvars\}})$ for all assignments $\xx$.
@@ -51,13 +51,13 @@ $\nei{i}$ denotes the smallest set of vertices indexes satisfying this relation,
 This dependency relation may be described by a graph $G(V,E)$ where $V = \{v_1,\ldots, v_p\}$ is the set of vertices and  $E \subseteq V \times V$ are the graph edges.
 Each variable $x_i$ will be assigned a vertex $v_i$. 
 An edge between $v_i$ and $v_j$ exists if  $j \in \nei{i}$\footnote{If $i \in \nei{j}$ than $j \in \nei{i}$, otherwise $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei{j}}) P(x_i|x_j,\xx_{\nei{i}\setminus j})$ and $P(\xx) = P(\xx_{[1,\ldots,p]\setminus i,j}) P(x_i|\xx_{[1,\ldots,p]\setminus i,j}) P(x_j|\xx_{\nei(j)})$ which results in $P(x_i|x_j,\xx_{\nei{i}\setminus j}) =   P(x_i|\xx_{[1,\ldots,p]\setminus i,j})$ - in contradiction to $j \in \nei{i}$}.
-Now, according to the Hammersley – Clifford theorem \cite{hammersley1971markov}\footnote{ the probability being defined as positive}, the probability may be written as
+Now, according to the Hammersley – Clifford theorem  \cite{hammersley1971markov}\footnote{ the probability being defined as positive}, the probability may be written as
 \be
 \label{eq:ciluqe_prob}
 P(\xx; \thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}
 \ee
 where $\theta_{c}(\xx_{c}): \cX^{|c|} \to \reals$  is a function, $\cC$ is the set of all maximal cliques\footnote{a clique is a set of vertices that have an edge to all vertices in the set. A maximal clique means that no other vertex can be added to the clique and it still be a clique.} in $G$ and $Z = \sum_{\xx \in \cX^p} \exp{\sum_{c \in \cC}\theta_{c}(\xx_{c})}$ is the normalization constant called the partition function.
-From the ability to describe the probability in this compact form\footnote{The naive description length is $O(|\cX|^p)$ while with this representation it is $O(\sum_{c \in \cC} |\cX|^{|c|})$} in itself, the merit of connecting probability and graph - or in other words, the potential of graphical models\cite{koller2009probabilistic} - is clear.
+From the ability to describe the probability in this compact form\footnote{The naive description length is $O(|\cX|^p)$ while with this representation it is $O(\sum_{c \in \cC} |\cX|^{|c|})$} in itself, the merit of connecting probability and graph - or in other words, the potential of graphical models \cite{koller2009probabilistic} - is clear.
 
 
 In this thesis I will assume that $|c| = 2$; this in itself does not restrict the probability function, but it may increase the cardinality of $\cX$\footnote{Basically each clique is assigned to a variable, and an edge exists between cliques sharing some variables. Note that new cardinality of the variable is the product the cardinalities of the clique variables.}.
@@ -74,7 +74,7 @@ The normalization constant $Z(\thetav)$ - the partition function, is defined as
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
 }
-In what follows, the log of the partition function will be of key importance, and will be denoted by $A(\thetav) = \log(Z(\thetav))$ for brevity. The gradient of $A(\thetav)$ is closely related to the marginal distirbutions of $P$, as follows: (e.g., see \cite{wainwright2008graphical}),
+In what follows, the log of the partition function will be of key importance, and will be denoted by $A(\thetav) = \log(Z(\thetav))$ for brevity. The gradient of $A(\thetav)$ is closely related to the marginal distirbutions of $P$, as follows: (e.g., see  \cite{wainwright2008graphical}),
 \bea
 \label{eq:pratition_derivative}
 \frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\\
@@ -111,18 +111,18 @@ P(\xx_{\cI};\thetav) = \sum_{\substack{\zz \in \cX \\
  s.t.\  \zz_{\cI} = \xx_{\cI} }} P(\zz;\thetav)
 \ee
 A natural generalization of the above queries is to solve them conditioned on a subset of the variables being set to some value.\footnote{This in fact is more compatible with the term maximum a posteriori, which implies considering a posterior after observing some variables. However, in recent graphical models literature MAP refers to maximizing over all assignments.} One can 
-consider such queries for any subset of observed variables and their values. There are thus exponentially many possible queries, all of which may be of interest. We touch upon this in \cite{heinemann2014inferning}. 
+consider such queries for any subset of observed variables and their values. There are thus exponentially many possible queries, all of which may be of interest. We touch upon this in  \cite{heinemann2014inferning}. 
 
 We now turn to the algorithmic aspects of solving the above tasks. Both MAR and MAP can be solved by enumerating over
-the set of assignments (maximizing over them in MAP and summing over them in MAR). This, however, is too expensive since it takes time exponential in the number of variables. Indeed, in the general case MAP \cite{shimony1994finding} is an NP complete problem, while MAR \cite{cooper1990computational} is \#P complete (MAR is hard to even approximate \cite{roth1996hardness}).
+the set of assignments (maximizing over them in MAP and summing over them in MAR). This, however, is too expensive since it takes time exponential in the number of variables. Indeed, in the general case MAP  \cite{shimony1994finding} is an NP complete problem, while MAR  \cite{cooper1990computational} is \#P complete (MAR is hard to even approximate  \cite{roth1996hardness}).
 
-However, in practice, the situation is often not hopeless. First, worst case run times are actually not exponential in the number of variables, but rather in a feature of the graph called tree-width \cite{robertson1983graph,robertson1994quickly}.
-The tree width of the graph is usually smaller than the number of vertices. For graphs without cycles (i.e., tree shaped graphs) the tree width is in fact one. On the other hand, for a complete graph it is the number of vertices. Furthermore, it is NP-complete to determine if the graph has tree-width smaller than $k$ \cite{Arnborg:1987}.
+However, in practice, the situation is often not hopeless. First, worst case run times are actually not exponential in the number of variables, but rather in a feature of the graph called tree-width  \cite{robertson1983graph,robertson1994quickly}.
+The tree width of the graph is usually smaller than the number of vertices. For graphs without cycles (i.e., tree shaped graphs) the tree width is in fact one. On the other hand, for a complete graph it is the number of vertices. Furthermore, it is NP-complete to determine if the graph has tree-width smaller than $k$  \cite{Arnborg:1987}.
 Given the above inference (both MAP and MAR) is easy on models where $G$ a tree. As mentioned ealier, this is percisely the case where BP is exact.
 
 There are other model restrictions that are known to allow polynomial
-inference, such as certain instances of planar graph models \cite{jaakkola2007approximate} and
-fast mixing models \cite{jerrum1993polynomial}.  However, in the
+inference, such as certain instances of planar graph models  \cite{jaakkola2007approximate} and
+fast mixing models  \cite{jerrum1993polynomial}.  However, in the
 general case, the inference problem is hard and an approximate
 algorithm must be used. Approximation algorithms will be further discussed in
 \secref{sec:approx}.
@@ -133,11 +133,16 @@ algorithm must be used. Approximation algorithms will be further discussed in
 Given the apparent hardness of inference in graphical models (even ``simple'' ones like MRFs as presented above), why should
 one study them at all. There are several compelling reasons as we outline below.
 
-First, despite the theoretical hardness of inference, there are many approximation algorithms which work very well in practice (we survey some below). It is of course interesting to understand why these algorithms work in practice, and there is ongoing research in this direction.\atodo{Give results on LDPC from Urbanke. Maybe also for community detection be Lenka and others} But this empirical success on its own merits the use of these models. Furthermore, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
+First, despite the theoretical hardness of inference, there are many approximation algorithms which work very well in practice (we survey some below). It is of course interesting to understand why these algorithms work in practice, and there is ongoing research in this direction.
+%%
+For example, in \cite{richardson2001design} a code which approach capacity is suggested, the decoding is done by Belief Propagation - an approximate algorithm, in \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model to achieve optimal algorithm in cases where the detection is feasible.    
+%%
+But this empirical success on its own merits the use of these models. Furthermore, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
 
 Second, graphical models have certain key representational advantages:
 \begin{itemize}
-\item Interpretability: The relation between graph structure and statistical properties allows one to learn much about a distribution from the structure of its MRF. Indeed, this is one reason why such models have found widespread use in computational biology.\atodo{Citation to Segal module networks}
+\item Interpretability: The relation between graph structure and statistical properties allows one to learn much about a distribution from the structure of its MRF.
+ Indeed, this is one reason why such models have found widespread use in computational biology \cite{segal2003module}.
 \item Query flexibility: As mentioend earlier, one can use a graphical model to ask an exponential number of possible queries (namely, what is the probaiblity of a given subset of variables given another subset). In applications such as medical diagnostics this is key.
 \item Missing values: Probabilistic models can easily handle missing values by marginalizing over them. This is again key in many application domains. 
 \end{itemize}

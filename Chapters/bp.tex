@@ -1,45 +1,47 @@
 \subsubsection{Belief Propagation}
 \label{sec:belief}
 Belief-Propagation (BP) is one of the most widely used approximate inference algorithms. One of the reasons for this popularity is its excellent performance
-on tasks such as decoding error correcting codes \atodo{cite} and machine vision applications \atodo{cite}.
+on tasks such as decoding error correcting codes \cite{richardson2001design} and machine vision applications \cite{felzenszwalb2006efficient}.
  
 Like mean field, BP is an iterative algortihm, which updates a set of variables at each iteration. However, whereas in mean field the variables are single 
 node marginals, in BP they are messages between nodes. Specifically, BP involves
 updating messages $m_{i \to j}(x_j)$ that are functions of $x_j$ and are {\em sent} from node $i$ to node $j$.
 %The message reflects the source vertex belief on the destination vertex probability.
 
-%In each cycle\footnote{The order of the messages can effect convergence rate, see for example \cite{elidan2012residual}.} 
+%In each cycle\footnote{The order of the messages can effect convergence rate, see for example  \cite{elidan2012residual}.} 
 %a message is passed from a vertex to all its neighbors. It is a function of the factor connecting the two vertices and the messages from all neighbors except the destination neighbor.
 %BP continues to cycle until the difference in the messages is very small, or after a fixed number of cycles.
-There are many schedules for updating messages (sequentially, in parallel, or via some dynamically chosen as in \cite{elidan2012residual}). In all of these,
+There are many schedules for updating messages (sequentially, in parallel, or via some dynamically chosen as in  \cite{elidan2012residual}). In all of these,
 the new value for $m_{i \to j}^{t}(x_j)$ is a function of all messages $m_{k\to i}(x_i)$ as follows:
 \be
 \label{eq:belief_propagation}
 m_{i \to j}^{t}(x_j) \propto \sum_{x_i \in\cX} \exp{\theta_{i,j}(x_i,x_j)+\theta_{i}(x_i)}\prod_{k \in \nei{i} \setminus j } m_{k \to i}^{t-1} (x_i)
 \ee 
 
-The resulting approximation for the marginals are given by:\atodo{No need for curly braces in exponent}
+The resulting approximation for the marginals are given by:
 \bean
 \tau_i(x_i) &\propto& \exp{\theta_i(x_i)} \prod_{k \in \nei{i}} m^T_{k \to i}(x_i) \label{eq:bp_single_marginal}\\
 \tau_{ij}(x_i,x_j) &\propto& \exp{\theta_{ij}(x_i,x_j)+\theta_i(x_i)+\theta_j(x_j)} \prod_{k \in \nei{i}\setminus j} m_{k \to i}^{T} (x_i) \prod_{k \in \nei{j}\setminus i}m_{k \to j}^{T} (x_j)\label{eq:bp_pairwise_marginal}
 \eean
-Note that $\tau_i,\tau_{ij}$ need not correspond to marginals of any distribution $P(\xx)$. In other words, they may be outside the marginal polytope.\atodo{cite yedidia for an example of this} Thus, they are often referred to as ``pseudo-marginals'', a term we will also use here.
+Note that $\tau_i,\tau_{ij}$ need not correspond to marginals of any distribution $P(\xx)$. In other words, they may be outside the marginal polytope.
+%\atodo{cite yedidia for an example of this - i did not see it at yedidia so i cite wainright} 
+Thus, they are often referred to as ``pseudo-marginals'' \cite{wainwright2008graphical}, a term we will also use here.
 
 
 The empirical success of BP has prompted researchers to better understand its thoeretical properties, leading to a wide range of elegant results.\atodo{cite some} We describe some of these below, with a focus on the variational perspective.
 
 First, when the graph $G$ is a tree BP is exact, since it essentially implements
-dynamic programming on the tree. There are other model families  where the error of BP marginals can be bound (e.g., ``tree-like'' graphs with long cycles as in \cite{dembo2010ising}. See also \cite{heinemann2014inferning} in this thesis).
+dynamic programming on the tree. There are other model families  where the error of BP marginals can be bound (e.g., ``tree-like'' graphs with long cycles as in  \cite{dembo2010ising}. See also  \cite{heinemann2014inferning} in this thesis).
 However, in the general case the quality of the BP approximation is unknown. 
 Moreover, there are cases where BP does not converge, and even when it does, the resulting psuedo-marginals may depend on the initial messages.
- Despite these points, BP often yields  good results in practice \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
+ Despite these points, BP often yields  good results in practice  \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
 
 We next turn to a variational formulation of BP, as derived in the seminal
-work of \citet{yedidia2000generalized, yedidia2003understanding}. Briefly, these results
-show that the fixed points of BP are local optima of a certain variational approximation,\footnote{Later, \cite{heskes2002stable} refined this result, and found that \textbf{stable} fixed point of BP are local minima of the variational approximation.} which starts
+work of  \citet{yedidia2000generalized, yedidia2003understanding}. Briefly, these results
+show that the fixed points of BP are local optima of a certain variational approximation,\footnote{Later,  \cite{heskes2002stable} refined this result, and found that \textbf{stable} fixed point of BP are local minima of the variational approximation.} which starts
 at \eqref{eq:variation_A} and approximates both the marginal polytope and entropy term.
 
-% where the authors found that the fix points of BP are local minima of the Bethe free energy of the system\footnote{Later, \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are local minima of the Bethe approximation.}.
+% where the authors found that the fix points of BP are local minima of the Bethe free energy of the system\footnote{Later,  \cite{heskes2002stable} refined this result to \textbf{stable} fix point of BP are local minima of the Bethe approximation.}.
 %This result not only gave meaning to BP fix points, it also allowed theoretical analysis of BP. 
 %I will now present this result; prior to this, some definitions are necessary.
 
@@ -49,7 +51,7 @@ First, let us define the Bethe entropy, a function of given singleton and pairwi
 H_B(\tauv) &=& -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)\label{eq:bethe_entropy}\\
 &=&-\sum_{i}\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\frac{\tau_{ij}(x_i,x_j)}{\tau_i(x_i)\tau_j(x_j)} \label{eq:bethe_entorpy_information}
 \eean
-For a tree shaped MRF, with marginals $\tauv$, we in fact have $H_B(\tauv) = H(\thetav(\tauv))$ (see \cite{yedidia2003understanding})
+For a tree shaped MRF, with marginals $\tauv$, we in fact have $H_B(\tauv) = H(\thetav(\tauv))$ (see  \cite{yedidia2003understanding})
 
 Next, we consider an outer bound on the marginal polytope. Note that any set of marginals in $\margpoly^G$ need to be consistent, in the sense
 that $\mu_{ij}(x_i,x_j)$ needs to marginalize to $\mu_i(x_i)$. This implies that requiring a set of $\muv$ to be pairwise consistent yield a 
@@ -77,11 +79,11 @@ The advantage of the above optimization is that the objective is simple to calcu
 a polynomial number of inequalities. 
 
 There are however two remaining difficulties. First, the maximizer of $\eqref{eq:bethe_approximation}$ is not necessarily in the marginal-polytope, and hence not a ``real'' marginal. Second, the resulting optimization problem is no longer convex, as the Bethe entropy is a non-convex function.
-In fact,  as far as I know, there is no result analyzing the general harndess of the Bethe approximation problem\footnote{In \cite{weller2012bethe} a polynomial algorithm is proposed for approximating the Bethe free energy up to arbitrary precision in binary attractive models.}.
+In fact,  as far as I know, there is no result analyzing the general harndess of the Bethe approximation problem\footnote{In  \cite{weller2012bethe} a polynomial algorithm is proposed for approximating the Bethe free energy up to arbitrary precision in binary attractive models.}.
 
 We are now ready to state the result relating the BP algorithm to the Bethe variational approximation in \eqref{eq:bethe_approximation}.
-%The claim by \cite{yedidia2000generalized} can now be quoted:
-\begin{claim} \cite{yedidia2000generalized}
+%The claim by  \cite{yedidia2000generalized} can now be quoted:
+\begin{claim}  \cite{yedidia2000generalized}
 \label{thm:bp_bethe}
 Let  $\mm$ be a set of messages as in \eqref{eq:belief_propagation}, and let $\tauv$ be the calculated pseudo-marginal as in \eqref{eq:bp_pairwise_marginal}.
 Then the pseudo-marginals are a fix-point of BP, if and only if they are zero gradient points of the Bethe Free energy \eqref{eq:bethe_approximation}.
@@ -124,13 +126,13 @@ Give two fixed points, the one with the better objective value may be a solution
 This suggests against the common practice of initializing the messages $\boldsymbol{m}^0$ to uniform distribution and running BP only once.
 Multiple restarts of BP with random initialization may improve the quality of BP results, at least when calculating the partition function.\footnote{How to use the resulting pseudo-marginals of BP when multiple maxima exists can be an interesting research direction.}.
 
-The first extension of \claimref{thm:bp_bethe} was the Generalized Belief Propagation algorithm \cite{yedidia2000generalized}. 
+The first extension of \claimref{thm:bp_bethe} was the Generalized Belief Propagation algorithm  \cite{yedidia2000generalized}. 
 Instead of maximizing the Bethe energy, it maximizes the Kikuchi free energy - an extension from only pairwise interactions to larger subsets. This 
 indeed resulted in improved marginal approximation in many cases.
 
 
 One of the drawbacks of the Bethe approximation is the fact that the objective \eqref{eq:bethe_approximation} is not concave.
-Tree Re-Weighted Belief Propagation (TRW) \cite{wainwright2003tree} proposes an alternative entropy approximation which is concave.
+Tree Re-Weighted Belief Propagation (TRW)  \cite{wainwright2003tree} proposes an alternative entropy approximation which is concave.
 This is acheived by proper weighting of the sum over edges in \eqref{eq:bethe_entorpy_information}.
 %Its name comes from the interpretation of these weights.
 \ignore{
@@ -141,40 +143,40 @@ these probabilities are weights of the information part.
 Another nice property of TRW is that the resulting log partition approximation is an upper bound on the true partition function. 
 %This can easily be seen by using Jensen inequality\footnote{Remember that the partition function is a convex function of $\thetav$.} $Z(\thetav) = Z\left(\sum_{\mathfrak{t}} t_{\mathfrak{t}}\thetav^{\mathfrak{t}}\right) \leq \sum_{\mathfrak{t}} t_{\mathfrak{t}} Z(\thetav^{\mathfrak{t}})$ which is exactly the TRW approximation to the partition function.
 % Both algorithms suggest a variation of BP messages to fit the change in energy.
-A unified view of entropy based approximation algorithms may be found in \cite{meshi2009convexifying}.
+A unified view of entropy based approximation algorithms may be found in  \cite{meshi2009convexifying}.
 
 Another line of inference algorithms attempts to optimize the Bethe free energy directly.
-For the binary case, \cite{welling2001belief} and later \cite{shin2012complexity} present two simliar algorithms, but the latter gives time complexity guarantees. A general algorithm was given by \cite{yuille2002cccp}, which uses a convex concave procecdure (CCCP, see \cite{yuille2002concave}) to optimize the Bethe or Kikuchi energies.
+For the binary case,  \cite{welling2001belief} and later  \cite{shin2012complexity} present two simliar algorithms, but the latter gives time complexity guarantees. A general algorithm was given by  \cite{yuille2002cccp}, which uses a convex concave procecdure (CCCP, see  \cite{yuille2002concave}) to optimize the Bethe or Kikuchi energies.
 
 One of the basic desiderata of any algorithm is convergence in finite time. Unfortunately, it is easy to construct cases where the
 BP messages do not converge to any limit. This has prompted much research on understanding conditions for guaranteeing BP convergence.
 %So the question remain, can convergence be guaranteed under some model's constrains.
-The first work to do so was \cite{tatikonda2002loopy}, where a bound on the pairwise interaction was given to guarantee convergence.
+The first work to do so was  \cite{tatikonda2002loopy}, where a bound on the pairwise interaction was given to guarantee convergence.
 For proving the bound, the computation tree of BP was used.
 The computation tree describes the running of BP where each time is a level in the tree.
 The root value is the pseudo-marginal of a specific vertex at time $t$, its direct descendents are the neighbors that send it a message $t-1$, and their values are the pseudo-marginal at that time.
 It continues to go back in time, until arriving at the leaves which are the initial messages at time $0$.
 Taking time to infinity, if the marginals at time $t$ are independent of the initial messages at time $0$, BP will converge.
-This method has roots in statistical physics, where it is related to the questions of uniqueness of the Gibbs measure, or independence of boundary conditions\footnote{These notions are important to the understanding of our second paper \cite{heinemann2014inferning}, where each marginal should be independent of nodes which are at distance $l$.}.
+This method has roots in statistical physics, where it is related to the questions of uniqueness of the Gibbs measure, or independence of boundary conditions\footnote{These notions are important to the understanding of our second paper  \cite{heinemann2014inferning}, where each marginal should be independent of nodes which are at distance $l$.}.
 
-\claimref{thm:bp_bethe} is used in \cite{heskes2004uniqueness} for finding convergence guarantees.
+\claimref{thm:bp_bethe} is used in  \cite{heskes2004uniqueness} for finding convergence guarantees.
 Since insuring the convexity of Bethe free energy implies convergence of BP, they define a set of conditions that guarantee this convexity.
 Another method to guarantee BP convergence, is the ability to bound the speed at which the messages get closer to each other.
 In other words, if the distance (in any distance measure) between any two vectors of messages at time $t+1$ is smaller than the distance at time $t$ by a rate that is always strictly smaller than one, then convergence of BP can be guaranteed $ K d(\mm^{t+1}, \hat{\mm}^{t+1}) \leq d(\mm^t, \hat{\mm}^t)$ where $0\leq K<1$ and $d(\xx,\yy)$ is some distance function.
-In both papers \cite{mooij2007sufficient} and \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
+In both papers  \cite{mooij2007sufficient} and  \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
 Note that all the listed methods do not find conditions to BP convergence, but rather that BP will have a single fixed point.
-This fact will be important in my paper \cite{heinemann2012cannot}.\atodo{I edited up to here}
+This fact will be important in my paper  \cite{heinemann2012cannot}.\atodo{I edited up to here}
 
 The relation between the Bethe partition function \eqref{eq:bethe_approximation} and the exact one \eqref{eq:variation_A} is still an open question.
 It is clear that a relation cannot be given in the general case - the Bethe approximation is sometimes bigger and sometimes smaller than the exact partition function.
-One of the first results was by \cite{AlanNips2007}, proving that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$), then the Bethe partition function lower bounds the exact partition function.
-Later, \cite{RuozziNips2012} gave a stronger result, showing that if the pairwise interactions are log sub-modular, then the Bethe partition function lower bounds the exact partition function (the case of attractive models is an instance of this class).
-In their proof, they used the important work of \cite{vontobel2013counting}, in which a combinatorial meaning was given to the Bethe entropy.
+One of the first results was by  \cite{AlanNips2007}, proving that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$), then the Bethe partition function lower bounds the exact partition function.
+Later,  \cite{RuozziNips2012} gave a stronger result, showing that if the pairwise interactions are log sub-modular, then the Bethe partition function lower bounds the exact partition function (the case of attractive models is an instance of this class).
+In their proof, they used the important work of  \cite{vontobel2013counting}, in which a combinatorial meaning was given to the Bethe entropy.
 
 To conclude, the connection between BP and Bethe contributes to the understanding of BP and helps improve it.
 The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.
 Another interpretation of BP is seeing it as a re-parametrization algorithm, that tries to change the parametrization of $\thetav$ such that it will belong to the local-polytope.  
-For full proof please refer to \cite{wainwright2002stochastic}.
+For full proof please refer to  \cite{wainwright2002stochastic}.
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
