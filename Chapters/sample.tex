@@ -1,0 +1,57 @@
+\subsection{Sampling}
+\label{sec:sampling}
+At first glance, sampling seems like the perfect solution for finding the marginals.
+The marginals may be estimated as the mean of bounded random variables.
+Using the Hoeffding bound, the probability of mistake greater than $\epsilon$ can be bound by $P(|p(x_i) - \frac{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}{M}| > \epsilon) < 2\exp{-\frac{2\epsilon^2M}{|\cX|^2}}$; meaning, the time complexity is $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$\footnote{With a probability greater than $1-\delta$, the estimation error will be less than $\epsilon$.}.
+The problem in this is, that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This can be easily seen from redction to q-coloring, for example \cite{levin2009markov, bordewich2016mixing}}.
+How, then, can a model be sampled?
+
+Markov Chain Monte Carlo (MCMC) is a method of sampling from a distribution $P(\xx)$ while being able to sample only from distribution $Q(\xx)$.
+In this, a Markov chain with two main features is constructed: first, it must be easy to move from one state to another; secondly, the stationary distribution of the Markov chain is $P(\xx)$.
+
+To define a Markov chain, one needs to define the transition matrix between any two states.
+The matrix rows should sum to one $\sum_j A_{i,j} = 1$, the coordinate $A_{i,j}$ defining the probability to move from state $i$ to state $j$.
+In MCMC, this matrix of dimensions is $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$, meaning that each state is a full assignment of the model variables. 
+The stationary distribution $\vv$ is a distribution over the states (over different assignments) that satisfies $A\vv=\vv$.
+In MCMC, this distribution should be $P(\xx)$ - the model distribution.
+
+Metropolis chains is an example of how the Markov chain can be constructed.
+The transition matrix is defined as follows:
+\be
+A(\xx,\tilde{\xx}) = \left\{
+\begin{array}{lr}
+Q(\tilde{\xx}|\xx)\min\{1,\frac{Q(\xx|\tilde{\xx})P(\tilde{\xx})}{Q(\tilde{\xx}|\xx)P(\xx)}\} & \tilde{\xx} \neq \xx\\
+1 - \sum_{\hat{\xx} \neq \xx} Q(\hat{\xx}|\xx)\min\{1,\frac{Q(\xx|\hat{\xx})P(\hat{\xx})}{Q(\hat{\xx}|\xx)P(\xx)}\} & \text{else}
+\end{array} \right.
+\ee
+Note that $Q(\xx|\tilde{\xx})$ must only be irreducible\footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
+Moreover, we need only to compute $\frac{P(\xx)}{P(\tilde{\xx})} $, hence the partition function is canceled, and the quantity is easy to calculate.
+
+Glauber chains, or Gibbs sampler, is another method to define the Markov transition matrix.
+The idea is simple, in each iteration only a small number of variables will change, this group denoted by $\cI \subseteq [1,\ldots,p]$, $|\cI| = k$.
+Then, the possible next states are the ones that differ from the current state $\xx$ only in the indices in $\cI$, this set denoted by $\mathcal{D}(\xx,\cI) = \left\{\tilde{\xx} \in \cX^p | \forall i \notin \cI,\ \xx_i = \tilde{\xx}_i \right\}$.
+The set $\mathcal{D}^k(\xx)= \cup_{\cI, |\cI|=k} \mathcal{D}(\xx,\cI)$ denotes the set of all $\tilde{\xx}$ that differ from $\xx$ only in $k$ entries.
+Now the transition matrix is defined as,
+\be
+A(\xx,\tilde{\xx}) = \left\{
+\begin{array}{lr}
+0 & \tilde{\xx} \notin \mathcal{D}^k(\xx)\\
+\frac{(p-k)!k!}{p!}\frac{P(\tilde{\xx})}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})} & \tilde{\xx} \in \mathcal{D}^k(\xx), \xx \neq \tilde{\xx}\\
+\frac{(p-k)!k!}{p!}\sum_{\cI, |\cI|=k}\frac{P(\xx)}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})}& \xx = \tilde{\xx}
+\end{array} \right.
+\ee
+Note that as in the case above, only the ratio of $P(\xx)$ needs to be computed, hence the partition function can be canceled.
+
+The remaining question is, how fast are we guaranteed to sample from the stationary distribution when starting from an arbitrary assignment $\xx$.
+This constant is called the \textit{mixing time}.
+The mixing time is defined as the maximum number of moves (transitions between states) necessary until the visited states distribution is $\epsilon$ close to the stationary distribution while starting from any state.
+\be
+\tau_{\epsilon}  = \min_{\tau \in \naturalNumbers}\sup_{\vv \in \Omega} \left\{\tau | d\left(A^{\tau}\vv,P(\xx)\right) < \epsilon\right\}
+\ee
+where $\Omega = \{ \vv \in [0,1]^{|\cX|^{p}} | \sum_i \vv_i = 1\}$, and $d(\vv,\tilde{\vv})$ is any distance function between probabilities.\footnote{ From the above condition it is easy to see the connection to the spectral gap (the distance between the largest to the second eigenvalue) and the mixing time. For more information see\cite{levin2009markov}}  .
+The mixing time depends on the model features, such as interaction strength, dependency structure etc.
+Hence, models with a small mixing time can be easily sampled, and inferring the marginals is doable.
+This fact will be important when talking about inferning \secref{sec:inferning}.
+
+The next section covers learning graphical models.
+
