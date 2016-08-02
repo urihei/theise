@@ -17,6 +17,7 @@ Specifying a model as defined above requires $|\cX|$ numbers, which is exponenti
 A graphical model of a distribution $P(\xx)$ makes the assumption that $P(\xx)$ can be expressed as a product of ``simple'' functions which depend only on a subset of the variables. The simplest graphical model is of the form:
 \be
 P(\xx) = \prod_i q_i(x_i)
+\label{eq:independent}
 \ee
 where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i n_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
 
