@@ -12,7 +12,7 @@ Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will foc
 A probabilistic model is a function $\pr(\xx)$ from assignments $\xx$ to their probabilities. It is thus constrained to be non-negative and sum to one: $\sum_{\xx \in \cX} \pr(\xx) = 1$.
 %\footnote{Note that zero is excluded, since we a positive distribution is required.}\footnote{Without loss of generality, for ease of notation, all variables were assumed to have the same domain. This assumption may be easily removed.}.
 
-Specifying a model as defined above requires $|\cX|$ numbers, which is exponential in $N$, and is typically too large from both modeling and computational standpoints. Thus, it is natural to seek more compact models, which can be described by less parameters, but can still capture probabilstic dependencies that are practically useful.
+Specifying a model as defined above requires $|\cX|$ numbers, which is exponential in $N$, and is typically too large from both modeling and computational standpoints. Thus, it is natural to seek more compact models, which can be described by less parameters, but can still capture probabilistic dependencies that are practically useful.
 
 A graphical model of a distribution $P(\xx)$ makes the assumption that $P(\xx)$ can be expressed as a product of ``simple'' functions which depend only on a subset of the variables. The simplest graphical model is of the form:
 \be
@@ -21,7 +21,7 @@ P(\xx) = \prod_i q_i(x_i)
 \ee
 where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i n_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
 
-A much more useful graphical model is the Pairwise Markov Random Field (MRF) model\footnote{The pairwise MRF ise used in vision \cite{yao2010modeling}, computational-biology \cite{hopf2015quantification}, medical \cite{goodwin2015predictive} and security (anomaly detection) \cite{wang2015ddos}}, which we will focus on in this thesis.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
+A much more useful graphical model is the Pairwise Markov Random Field (MRF) model\footnote{The pairwise MRF is used in vision \cite{yao2010modeling}, computational-biology \cite{hopf2015quantification}, medical \cite{goodwin2015predictive} and security (anomaly detection) \cite{wang2015ddos}}, which we will focus on in this thesis.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
 \begin{itemize}
 \item An undirected graph $G=(V,E)$ with $\nvars$ nodes and edges $E$. We will denote the neighbors of $i$ in $G$ by $\nei{i}$.
 \item For each edge $(i,j)\in E$ and assignment $x_i,x_j$ a parameter $\theta_{ij}(x_i,x_j)$. Similarly for each $i\in V$ and assignment $x_i$ a parameter $\theta_i(x_i)$. 
@@ -38,10 +38,10 @@ where $Z(\thetav)$ is a normalization constant, also known as the partition func
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
 
-From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighrbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independcies in such models are a result of the one specified above, and also known as the local Markov property. See e.g.,  \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic  \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks, can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
+From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independencies in such models are a result of the one specified above, and also known as the local Markov property. See e.g.,  \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic  \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks, can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
 
 \ignore{
-In many real-world situations, each variable is directly dependent on a small subset of other variables only. To formalize this notion, consider a random variable $X_i$, and the dependent set of variables by $X_{\cI}$, where $\cI \subset \{1,\ldots,n\}$. Then direct depdnence of $X_i$ on $X_{\cI}$ can be captured by requiring that $X_i$ is conditionally indepndent of the rest of the variables given $X_{\cI}$. This is equivalent to requiring $P(x_i |\xx_{\cI}) = P(x_i|\xx_{\{1,\ldots,i-1,i+1,\ldots, \nvars\}})$ for all assignments $\xx$.
+In many real-world situations, each variable is directly dependent on a small subset of other variables only. To formalize this notion, consider a random variable $X_i$, and the dependent set of variables by $X_{\cI}$, where $\cI \subset \{1,\ldots,n\}$. Then direct dependence of $X_i$ on $X_{\cI}$ can be captured by requiring that $X_i$ is conditionally independent of the rest of the variables given $X_{\cI}$. This is equivalent to requiring $P(x_i |\xx_{\cI}) = P(x_i|\xx_{\{1,\ldots,i-1,i+1,\ldots, \nvars\}})$ for all assignments $\xx$.
 
 In probabilistic terminology, this is equivalent to requiring that $P(x_i |\xx_{\cI}) = P(x_i|\xx_{[1,\ldots,p] \setminus i}),\  \forall \xx \in \cX^{P}$ where $\cI \subset \{1,\ldots,p\}$  is a small set of the variable's indices.
 }
@@ -74,7 +74,7 @@ The normalization constant $Z(\thetav)$ - the partition function, is defined as
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
 }
-In what follows, the log of the partition function will be of key importance, and will be denoted by $A(\thetav) = \log(Z(\thetav))$ for brevity. The gradient of $A(\thetav)$ is closely related to the marginal distirbutions of $P$, as follows: (e.g., see  \cite{wainwright2008graphical}),
+In what follows, the log of the partition function will be of key importance, and will be denoted by $A(\thetav) = \log(Z(\thetav))$ for brevity. The gradient of $A(\thetav)$ is closely related to the marginal distributions of $P$, as follows: (e.g., see  \cite{wainwright2008graphical}),
 \bea
 \label{eq:pratition_derivative}
 \frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\\
@@ -92,7 +92,7 @@ Other properties of the log partition function will be presented in \secref{sec:
 %The fact that the derivative of $A(\thetav)$ with respect to $\thetav_{ij}(x_i,x_j)$ equals the marginal probability of these variables, illustrates its importance. 
 
 \subsection{Inference in Graphical Models \label{sec:inference}}
-The utility of probabilsic models lies in their ability to answer probabilistic queries. Namely, queries of the form: what is
+The utility of probabilistic models lies in their ability to answer probabilistic queries. Namely, queries of the form: what is
 the probability of event $A$ given event $B$, or what is the most likely event $A$ given event $B$. The process
 of answering such queries is known as probabilistic inference. In what follows we define key inference problems. 
 
@@ -118,7 +118,7 @@ the set of assignments (maximizing over them in MAP and summing over them in MAR
 
 However, in practice, the situation is often not hopeless. First, worst case run times are actually not exponential in the number of variables, but rather in a feature of the graph called tree-width  \cite{robertson1983graph,robertson1994quickly}.
 The tree width of the graph is usually smaller than the number of vertices. For graphs without cycles (i.e., tree shaped graphs) the tree width is in fact one. On the other hand, for a complete graph it is the number of vertices. Furthermore, it is NP-complete to determine if the graph has tree-width smaller than $k$  \cite{Arnborg:1987}.
-Given the above inference (both MAP and MAR) is easy on models where $G$ a tree. As mentioned ealier, this is percisely the case where BP is exact.
+Given the above inference (both MAP and MAR) is easy on models where $G$ a tree. As mentioned earlier, this is precisely the case where BP is exact.
 
 There are other model restrictions that are known to allow polynomial
 inference, such as certain instances of planar graph models  \cite{jaakkola2007approximate} and
@@ -143,7 +143,7 @@ Second, graphical models have certain key representational advantages:
 \begin{itemize}
 \item Interpretability: The relation between graph structure and statistical properties allows one to learn much about a distribution from the structure of its MRF.
  Indeed, this is one reason why such models have found widespread use in computational biology \cite{segal2003module}.
-\item Query flexibility: As mentioend earlier, one can use a graphical model to ask an exponential number of possible queries (namely, what is the probaiblity of a given subset of variables given another subset). In applications such as medical diagnostics this is key.
+\item Query flexibility: As mentioned earlier, one can use a graphical model to ask an exponential number of possible queries (namely, what is the probability of a given subset of variables given another subset). In applications such as medical diagnostics this is key.
 \item Missing values: Probabilistic models can easily handle missing values by marginalizing over them. This is again key in many application domains. 
 \end{itemize}
 
@@ -175,4 +175,4 @@ Queries on several variables are possible and will take into account the relatio
 
 %To conclude, graphical models is a very powerful tool.
 %This power comes with a price, inferring and learning (as we will be shown in \secref{sec:learning}) are hard, and approximation algorithms must be used in most cases.
-These advantages have motivated researchers to tackle the hardness of learnign and inference in graphical models. We next discuss present some standard approximate inference algorithms, followed by methods for learning graphical models.
+These advantages have motivated researchers to tackle the hardness of learning and inference in graphical models. We next discuss present some standard approximate inference algorithms, followed by methods for learning graphical models.

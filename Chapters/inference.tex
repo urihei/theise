@@ -71,13 +71,13 @@ The advantage of the above representation lies in the simplicity of approximatin
 %% For example, the local polytope (defined in \eqref{eq:local_polytope}) will approximate the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
 %% The resulting approximation is the Bethe approximation, which is related to the known algorithm Belief-Propagation\cite{pearl1986fusion, yedidia2000generalized}.
 \subsubsection{Mean Field}
-Mean field methods have a long history, starting from statistical physics, and later popularized in the machine learning community \cite{weiss1907hypothese,peterson1987mean}. There are various ways of deriving them, and here we will provide one based on the variataional view of \eqref{eq:variation_A}.\footnote{A popular and earlier derivation, casts mean field as finding a simple distribution that approximates $P(\xx;\thetav)$ in a KL divergence sense.} 
+Mean field methods have a long history, starting from statistical physics, and later popularized in the machine learning community \cite{weiss1907hypothese,peterson1987mean}. There are various ways of deriving them, and here we will provide one based on the variational view of \eqref{eq:variation_A}.\footnote{A popular and earlier derivation, casts mean field as finding a simple distribution that approximates $P(\xx;\thetav)$ in a KL divergence sense.} 
 %The term mean field methods (e.g., see \cite{peterson1987mean}) corresponds to approximate inference approaches that that approximate a complex model by a simpler one.
 %In inference, it approximates the real model marginals by marginals of a simpler model.
 
 %\atodo{It's incorrect ot say mean field uses $\margpoly^{G_I}$ since that contains only singleton marginals}
-We begin by considering all distributions $P(\xx)$ corresponding to a set of $\nvars$ independent variables, as in \eqref{eq:independent}. The pairwise marginals of such distributions will also indepednent, namely given by $\mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)$.
-Such distribtions are therefore always in $\margpoly^G$.
+We begin by considering all distributions $P(\xx)$ corresponding to a set of $\nvars$ independent variables, as in \eqref{eq:independent}. The pairwise marginals of such distributions will also be independent, namely given by $\mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)$.
+Such distributions are therefore always in $\margpoly^G$.
 This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (namely $\margpoly^{I} \subseteq \margpoly^{G}$):
 %\atodo{Strictly speaking this is not a marginal polytope...}
 %More specifically, it replaces the marginal polytope (of the true dependencies graph) and the true entropy, with the marginal polytope and entropy of a simpler dependencies graph.
@@ -95,7 +95,7 @@ This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (
 %Note that the dimension of the marginals is with respect to the original graph,
 %moreover, $\margpoly^{I} \subseteq \margpoly^{G}$\footnote{Note that marginals corresponding to the pairwise interaction are constrained to reflect independence, a constraint that does not exist in the original marginal polytope.}.\\
 
-We next turn to calculating $A^*(\muv)$ for $\muv\in\margpoly^{I}$. It is easy to see that for any $\muv \in  \margpoly^{I}$  the distribution $P(\xx) = \prod_{i} \mu_i(x_i)$ has pairwse marginals $\mu_{ij}(x_i,x_j) =  \mu_i(x_i)\mu_j(x_j)$. Since $P$ is an MRF, it follows that
+We next turn to calculating $A^*(\muv)$ for $\muv\in\margpoly^{I}$. It is easy to see that for any $\muv \in  \margpoly^{I}$  the distribution $P(\xx) = \prod_{i} \mu_i(x_i)$ has pairwise marginals $\mu_{ij}(x_i,x_j) =  \mu_i(x_i)\mu_j(x_j)$. Since $P$ is an MRF, it follows that
 $\thetav(\muv)$ are the parameters specifying $P$. Also, the entropy of $P$ is just the sum of individual entropies:
 \be
 H_{I}(\muv) = -\sum_{i}\sum_{x_i} \mu_i(x_i)\log\mu_i(x_i)
