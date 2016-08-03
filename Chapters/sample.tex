@@ -7,61 +7,70 @@ More formally, suppose that $\xx^{1},\ldots,\xx^{m}$ are $m$ samples (each of al
 \be
 \hat{\mu}_i(x_i) = {1\over M}{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}
 \ee
-As $M\to\infty$ this will converge to the true marginal. Furthermore, we can use concentration bounds like Hoeffding's inequality to characterize the rate of convergence. For the above case this will state that for all $\epsilon > 0$:\atodo{Why does the cardinality of $X$ appear here? If you have a single marginal it shouldn't matter what $\cX$ is. Check this.}
+As $M\to\infty$ this will converge to the true marginal. Furthermore, we can use concentration bounds like Hoeffding's inequality to characterize the rate of convergence. For the above case this will state that for all $\epsilon > 0$:
+%\atodo{Why does the cardinality of $X$ appear here? If you have a single marginal it shouldn't matter what $\cX$ is. Check this - you changed the notation it should be the cardinality of x_i}
 \be
-P\left[|\mu^{\thetav}_i(x_i) - \hat{\mu}_i(x_i)| > \epsilon\right] < 2\exp{-\frac{\epsilon^2M}{|\cX|^2}}
+P\left[|\mu^{\thetav}_i(x_i) - \hat{\mu}_i(x_i)| > \epsilon\right] < 2\exp{-\frac{\epsilon^2M}{|\cX_i|^2}}
 \ee
-This in turn implies that with probability greater than $1-\delta$ we will need $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$ samples to reach accuracy $\epsilon$.
+This in turn implies that with probability greater than $1-\delta$ we will need $O(\frac{\log(\delta) |\cX_i|^2}{\epsilon^2})$ samples to reach accuracy $\epsilon$.
 
 There is however one major difficulty with the above approach. Namely, that sampling IID from $P(\xx;\theta)$ is hard.\footnote{This can be easily seen from redction to q-coloring, for example \cite{levin2009markov, bordewich2016mixing}}. How, then, can a model be sampled, even approximately?
 
 A key idea in the sampling literature is to use a different distribution $Q(\xx)$ from which we {\em can} sample efficiently. 
-Markov Chain Monte Carlo (MCMC) is perhaps the most popular and general among these approaches.\atodo{cite nando jordan review}
+Markov Chain Monte Carlo (MCMC) is perhaps the most popular and general among these approaches\cite{andrieu2003introduction,levin2009markov}.
+%\atodo{cite nando jordan review}
 %In this, a Markov chain with two main features is constructed: first, it must be easy to move from one state to another; secondly, the stationary distribution of the Markov chain is $P(\xx)$.
 
 \atodo{The following is too messy. Why is $A$ indexed by $ij$ and then by $\xx$? Also, $A$ typically is the acceptance probability and not transition. Please
 define things clearly.}
 %An MCMC sampler defines a markov chain, where at any given point in the sampling process a new sample $\xx$ is generated based on the previous sample.
 To define a Markov chain, one needs to define the transition matrix between any two states.
-The matrix rows should sum to one $\sum_j A_{i,j} = 1$, the coordinate $A_{i,j}$ defining the probability to move from state $i$ to state $j$.
-In MCMC, this matrix of dimensions is $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$, meaning that each state is a full assignment of the model variables. 
-The stationary distribution $\vv$ is a distribution over the states (over different assignments) that satisfies $A\vv=\vv$.
+%%
+In our case each state is an assignment $\xx$ and the transition matrix describe the probability to move from state $\xx$ to state $\xx'$.
+Hence the matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$ and its diminutions are $T \in [0,1]^{|\cX|,|\cX|}$.
+%%
+%The matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$, the coordinate $A_{\xx,j}$ defining the probability to move from state $i$ to state $j$.
+%In MCMC, this matrix of dimensions is $T \in [0,1]^{|\cX|,|\cX|}$, meaning that each state is a full assignment of the model variables. 
+The stationary distribution $\piv$ is a distribution over the states (over different assignments) that satisfies $\piv=\piv T$.
 In MCMC, this distribution should be $P(\xx)$ - the model distribution.
 
 Metropolis chains is an example of how the Markov chain can be constructed.
 The transition matrix is defined as follows:
 \be
-A(\xx,\tilde{\xx}) = \left\{
+T_{\xx,\xx'} = \left\{
 \begin{array}{lr}
-Q(\tilde{\xx}|\xx)\min\{1,\frac{Q(\xx|\tilde{\xx})P(\tilde{\xx})}{Q(\tilde{\xx}|\xx)P(\xx)}\} & \tilde{\xx} \neq \xx\\
+Q(\xx'|\xx)\min\{1,\frac{Q(\xx|\xx')P(\xx')}{Q(\xx'|\xx)P(\xx)}\} & \xx' \neq \xx\\
 1 - \sum_{\hat{\xx} \neq \xx} Q(\hat{\xx}|\xx)\min\{1,\frac{Q(\xx|\hat{\xx})P(\hat{\xx})}{Q(\hat{\xx}|\xx)P(\xx)}\} & \text{else}
 \end{array} \right.
 \ee
-Note that $Q(\xx|\tilde{\xx})$ must only be irreducible\footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX^p$ exists $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$} - it does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
-Moreover, we need only to compute $\frac{P(\xx)}{P(\tilde{\xx})} $, hence the partition function is canceled, and the quantity is easy to calculate.
+Note that $Q(\xx|\xx')$ must only be irreducible
+%%
+\footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX$ there exists a $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$ - There is a positive probability to move from every $\xx_0$ to any $\xx$ in finite number of steps}. It does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
+Moreover, we need only to compute $\frac{P(\xx)}{P(\xx')} $, hence the partition function is canceled, and the quantity is easy to calculate.
+%%
 
 Glauber chains, or Gibbs sampler, is another method to define the Markov transition matrix.
-The idea is simple, in each iteration only a small number of variables will change, this group denoted by $\cI \subseteq [1,\ldots,p]$, $|\cI| = k$.
-Then, the possible next states are the ones that differ from the current state $\xx$ only in the indices in $\cI$, this set denoted by $\mathcal{D}(\xx,\cI) = \left\{\tilde{\xx} \in \cX^p | \forall i \notin \cI,\ \xx_i = \tilde{\xx}_i \right\}$.
-The set $\mathcal{D}^k(\xx)= \cup_{\cI, |\cI|=k} \mathcal{D}(\xx,\cI)$ denotes the set of all $\tilde{\xx}$ that differ from $\xx$ only in $k$ entries.
+The idea is simple, in each iteration only a small number of variables will change, this group denoted by $\cI \subseteq [1,\ldots,N]$, $|\cI| = k$.
+Then, the possible next states are the ones that differ from the current state $\xx$ only in the indices in $\cI$, this set denoted by $\mathcal{D}(\xx,\cI) = \left\{\xx' \in \cX | \forall i \notin \cI,\ \xx_i = \xx'_i \right\}$.
+The set $\mathcal{D}^k(\xx)= \cup_{\cI, |\cI|=k} \mathcal{D}(\xx,\cI)$ denotes the set of all $\xx'$ that differ from $\xx$ only in $k$ entries.
 Now the transition matrix is defined as,
 \be
-A(\xx,\tilde{\xx}) = \left\{
+T_{\xx,\xx'} = \left\{
 \begin{array}{lr}
-0 & \tilde{\xx} \notin \mathcal{D}^k(\xx)\\
-\frac{(p-k)!k!}{p!}\frac{P(\tilde{\xx})}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})} & \tilde{\xx} \in \mathcal{D}^k(\xx), \xx \neq \tilde{\xx}\\
-\frac{(p-k)!k!}{p!}\sum_{\cI, |\cI|=k}\frac{P(\xx)}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})}& \xx = \tilde{\xx}
+0 & \xx' \notin \mathcal{D}^k(\xx)\\
+\frac{(N-k)!k!}{N!}\frac{P(\xx')}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})} & \xx' \in \mathcal{D}^k(\xx), \xx \neq \xx'\\
+\frac{(N-k)!k!}{N!}\sum_{\cI, |\cI|=k}\frac{P(\xx)}{\sum_{\hat{\xx} \in \mathcal{D}(\xx,\cI)}P(\hat{\xx})}& \xx = \xx'
 \end{array} \right.
 \ee
-Note that as in the case above, only the ratio of $P(\xx)$ needs to be computed, hence the partition function can be canceled.
+Note that as in the case above, only the ratio of $P(\xx)$ needs to be computed, hence the partition function is canceled.
 
 The remaining question is, how fast are we guaranteed to sample from the stationary distribution when starting from an arbitrary assignment $\xx$.
 This constant is called the \textit{mixing time}.
 The mixing time is defined as the maximum number of moves (transitions between states) necessary until the visited states distribution is $\epsilon$ close to the stationary distribution while starting from any state.
 \be
-\tau_{\epsilon}  = \min_{\tau \in \naturalNumbers}\sup_{\vv \in \Omega} \left\{\tau | d\left(A^{\tau}\vv,P(\xx)\right) < \epsilon\right\}
+\tau_{\epsilon}  = \min_{\tau \in \naturalNumbers}\sup_{\vv \in \Omega} \left\{\tau | d\left(\piv T^{\tau},P(\xx)\right) < \epsilon\right\}
 \ee
-where $\Omega = \{ \vv \in [0,1]^{|\cX|^{p}} | \sum_i \vv_i = 1\}$, and $d(\vv,\tilde{\vv})$ is any distance function between probabilities.\footnote{ From the above condition it is easy to see the connection to the spectral gap (the distance between the largest to the second eigenvalue) and the mixing time. For more information see\cite{levin2009markov}}  .
+where $\Omega = \{ \vv \in [0,1]^{|\cX|} | \sum_i \vv_i = 1\}$ sum initialization distribution over $\xx$, and $d(\vv,\vv')$ is any distance function between probabilities.\footnote{ From the above condition it is easy to see the connection to the spectral gap (the distance between the largest to the second eigenvalue) and the mixing time. For more information see\cite{levin2009markov}}  .
 The mixing time depends on the model features, such as interaction strength, dependency structure etc.
 Hence, models with a small mixing time can be easily sampled, and inferring the marginals is doable.
 This fact will be important when talking about inferning \secref{sec:inferning}.
