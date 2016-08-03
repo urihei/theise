@@ -169,19 +169,17 @@ Since insuring the convexity of Bethe free energy implies convergence of BP, the
 Another method to guarantee BP convergence, is the ability to bound the speed at which the messages get closer to each other.
 In other words, if the distance (in any distance measure) between any two vectors of messages at time $t+1$ is smaller than the distance at time $t$ by a rate that is always strictly smaller than one, then convergence of BP can be guaranteed $ K d(\mm^{t+1}, \hat{\mm}^{t+1}) \leq d(\mm^t, \hat{\mm}^t)$ where $0\leq K<1$ and $d(\xx,\yy)$ is some distance function.
 In both papers  \cite{mooij2007sufficient} and  \cite{roosta2008convergence} this intuition is used to provide bounds for BP convergence.
-Note that all the listed methods do not find conditions to BP convergence, but rather that BP will have a single fixed point.
-This fact will be important in my paper  \cite{heinemann2012cannot}.\atodo{I edited up to here}
+Note that all the above methods do not find conditions for BP convergence, but rather that BP will have a single fixed point.
+This fact will be important in \cite{heinemann2012cannot}, presented in this thesis.
 
-The relation between the Bethe partition function \eqref{eq:bethe_approximation} and the exact one \eqref{eq:variation_A} is still an open question.
-It is clear that a relation cannot be given in the general case - the Bethe approximation is sometimes bigger and sometimes smaller than the exact partition function.
-One of the first results was by  \cite{AlanNips2007}, proving that if all the pseudo-marginals are in the same orientation (all bigger or smaller than $0.5$), then the Bethe partition function lower bounds the exact partition function.
-Later,  \cite{RuozziNips2012} gave a stronger result, showing that if the pairwise interactions are log sub-modular, then the Bethe partition function lower bounds the exact partition function (the case of attractive models is an instance of this class).
-In their proof, they used the important work of  \cite{vontobel2013counting}, in which a combinatorial meaning was given to the Bethe entropy.
+The relation between the Bethe partition function \eqref{eq:bethe_approximation} and the true partition function in \eqref{eq:variation_A} is still an open question.
+ For example, the Bethe partition function neither upper bounds nor lower bounds $A(\thetav)$ in the general case, but such a bound might be true in specific cases. One of the first results characterizing BP approximations is \cite{AlanNips2007}, where it was shown that if all the pseudo-marginals have the same orientation (all larger or smaller than $0.5$), then the Bethe partition function lower bounds the exact partition function.
+Later \cite{RuozziNips2012} proved a stronger result, showing that if the pairwise interactions are log sub-modular, then the Bethe partition function lower bounds the exact partition function (the case of attractive binary Ising models is an instance of this class).
+In their proof, they used the important work of  \cite{vontobel2013counting}, in which the Bethe entropy was given a combinatorial interpretation.
 
-To conclude, the connection between BP and Bethe contributes to the understanding of BP and helps improve it.
-The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.
-Another interpretation of BP is seeing it as a re-parametrization algorithm, that tries to change the parametrization of $\thetav$ such that it will belong to the local-polytope.  
-For full proof please refer to  \cite{wainwright2002stochastic}.
+To conclude, the connection between BP and Bethe contributes to the understanding of BP and can result in practical improvements.
+The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.\atodo{What does that mean?}
+Finally, we mention another interpretation as a re-parametrization algorithm. In this view, BP changes the parametrization of the MRF parameters $\thetav$ in order to optimize a bound on the partition function. For more details please refer to  \cite{wainwright2002stochastic}.\atodo{Better to give a paper here}
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
