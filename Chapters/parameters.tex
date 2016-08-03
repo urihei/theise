@@ -262,19 +262,20 @@ the learned model.
 
 The above interplay between learning and inference has recently been coined the term ``inferning''\atodo{Cite something for mccallum}.
 
-The complexity of inference for a given model is governed by its tree-width, \cite{robertson1983graph,robertson1994quickly}
-Learning models with bounded tree-width will guarantee efficient inference.
-This, however, turns out to be a hard problem in itself \cite{srebro2001maximum}. Many algorithms tried to approximate this problem, for example \cite{karger2001learning,bach2001thin,elidan2009learning}.
+The complexity of inference for a given model is exponential in its tree-width \cite{robertson1983graph,robertson1994quickly}.
+Therefore it would be desirable to learn bounded tree-width models.
+This, however, turns out to be a hard problem in itself \cite{srebro2001maximum}. There are multiple approximation approaches of this problem. See for example \cite{karger2001learning,bach2001thin,elidan2009learning}.
 %
-Another class of interesting models is where the inference algorithm is not exact, but still guaranteed to return good approximation. 
-As mentioned earlier (see here \ref{sec:belief} ), running BP on models that are tree-like can be proven to return good approximation \cite{dembo2010ising}.
-Tree-like models are models that are locally trees, but allow far- away cycles.
-The meaning of far- away in models, is translated to negligible correlation between vertices or a vertex and a group, this attribute is called correlation decay (see \secref{sec:structure} for more detailed explanation of this attribute).
+
+Another class of interesting models is where the inference algorithm is not exact, but still guaranteed to return a good approximation. 
+As mentioned earlier (see here \ref{sec:belief} ), running BP on models that are tree-like can be shown to return a good approximation \cite{dembo2010ising}.
+Tree-like models are models that are locally trees, but allow long cycles.
+Formally a ``long'' cycle corresponds to negligible correlation between vertices or a vertex and a group. This property is also known as correlation decay (see \secref{sec:structure} for further discussion).
 \ignore{ $\epsilon$ influence of the assignment of two vertices on each other (or on a group of vertices to a vertex).}
-In other words, in models where in the influential surrounding are trees, inference is plausible.
-In our paper \cite{heinemann2014inferning} the structure and parameters are learned such the resulted model belong to such model family.
+%In other words, in models where in the influential surrounding are trees, inference is plausible.
+In our paper \cite{heinemann2014inferning} the structure and parameters are learned such the resulting model has the above tree-like properties.
 %
 Fast mixing models are another model family,  known to have good approximation inference algorithms.
-As explained above  \secref{sec:sampling}, if the mixing time is small, sampling from the distribution is feasible -resulting in good approximation inference. 
-In the paper \cite{domke2015maximum}, a learning algorithm is presented, that guarantees to return a model which belongs to the fast mixing model family,
-thereby guaranteeing the quality of the inferring result.
+As explained above  \secref{sec:sampling}, if mixing is rapid, then sampling from the distribution is feasible, resulting in a theoretical guarantees for approximate inference. 
+In the paper \cite{domke2015maximum}, a learning algorithm is presented, that guarantees returning a model which belongs to the fast mixing model family,
+thereby guaranteeing the quality of inference approximations.
