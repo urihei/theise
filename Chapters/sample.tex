@@ -1,14 +1,27 @@
-\subsection{Sampling}
+\subsection{Sampling Approaches}
 \label{sec:sampling}
-At first glance, sampling seems like the perfect solution for finding the marginals.
-The marginals may be estimated as the mean of bounded random variables.
-Using the Hoeffding bound, the probability of mistake greater than $\epsilon$ can be bound by $P(|p(x_i) - \frac{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}{M}| > \epsilon) < 2\exp{-\frac{2\epsilon^2M}{|\cX|^2}}$; meaning, the time complexity is $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$\footnote{With a probability greater than $1-\delta$, the estimation error will be less than $\epsilon$.}.
-The problem in this is, that sampling from a model as in \eqref{eq:ciluqe_prob} is hard in itself\footnote{This can be easily seen from redction to q-coloring, for example \cite{levin2009markov, bordewich2016mixing}}.
-How, then, can a model be sampled?
+The marginals of a distribution can be viewed as expected values of indicator random variables. For example $\mu_i(x_i)$ is the expected value of a binary
+random variable $Z(X_1,\ldots,X_{\nvars})$ that takes value $1$ whenever $X_i=x_i$. Given this observation, a natural approach to estimating marginals is to approximate the expected value via an empirical average over samples drawn from $P(\xx;\thetav)$. 
 
-Markov Chain Monte Carlo (MCMC) is a method of sampling from a distribution $P(\xx)$ while being able to sample only from distribution $Q(\xx)$.
-In this, a Markov chain with two main features is constructed: first, it must be easy to move from one state to another; secondly, the stationary distribution of the Markov chain is $P(\xx)$.
+More formally, suppose that $\xx^{1},\ldots,\xx^{m}$ are $m$ samples (each of all the $\nvars$ variables) drawn IID from $P(\xx;\thetav)$. Then we can estimate the singleton marginal $\mu^{\thetav}_i(x_i)$ via:
+\be
+\hat{\mu}_i(x_i) = {1\over M}{\sum_{m=1}^M \deltaF{\xx_i^m=x_i}}
+\ee
+As $M\to\infty$ this will converge to the true marginal. Furthermore, we can use concentration bounds like Hoeffding's inequality to characterize the rate of convergence. For the above case this will state that for all $\epsilon > 0$:\atodo{Why does the cardinality of $X$ appear here? If you have a single marginal it shouldn't matter what $\cX$ is. Check this.}
+\be
+P\left[|\mu^{\thetav}_i(x_i) - \hat{\mu}_i(x_i)| > \epsilon\right] < 2\exp{-\frac{\epsilon^2M}{|\cX|^2}}
+\ee
+This in turn implies that with probability greater than $1-\delta$ we will need $O(\frac{\log(\delta) |\cX|^2}{\epsilon^2})$ samples to reach accuracy $\epsilon$.
 
+There is however one major difficulty with the above approach. Namely, that sampling IID from $P(\xx;\theta)$ is hard.\footnote{This can be easily seen from redction to q-coloring, for example \cite{levin2009markov, bordewich2016mixing}}. How, then, can a model be sampled, even approximately?
+
+A key idea in the sampling literature is to use a different distribution $Q(\xx)$ from which we {\em can} sample efficiently. 
+Markov Chain Monte Carlo (MCMC) is perhaps the most popular and general among these approaches.\atodo{cite nando jordan review}
+%In this, a Markov chain with two main features is constructed: first, it must be easy to move from one state to another; secondly, the stationary distribution of the Markov chain is $P(\xx)$.
+
+\atodo{The following is too messy. Why is $A$ indexed by $ij$ and then by $\xx$? Also, $A$ typically is the acceptance probability and not transition. Please
+define things clearly.}
+%An MCMC sampler defines a markov chain, where at any given point in the sampling process a new sample $\xx$ is generated based on the previous sample.
 To define a Markov chain, one needs to define the transition matrix between any two states.
 The matrix rows should sum to one $\sum_j A_{i,j} = 1$, the coordinate $A_{i,j}$ defining the probability to move from state $i$ to state $j$.
 In MCMC, this matrix of dimensions is $A \in [0,1]^{|\cX|^{p},|\cX|^{p}}$, meaning that each state is a full assignment of the model variables. 
