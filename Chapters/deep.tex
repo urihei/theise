@@ -9,14 +9,54 @@ Can a kernel be found such that the reproduced Hilbert space define a hypothesis
 I will now give short introduction to some of the ideas in the two fields which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
-One basic problem in machine learning is classification.
-Given features of an instance we want the ability to classify - assign one label out of small discrete group.
-Formally, given $\xx \in \Re^p$, a classifying function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=o,q \in \naturalNumbers$  - it take as input an instance to classify and parameters of $f$  and return a label.
-Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
+Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $L$ possible labels (e.g., when classifying digits $L=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^p$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^p \times \Re^q \to \Re^L$. The output label for an input $\xx$ is given simply by:
+\be
+y = \arg\max_{r\in 1,\ldots, L} f_r(\xx,\ww)
+\label{eq:argmax_classify}
+\ee
+Thus $f$ assigns a score $f_r(\xx,\ww)$ to each candidate label $i$, and the highest scoring label is returned.
+As an example, the input could be an image and the output the category of the object in the image (e.g., a dog, a cat, a mouse etc). 
 
-The above objective is not achievable in most cases, hence some relaxation of the problem must take place.  
-First, we usually do not know the real distribution, but only have a sample of it: given $N$ samples $D = \{(\xx^i,y_i)\}_{i=1}^N$  where $\xx^i \in \Re^p, y_i \in \cL$ sampled from some fixed distribution $P$.
-We will want to minimize our objective on this sample - minimizing the empirical loss\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
+%When $f$ is a linear classifier 	 
+% function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=o,q \in \naturalNumbers$  
+ %- it take as input an instance to classify and parameters of $f$  and return a label.
+
+%When learning classifiers it is natural to restrict our attention to a class of functions $f \in \mathcal{F}$ (e.g., all linear classifiers, or all neural nets with one hidden layer). During training, our
+%goal is to return a function in $\mathcal{F}$ that performs well on the training data. Formally, consider a loss function $\ell(f(\xx),y)$ that measures how well 
+
+To define the learning problem, one first a loss function $\ell(f(\xx,\ww),y)$ which measures the error incurred when using a classifier with parameters $\ww$ to label an object $\xx$. in the case
+where the true label is $y$. One loss of interest is the zero-one loss of the classifier in \eqref{eq:argmax_classify}. Namely:\atodo{fill this in}
+\be
+\ell_{zo}(f(\xx,\ww),y) = 
+\ee
+However, since $\ell_{zo}$ is typically hard to optimize, other losses are used in practice. Here we focus on the hinge loss (a convex upper bound on the zero-one loss) defined as follows:\atodo{fill in}
+\be
+\ell_{h}(f(\xx,\ww),y) = 
+\ee
+ 
+The goal of learning is to find a classifier that minimizes the expected loss. Denote the true underlying distribution of $\xx,y$ by $P$. Then we would have liked to 
+find $\ww$ such that:
+\be
+\expect{(\xx,y) \sim P}{\ell(f(\xx, \ww) ,y)}
+\label{eq:true_risk}
+\ee
+is minimized. Of course we do not know $P$, but assume we have IID samples from it (as in ML. See \atodo{complete section}).
+
+
+%Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
+Assume we are given $N$ samples $D = \{(\xx^i,y_i)\}_{i=1}^N$  where $\xx^i \in \Re^p, y_i \in \cL$ sampled IID from some fixed distribution $P$. We will use this sample 
+to approximate the expected value in \eqref{eq:true_risk}. Namely, we will want to find a $\ww$ that minimizes the empirical loss:
+ %\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or %Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
+\be
+{1\over N} \sum_{i=1}^N \ell(f(\xx_i, \ww) ,y_i)
+\ee
+To arrive at the classic Support Vector Machine formulation we introduce two further assumptions. First, we consider functions $f$ that are linear in some features $\phiv(\xx)\in\Re^q$ or $\xx$. 
+The parameters $\ww$ will be a set of $L$ vectors $\ww_i \in \Re^q$, and $f_r$ is defined as:
+\be
+f_r(\xx) = \ww_r \cdot \phiv(\xx)
+\ee  
+
+
 Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation by giving the instance of group $\cL$ and its index the same notation}.
 Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
 This function is very hard to optimize since it is non-convex.
