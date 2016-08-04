@@ -55,26 +55,31 @@ The parameters $\ww$ will be a set of $L$ vectors $\ww_i \in \Re^q$, and $f_r$ i
 \be
 f_r(\xx) = \ww_r \cdot \phiv(\xx)
 \ee  
-
-
-Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation by giving the instance of group $\cL$ and its index the same notation}.
-Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
-This function is very hard to optimize since it is non-convex.
-One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
+%Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation by giving the instance of group $\cL$ and its index the same notation}.
+%Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
+%This function is very hard to optimize since it is non-convex.
+%One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
+Finally, we add an quadratic regularization term $\lambda \|\ww\|^2$. This serves several purposes. First, it implies that the $\ww$ will be a linear combination of $\phiv(\xx_i)$ of the training data (this is known as the representer theorem. See \atodo{cite}). Second, it regularizes the weights towards low norms, which results in strong generalization error guarantees \atodo{Cite Shai paper on fast rates}. 
+The resulting optimization problem (e.g., see \cite{crammer2002algorithmic}) is:
 \be
 \label{eq:svm_obj}
-\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^N \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|W\|^2
+\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^N \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|\ww\|^2
 \ee
-
-Taking the dual and some algebra gives:
+Since this is a convex optimization problem, it has a convex dual \atodo{cite Boyd} whose solution also yields $\ww$. The dual variables in this case are vectors $\alphav_i\in\Re^L$ (for $i=1,\ldots,N$)
+and the dual optimization problem is:\atodo{What is $\beta$ below? Should be something with $\lambda$}
 \bea
 \label{eq:svm_obj_dual}
 \max_{A \in \Re^{N,|\cL|}}&& -\sum_{i,j}^N(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^N\alphav_i \cdot \mathbf{1}_{y_i}\\
 \text{subject to}:&& \forall i\ \ \alphav_i \leq \mathbf{1}_i, \text{ and } \alphav_i \cdot \mathbf{1} = 0
 \eea
-Where $\lambda$ is the regularization parameter, $\mathbf{1}_i$ is the all zero vector except the $i$ coordinate and $\mathbf{1}$ is the all one vector.
-Note that in this form it is enough to calculate the dot product between any two samples - no need to calculate the map $\phi$.
-This is know as the kernel trick \cite{hofmann2008kernel}.
+where $\mathbf{1}_i$ is the all zero vector except the coordinate $i$,  and $\mathbf{1}$ is the all ones vector. The mapping from dual variables $\alphav$ to primal $\ww$ is given by:\atodo{complete}
+\be
+\ww = 
+\label{eq:alpha_to_w}
+\ee
+A nice property of \eqref{eq:svm_obj_dual} is that it only depends on the dot products of $\phiv$ vectors, and not on the vectors themselves. Thus to optimize it, one only needs the dot products 
+between training vectors. Furthermore, the structure of $\ww$ in \eqref{eq:alpha_to_w} implies that
+calculating $f(\xx_i;\ww)$ will also only require dot products. This fact is known as the kernel trick (e.g., see \cite{hofmann2008kernel}).
 
 \subsubsection{Kernels}
 I will present the idea of kernels with an example.
