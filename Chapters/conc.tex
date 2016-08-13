@@ -1,50 +1,58 @@
 % !TEX root =../main.tex
 \chapter{Conclusion and Discussion } % Main chapter title
 \label{con} % For referencing the chapter elsewhere, use \ref{con} 
-The name ``learning using an approximate inference''  attempts to cover two aspects of the learning process.
-First, in the process of learning one uses an approximation inference.
-Second, after learning, the model will be used with an approximate inference, and the quality of learning will be measured by the quality of the inference.
+The title of this thesis ``Learning Using Approximate Inference'',\atodo{Is this the title?}  addresses two practical aspects of using complex graphical models. First, parameter learning in these models typically involves approximations (due to intractability of partition functions and marginals). Second, after learning, when the models are used to answer new queries, approximate inference is typically used. It is thus natural to study the manner in which these two steps interact, and this is indeed the goal of the first two chapters of this thesis. 
 
-The first paper \secref{sec:lwbethe} clarifies the implication of using BP as the approximate inference in the learning process.
-It appears that the optimized objective is the Bethe ML \eqref{eq:bethe_like} and not ML \eqref{eq:ML}.
-We show that although Bethe ML is a convex function, as it is not smooth- learning must be done with care.
+The first paper we present in \secref{sec:lwbethe} clarifies the implication of using loopy belief propagation (BP) as the approximate inference method during the learning process. We focus on the task of moment matching, and show that it is closely related to maximizing the Bethe likelihood (an approximation to the true likelihood). Our surprising finding is that even though Bethe likelihood is concave, its maximization does not necessarily result in moment matching. In fact, a more radical conclusion arises. Namely, that some moments can simply not be attained using belief propagation.  
+
+Following the above insight, we characterize marginals where moment matching is and is not possible when learning with BP.  Specifically, we provide outer and inner bounds on these for some cases. It is an interesting theoretical challenge to provide further characterizations of this type, which will help understand when BP is likely to work well in the context of learning and inference.
+
+
+\ignore{
 More specifically, we define a set of marginals that could safely be learned by Bethe ML.
 Furthermore, for empirical marginals in this set, we show that the canonical parameters \eqref{eq:canonical} maximize the Bethe ML, and no gradient descent is needed;
 while for marginals outside this set, there are no parameters guaranteeing moment-matching \eqref{eq:moment_matching}, translating into parameters of questionable use.
 We give an inner and outer bound for this set.
 The existence of outer bounds to this set, which cross the marginal polytope, prove the existence of marginals that will never be a sole fix point of BP, or even a stable fix point at all.
+}
 
-The second paper addresses the second aspect, how to learn when knowing that the model will be used for inference by a known approximate inference.
+Our second paper in \secref{sec:lg} addresses the ``inferning'' setup where loopy belief propagation is used as an inference algorithm for answering queries after learning.  
 %Remembering the fact that the quality of the learning process is asses by the quality of the results of the approximate inference and not by how close the model is to the real one.
 %In cases where the model will be used for inference after learning the quality of the learning process should be measured by the quality of the result of the approximate inference algorithm.
-In such cases, the quality of the learning process will be measured by the quality of the results of the approximate algorithm. 
-Therefore, inference quality needs to be assured - the learned  model must belong to a family of models where the inference is known to give good approximation.
-In \secref{sec:lg} we present an algorithm that guarantees returning a model that belongs to the family of High Girth Correlation Decay (HGCD), a model family on which BP is guaranteed to return good approximations .
-HGCD models are models in which the surrounding for every vertex is a tree, where a vertex belongs to other vertex's surrounding if a change in its assignment effects the other vertex marginals in a non-negligible way.
+%In such cases, the quality of the learning process will be measured by the quality of the results of the approximate algorithm. 
+%Therefore, inference quality needs to be assured - the learned  model must belong to a family of models where the inference is known to give good approximation.
+To show theoretical guarantees in this case, we focus on a regime where BP is known to perform well, 
+namely the family of High Girth Correlation Decay (HGCD) models. HGCD models are graphical models where the marginals of each variable are determined mostly by their tree shaped neighborhood, rather than  by longer cycles. 
 
-In the paper we present an algorithm to learn the structure and parameters of the model.
-The structure learning algorithm is a natural extension to \cite{chowLiu}, where we replace the tree constraint with the constraint on the girth\footnote{The girth of a graph is the length of its shortest cycle. The girth of a tree is infinite.}.
-Parameters are the canonical parameters, but to insure correlation decay, it may be necessary for the empirical marginals' interaction strength to be clamped down\footnote{We know how to do this only in the binary pairwise case. In the general case, I am not aware of an adequate way to measure the interaction strength between the variables.}.
-We prove that if the samples are generated from a model from this family, then under certain conditions, the models can be reconstructed.
-More importantly, we show that if the number of samples is large enough, then the error of the inference algorithm can be bounded.
+In the paper we present an algorithm to learn the structure and parameters of such models model.
+The structure learning algorithm is a natural extension to \cite{chowLiu}, where we replace the tree constraint with the constraint on the girth. Parameter learning is also similar to Chow Liu, but with a subtle clamping procedure require to keep the HGCD property.\footnote{The procedure we provide is specific to the binary pairwise case. Generalization to more complex cases is non-trivial, as it requires a notion of interaction strength for the non-binary case.}. We provide several sample complexity results. 
+ For structure learning, ww show that if training samples are generated from an HGCD model, then under certain conditions, the model can be exactly reconstructed. More importantly, we show that if the number of samples is large enough, then the error of the inference algorithm can be bounded, when averaged over queries.
 
-In the third paper \secref{sec:impnet} we present a kernel the hypothesis class of which is a combination of deep networks with a given network structure. This work follows the work of \cite{cho2009kernel}, although while their kernel relates to infinite networks, ours relates to a finite number of nodes.
+The third paper \atodo{secref} turns to the topic of integrating deep learning and kernels. In it, we show that extending the class of deep learning models results in a kernel based method. The relevant kernel can be calculated in closed form for some architectures and we provide a detailed analysis for such a case. We provide sample complexity results, highlight the fact that ease of optimization comes at the cost of exponentially more training samples. Empirical results show that method outperforms other kernel based method, and is competitive with some non kernel based ones.  
+
+%In the third paper \secref{sec:impnet} we present a kernel the hypothesis class of which is a combination of deep networks with a given network structure. This work follows the work of \cite{cho2009kernel}, although while their kernel relates to infinite networks, ours relates to a finite number of nodes.
 
 \subsection{Future Work}
-I will now suggest directions for future work which may be of interest.
+I will next propose directions for future work which may be of interest.
 
-\claimref{thm:bp_bethe} gives meaning to the fix point of BP - they are the pseudo-marginals that minimize the Bethe free energy.  
-The variational point of view shows, that the argument that minimizes the free energy is indeed the marginal of the model.
-From here it is concluded that the pseudo-marginals that minimize the Bethe free energy are approximations to the true marginal.
-This conclusion is problematic in case of multiple minima - the resulted marginals sould not be thought of as an approximation of the true marginals (and empirically they usually are of very poor quality).
-So how can the marginals be estimated in these cases?
-A simple way to calculate a single marginal is to note that $\mu_i^{\thetav}(x_i) = \frac{Z(x_i;\thetav)}{\sum_{\hat{x}_i}Z(\hat{x}_i;\thetav)}$, where $Z(x_i;\thetav)$% = \sum_{\hat{\xx}, \hat{\xx}_i = x_i}  
-is the partition function when the $i$ variable is set to $x_i$.
-The approximation will now be $\tau_i^{\thetav} = \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetav)}}$.
-The problem with this approximation is that for each variable assignment, one should run BP; 
-however, may the previous runs be used to accelerate BP convergence, so BP will run for only a few iterations?
-Could this method be efficient enough for use?
+Our results for BP in \secref{sec:lwbethe} emphasize the limitations of using BP as an approximate inference algorithm. However, one natural approach to overcome this difficulty is to use BP for partition function approximation. To see this, note that an exact singleton marginal can be calculated as:
+\be
+\mu_i^{\thetav}(x_i) = \frac{Z(x_i;\thetav)}{\sum_{\hat{x}_i}Z(\hat{x}_i;\thetav)}
+\label{eq:marg_partition}
+\ee
+where $Z(x_i;\thetav)$ 
+% = \sum_{\hat{\xx}, \hat{\xx}_i = x_i}  
+is the partition function when the $i$ variable is set to $x_i$.  
 
+This can naturally be turned into a Bethe based approximation by replacing the log partition function with its Bethe based approximation $A_B(\thetav)$ (see \atodo{ref equation in paper}). The resulting approximation is:
+\be
+\tau_i^{\thetav}(x_i)= \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetav)}} .~
+\ee
+There are several interesting theoretical and algorithmic issues with this proposal. First, it requires a different partition function estimate for each variable $X_i$ and assignment $x_i$, and this translates to many different BP runs. However, it's conceivable that these BP runs will have similar computation trees, and thus computation may be saved. A second question is how good this approximation can be in theory. For example, if $A_B(\thetav)$ corresponds to the exact minimum of the Bethe partition function\footnote{Note that we do not have the $\arg\min$ problem of marginal estimation.}, what can be said about the quality of approximation for different models. Third, what is the best way to learn parameters $\thetav$ is this is the inference method.
+
+Our HGCD results show that in some cases, the BP computation tree should be truncated to a tree shaped neighbourhood. An generalization of this approach is to assume that each probabilistic query corresponds to a truncated computation tree. A moment matching objective for such a process may be devised, and again there are many interesting algorithmic and theoretical questions.  
+
+\ignore{
 The hardness results of learning and infernce of GM imply that maybe a more direct approach is in order.
 The desired model should be able to answer different queries, for structure output.
 The richness of models with correlation decay suggests, that even when only a small number of variables effect each other, rich models can still be designed.
@@ -53,24 +61,22 @@ if so, can a model be defined, such that imitates the behavior of running BP of 
 One way to implement this is by a model constructing for each variable its computation tree of BP to a certain depth,
 while the parameters between any two variables are tied throughout the trees.
 The inference will be defined as recalculating the computation tree for any assignment (when a variable is observed, all its instances should be assigned).
+}
 
+Pseudo-Likelihood (PL) is also an interesting algorithm in the context of inferning. On the one hand, learning with PL is consistent. On the other hand, PL does not imply an inference algorithm. A fascinating question in this context is whether there exists an inference algorithm that is ``compatible'' with PL. As PL is consistent, such an algorithm in the exact sense is unlikely to be found.
+But, can an efficient algorithm be found that will guarantee moment matching? An interesting
+step in this direction was recently proposed in \atodo{cite this: https://arxiv.org/pdf/1605.07686.pdf}
+%Note that a moment in PL means not only the factor itself, but includes its neighbourhood as well.
 
-Pseudo-Likelihood (PL) has many appealing features.
-Learning is feasible, and although it is less sample efficient than ML, it is still consistent.
-This work argues, that the inference algorithm to be used on the learned model should be taken into account when learning.
-Can an algorithm be found that insures PL inference quality?
-As PL is consistent, such an algorithm is unlikely to be found.
-So, can an efficient algorithm be found that will guarantee moment matching?
-Note that a moment in PL means not only the factor itself, but includes its neighbourhood as well.
-
-PL is an example of a larger set of methods, called composite likelihood.
-While PL breaks down the probability to each vertex and its neighbours, composite likelihood breaks it down to larger sets.
+PL is an instance of a larger set of methods, called composite likelihood. While PL breaks down the probability to each vertex and its neighbours, composite likelihood breaks it down to larger sets.
 As long as each set is easy to calculate, the time complexity does not change much - though sample complexity depends on the larger set and its neighbours.
-An interesting direction will be to optimize, during learning, how the model should be broken down - what the best sets are.
+An interesting direction will be to optimize, during learning, how the model should be broken down - and what the best sets are.\atodo{cite Guy Lebanon paper on CL}
 
-Approximate infernce in learning will continue to be utilized in the near future.
-Hence, its implications need further research for both aspects -  using the approximate algorithm in the learning process, and the use of the model with a specific approximate algorithm.
-I hope that when GM will come back to fashion, these aspects will not be overlooked.
+Approximate inference in learning and probabilistic queries will continue to be utilized in the near future. This is also true in the age of deep learning, where generative models are highly useful, and still benefit from variational approximations. \atodo{cite Variational Autoencoder by Kingma and Welling} 
+I expect questions such as those raised here to be of relevance for these future works as well. 
+
+%Hence, its implications need further research for both aspects -  using the approximate algorithm in the learning process, and the use of the model with a specific approximate algorithm.
+%I hope that when GM will come back to fashion, these aspects will not be overlooked.
 
 \ignore{
 The research of structure learning algorithm is now at a turning point.
