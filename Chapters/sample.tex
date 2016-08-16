@@ -5,7 +5,7 @@ random variable $Z(X_1,\ldots,X_{\nvars})$ that takes value $1$ whenever $X_i=x_
 
 More formally, suppose that $\xx^{1},\ldots,\xx^{\nsamples}$ are $\nsamples$ samples (each of all the $\nvars$ variables) drawn IID from $P(\xx;\thetav)$. Then we can estimate the singleton marginal $\mu^{\thetav}_i(x_i)$ via:
 \be
-\hat{\mu}_i(x_i) = \frac{1}{\nsamples}\sum_{m=1}^{nsamples} \deltaF{\xx_i^m=x_i}
+\hat{\mu}_i(x_i) = \frac{1}{\nsamples}\sum_{m=1}^{\nsamples} \deltaF{\xx_i^m=x_i}
 \ee
 As $\nsamples \to \infty$ this will converge to the true marginal. Furthermore, we can use concentration bounds like Hoeffding's inequality to characterize the rate of convergence. For the above case this will state that for all $\epsilon > 0$:
 %\atodo{Why does the cardinality of $X$ appear here? If you have a single marginal it shouldn't matter what $\cX$ is. Check this - you changed the notation it should be the cardinality of x_i}
@@ -28,8 +28,8 @@ define things clearly.}
 %An MCMC sampler defines a markov chain, where at any given point in the sampling process a new sample $\xx$ is generated based on the previous sample.
 To define a Markov chain, one needs to define the transition matrix between any two states.
 %%U
-In our case each state is an assignment $\xx$ and the transition matrix describe the probability to move from state $\xx$ to state $\xx'$.
-Hence the matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$ and the matrix diminutions are $T \in [0,1]^{|\cX|,|\cX|}$.
+\red{In our case, each state is an assignment $\xx$ and the transition matrix describe the probability to move from state $\xx$ to state $\xx'$.
+Hence the matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$ and the matrix dimensions are $T \in [0,1]^{|\cX|,|\cX|}$.}
 %%
 %The matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$, the coordinate $A_{\xx,j}$ defining the probability to move from state $i$ to state $j$.
 %In MCMC, this matrix of dimensions is $T \in [0,1]^{|\cX|,|\cX|}$, meaning that each state is a full assignment of the model variables. 
@@ -47,9 +47,11 @@ Q(\xx'|\xx)\min\{1,\frac{Q(\xx|\xx')P(\xx')}{Q(\xx'|\xx)P(\xx)}\} & \xx' \neq \x
 \ee
 Note that $Q(\xx|\xx')$ must only be irreducible
 %%U
-\footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX$ there exists a $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$ - There is a positive probability to move from every $\xx_0$ to any $\xx$ in finite number of steps}. It does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
+\red{
+\footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX$ there exists a $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$ - There is a positive probability to move from every $\xx_0$ to any $\xx$ in finite number of steps}.
+It does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
 Sampling using this chain is easy, being in state $\xx$ a possible next state $\xx'$ is chosen by the distribution $Q(\xx' |\xx)$ and is accepted with probability  $\frac{Q(\xx|\xx')P(\xx')}{Q(\xx'|\xx)P(\xx)}$.
-Hence only $\frac{P(\xx)}{P(\xx')} $ is needed to be computed , hence the partition function is canceled, and the quantity is easy to calculate.
+Hence only $\frac{P(\xx)}{P(\xx')} $ is needed to be computed , hence the partition function is canceled, and the quantity is easy to calculate.}
 %%
 
 Glauber chains, or Gibbs sampler, is another method to define the Markov transition matrix.

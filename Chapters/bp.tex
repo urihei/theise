@@ -28,7 +28,7 @@ Note that $\tau_i,\tau_{ij}$ need not correspond to marginals of any distributio
 Thus, they are often referred to as ``pseudo-marginals'' \cite{wainwright2008graphical}, a term we will also use here.
 
 
-The empirical success of BP has prompted researchers to better understand its theoretical properties, leading to a wide range of elegant results \cite{tatikonda2002loopy,ihler05b,wainwright2003tree}.
+The empirical success of BP has prompted researchers to better understand its theoretical properties, leading to a wide range of elegant results \cite{tatikonda2002loopy,wainwright2003tree,ihler05b}.
 %\atodo{cite some}
 We describe some of these below, with a focus on the variational perspective.
 
@@ -36,10 +36,9 @@ First, when the graph $G$ is a tree BP is exact, since it essentially implements
 dynamic programming on the tree. There are other model families  where the error of BP marginals can be bound (e.g., ``tree-like'' graphs with long cycles as in  \cite{dembo2010ising}. See also  \cite{heinemann2014inferning} in this thesis).
 However, in the general case the quality of the BP approximation is unknown. 
 Moreover, there are cases where BP does not converge, and even when it does, the resulting pseudo-marginals may depend on the initial messages.
- Despite these points, BP often yields  good results in practice  \cite{willsky2002multiresolution,loeliger2004introduction,kschischang2003codes}.
+ Despite these points, BP often yields  good results in practice  \cite{willsky2002multiresolution,kschischang2003codes,loeliger2004introduction}.
 
-We next turn to a variational formulation of BP, as derived in the seminal
-work of  \citet{yedidia2000generalized, yedidia2003understanding}. Briefly, these results
+We next turn to a variational formulation of BP, as derived in the seminal work of  \citet{yedidia2000generalized, yedidia2003understanding}. Briefly, these results
 show that the fixed points of BP are local optima of a certain variational approximation,\footnote{Later,  \cite{heskes2002stable} refined this result, and found that \textbf{stable} fixed point of BP are local minima of the variational approximation.} which starts
 at \eqref{eq:variation_A} and approximates both the marginal polytope and entropy term.
 
@@ -48,7 +47,7 @@ at \eqref{eq:variation_A} and approximates both the marginal polytope and entrop
 %I will now present this result; prior to this, some definitions are necessary.
 
 As mentioned earlier, the approximation of \eqref{eq:variation_A} includes two parts.
-First, let us define the Bethe entropy, a function of given singleton and pairwise marginals $\tauv$:
+First, let us define the Bethe entropy, a function of given singleton and pairwise \red{pseudo-}marginals $\tauv$:
 \bean
 H_B(\tauv) &=& -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)\label{eq:bethe_entropy}\\
 &=&-\sum_{i}\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\frac{\tau_{ij}(x_i,x_j)}{\tau_i(x_i)\tau_j(x_j)} \label{eq:bethe_entorpy_information}
@@ -180,10 +179,11 @@ In their proof, they used the important work of  \cite{vontobel2013counting}, in
 To conclude, the connection between BP and Bethe contributes to the understanding of BP and can result in practical improvements.
 The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.\atodo{What does that mean?}
 %%U
+\red{
 So if BP does not converge, the result is not in the local polytope and hence can not be related to the Bethe free energy.
-In other words, BP dos not minimize the Bethe free energy, but seek out after other goal, that when reached, it minimize the Bethe free energy. 
+In other words, BP dos not minimize the Bethe free energy, but seek out after other goal, that when reached, it minimize the Bethe free energy.}
 %%
-Finally, we mention another interpretation as a re-parametrization algorithm. In this view, BP changes the parametrization of the MRF parameters $\thetav$ in order to optimize a bound on the partition function. For more details please refer to  \cite{wainwright2001tree,wainwright2002stochastic}.
+Finally, we mention another interpretation as a re-parametrization algorithm. In this view, BP changes the parametrization of the MRF parameters $\thetav$ in order to optimize a bound on the partition function. For more details please refer to  \citet{wainwright2001tree,wainwright2002stochastic}.
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\

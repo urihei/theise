@@ -15,17 +15,18 @@ the learning problem, which is the focus of this thesis.
 Variational methods are a large class of approximate inference algorithms. The key
 underlying approach in all of these is casting inference as a continuous (as opposed to discrete) optimization problem. Our review below largely follows the excellent and rigorous introduction to the topic in \cite{wainwright2008graphical}. 
 
-The goal of marginal inference is to calculate the marginals of the model $P(\xx;\thetav)$. Here we focus on calculating singleton marginals $\mu_i^{\thetav}(x_i)$ and pairwise marginals  $\mu^{\thetav}_{ij}(x_i, x_j)$ (see \eqref{eq:pratition_derivative}). In what follows we will denote by $\muv$ the vector constructed from concatenating all these marginals, and denote its dimension by $d$.\footnote{For example, in the case of binary variables we will have $d = 2|V| + 4|E|$.} 
+The goal of marginal inference is to calculate the marginals of the model $P(\xx;\thetav)$. Here we focus on calculating singleton marginals $\mu_i^{\thetav}(x_i)$ and pairwise marginals  $\mu^{\thetav}_{ij}(x_i, x_j)$ (see \eqref{eq:pratition_derivative}).
+In what follows we will denote by $\muv$ the vector constructed from concatenating all these marginals, and denote its dimension by $d$.\footnote{For example, in the case of binary variables we will have $d = 2|V| + 4|E|$.}
 
 The variational approach proceeds by defining some function $g(\muv)$ of the marginals, and maximizing this function, subject to some constraints, to obtain the approximate marginals. A first step to realizing such an approach is to understand which values of $\muv$ are possible. In other words, which vectors $\muv$ are marginals of some model $P(\xx;\thetav)$. Clearly we need not consider vectors $\muv$ that cannot be marginals of any model.
 
 The above point leads to the definition of the ``Marginal Polytope''  \cite{wainwright2008graphical}. The Marginal Polytope, which we denote by $\margpoly^G$,  is a set of $\muv$ vector, which are the marginals of
-``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:\atodo{The definition here should not include $\thetav$ but instead a general distribution on $\xx$} 
+``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:\todo{The definition here should not include $\thetav$ but instead a general distribution on $\xx$} 
 \be
 \label{eq:margpoly}
 \margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
 \begin{array}{lr}
-  \exists P \ s.t. \\
+  \exists P(\xx) \ s.t. \\
   \forall i \in V \land \forall x_i \in \cX &   P(x_i) = \mu_i(x_i)\\
   \forall ij \in E \land \forall x_i, x_j \in \cX &P(x_i,x_j) = \mu_{ij}(x_i,x_j)
 \end{array} \right. \right\}
@@ -78,7 +79,7 @@ Mean field methods have a long history, starting from statistical physics, and l
 %\atodo{It's incorrect ot say mean field uses $\margpoly^{G_I}$ since that contains only singleton marginals}
 We begin by considering all distributions $P(\xx)$ corresponding to a set of $\nvars$ independent variables, as in \eqref{eq:independent}. The pairwise marginals of such distributions will also be independent, namely given by $\mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)$.
 Such distributions are therefore always in $\margpoly^G$.
-This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (namely $\margpoly^{I} \subseteq \margpoly^{G}$):
+This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (namely $\margpoly^{I} \subseteq \margpoly^{G}$)\footnote{\red{If $G$ include edges,  $\margpoly^{I} \subset \margpoly^{G}$. Since both sets share the same extreme point $\margpoly^{I}$ is a non-convex set.}}:
 %\atodo{Strictly speaking this is not a marginal polytope...}
 %More specifically, it replaces the marginal polytope (of the true dependencies graph) and the true entropy, with the marginal polytope and entropy of a simpler dependencies graph.
 %I will illustrate this technique by choosing the simplest graph - the independent graph denoted by $G_I$.

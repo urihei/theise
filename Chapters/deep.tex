@@ -9,12 +9,12 @@ Can a kernel be found such that the reproduced Hilbert space define a hypothesis
 I will now give short introduction to some of the ideas in the two fields which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
-Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $R$ possible labels (e.g., when classifying digits $R=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^\nvars$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^\nvars \times \Re^q \to \Re^R$. The output label for an input $\xx$ is given simply by
+Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $\card$ possible labels (e.g., when classifying digits $\card=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^\nvars$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^\nvars \times \Re^q \to \Re^\card$. The output label for an input $\xx$ is given simply by
 %%U
-\footnote{Without loss of generality we assume that the labels are $y \in 1,\ldots,R$}:
+\footnote{Without loss of generality we assume that the labels are $y \in 1,\ldots,\card$}:
 %%
 \be
-y = \arg\max_{r\in 1,\ldots, R} f_r(\xx,\ww)
+y = \arg\max_{r\in 1,\ldots, \card} f_r(\xx,\ww)
 \label{eq:argmax_classify}
 \ee
 Thus $f$ assigns a score $f_r(\xx,\ww)$ to each candidate label $i$, and the highest scoring label is returned.
@@ -50,7 +50,7 @@ is minimized. Of course we do not know $P$, but assume we have IID samples from 
 
 
 %Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
-Assume we are given $\nsamples$ samples $D = \{(\xx^i,y^i)\}_{i=1}^\nsamples$  where $\xx^i \in \Re^\nvars, y^i \in 1,\ldots,R$ sampled IID from some fixed distribution $P$.
+Assume we are given $\nsamples$ samples $D = \{(\xx^i,y^i)\}_{i=1}^\nsamples$  where $\xx^i \in \Re^\nvars, y^i \in 1,\ldots,\card$ sampled IID from some fixed distribution $P$.
 We will use this sample to approximate the expected value in \eqref{eq:true_risk}.
 Namely, we will want to find a $\ww$ that minimizes the empirical loss:
  %\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or %Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
@@ -58,7 +58,7 @@ Namely, we will want to find a $\ww$ that minimizes the empirical loss:
 {1\over \nsamples} \sum_{i=1}^\nsamples \ell(f(\xx^i, \ww) ,y^i)
 \ee
 To arrive at the classic Support Vector Machine formulation we introduce two further assumptions. First, we consider functions $f$ that are linear in some features $\phiv(\xx)\in\Re^q$ of $\xx$. 
-The parameters $\ww$ will be a set of $R$ vectors $\ww_i \in \Re^q$, and $f_r$ is defined as:
+The parameters $\ww$ will be a set of $\card$ vectors $\ww_i \in \Re^q$, and $f_r$ is defined as:
 \be
 f_r(\xx, \ww) = \ww_r \cdot \phiv(\xx)
 \ee  
@@ -70,13 +70,13 @@ Finally, we add an quadratic regularization term $\lambda \|\ww\|^2$. This serve
 The resulting optimization problem (e.g., see \cite{crammer2002algorithmic}) is:
 \be
 \label{eq:svm_obj}
-\min_{\ww \in \Re^{R,q}} \sum_{i=1}^\nsamples \max_{r}\{\deltaF{r \ne y} - \ww_{y^i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|\ww\|^2
+\min_{\ww \in \Re^{\card,q}} \sum_{i=1}^\nsamples \max_{r}\{\deltaF{r \ne y} - \ww_{y^i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|\ww\|^2
 \ee
-Since this is a convex optimization problem, it has a convex dual \cite{boyd2004convex} whose solution also yields $\ww$. The dual variables in this case are vectors $\alphav_i\in\Re^R$ (for $i=1,\ldots,\nsamples$)
+Since this is a convex optimization problem, it has a convex dual \cite{boyd2004convex} whose solution also yields $\ww$. The dual variables in this case are vectors $\alphav_i\in\Re^\card$ (for $i=1,\ldots,\nsamples$)
 and the dual optimization problem is:
 \bean
 \label{eq:svm_obj_dual}
-\max_{\alpha \in \Re^{\nsamples,R}}&& -\sum_{i,j}^\nsamples(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \lambda\sum_i^\nsamples\alphav_i \cdot \mathbf{1}_{y^i}\nonumber\\
+\max_{\alpha \in \Re^{\nsamples,\card}}&& -\sum_{i,j}^\nsamples(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \lambda\sum_i^\nsamples\alphav_i \cdot \mathbf{1}_{y^i}\nonumber\\
 \text{subject to}:&& \forall i\ \ \alphav_i \leq \mathbf{1}_i, \text{ and } \alphav_i \cdot \mathbf{1} = 0
 \eean
 where $\mathbf{1}_i$ is the all zero vector except the coordinate $i$,  and $\mathbf{1}$ is the all ones vector. The mapping from dual variables $\alphav$ to primal $\ww$ is given by:
@@ -176,7 +176,7 @@ Moreover in both linear and kernel SVM, there is no principle way to integrate p
 }
 \subsection{Neural Network Models}
 Neural network (NN) models have recently revolutionized machine learning, by demonstrating significant performance improvements in applications like image categorization \cite{krizhevsky2012imagenet} and speech recognition \cite{hinton2012deep}. A typical NN involves a sequence of linear projections and non-linear activation functions.
-In our context, we define a NN model as a function $f: \Re^\nvars \times \Re^q \to 1,\ldots,R$ defined recursively as:
+In our context, we define a NN model as a function $f: \Re^\nvars \times \Re^q \to 1,\ldots,\card$ defined recursively as:
 \bea
 \label{eq:neural_networks}
 f(\xx, \wparams) &=& \argmax_{r} \zz_{L}(\xx, \wparamsi{L})_r\\

@@ -2,7 +2,7 @@
 We begin with an introduction to graphical models, with a particular focus on inference and learning algorithms. For a comprehensive coverage of the topic see for example \cite{koller2009probabilistic}.
 \subsection{Notations and Definitions}
 \label{sec:def}
-Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will focus on the case where all these variables are discrete,  so that each $X_i$ can take one of the values $\cX_i = \{1,\ldots,n_i\}$. Similarly $\cX_{i,j}$ will denote the set of $n_i n_j$ values that $X_i,X_j$ can take. More generally for any subset $c\subseteq \{1,\ldots,\nvars\}$ we will use $\cX_c$ to denote the set of values the variables in this subset can take, and $\cX$ will denote all possible assignments.\footnote{Namely, the size of $\cX$ is $\prod_{i=1}^{\nvars} n_i$} A specific assignment to all the variables will be denoted by $x_1,\ldots,x_{\nvars}$ or for brevity $\xx$. 
+Consider a set of $\nvars$ random variables $X_1,\ldots,X_{\nvars}$. We will focus on the case where all these variables are discrete,  so that each $X_i$ can take one of the values $\cX_i = \{1,\ldots,\card_i\}$. Similarly $\cX_{i,j}$ will denote the set of $\card_i \card_j$ values that $X_i,X_j$ can take. More generally for any subset $c\subseteq \{1,\ldots,\nvars\}$ we will use $\cX_c$ to denote the set of values the variables in this subset can take, and $\cX$ will denote all possible assignments.\footnote{Namely, the size of $\cX$ is $\prod_{i=1}^{\nvars} \card_i$} A specific assignment to all the variables will be denoted by $x_1,\ldots,x_{\nvars}$ or for brevity $\xx$. 
 
 %Probability is the chance of a certain event taking place.
 %Therefore, the first step is to define all the possible events.
@@ -19,7 +19,7 @@ A graphical model of a distribution $P(\xx)$ makes the assumption that $P(\xx)$ 
 P(\xx) = \prod_i q_i(x_i)
 \label{eq:independent}
 \ee
-where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i n_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
+where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i R_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
 
 A much more useful graphical model is the Pairwise Markov Random Field (MRF) model\footnote{The pairwise MRF is used in vision \cite{yao2010modeling}, computational-biology \cite{hopf2015quantification}, medical \cite{goodwin2015predictive} and security (anomaly detection) \cite{wang2015ddos}}, which we will focus on in this thesis.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
 \begin{itemize}
@@ -75,12 +75,12 @@ Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{
 \ee
 }
 In what follows, the log of the partition function will be of key importance, and will be denoted by $A(\thetav) = \log(Z(\thetav))$ for brevity. The gradient of $A(\thetav)$ is closely related to the marginal distributions of $P$, as follows: (e.g., see  \cite{wainwright2008graphical}),
-\bea
+\bean
 \label{eq:pratition_derivative}
-\frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\\
-s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = P(x_i;\thetav)  \equiv \mu^{\thetav}_i(x_i)\\
-\frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& P(x_i,x_j;\thetav) \equiv \mu^{\thetav}_{ij}(x_i, x_j)\\
-\eea
+\frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\nonumber\\
+s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = P(x_i;\thetav)  \equiv \mu^{\thetav}_i(x_i)\nonumber\\
+\frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& P(x_i,x_j;\thetav) \equiv \mu^{\thetav}_{ij}(x_i, x_j)
+\eean
 Note that when clear, the dependence on $\thetav$ will be dropped. The set of all marginals (singleton and pairwise)
 has the same dimensionality as $\thetav$. We will use $\muv^{\thetav}$ to denote this vector.
 
@@ -134,10 +134,11 @@ Given the apparent hardness of inference in graphical models (even ``simple'' on
 one study them at all. There are several compelling reasons as we outline below.
 
 First, despite the theoretical hardness of inference, there are many approximation algorithms which work very well in practice (we survey some below). It is of course interesting to understand why these algorithms work in practice, and there is ongoing research in this direction.
+%%U
+\red{For example, in \cite{richardson2001design} a code which approach capacity is suggested, the decoding is done by Belief Propagation - an approximate algorithm.
+ In \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model to achieve optimal algorithm in cases where the detection is feasible.}
 %%
-For example, in \cite{richardson2001design} a code which approach capacity is suggested, the decoding is done by Belief Propagation - an approximate algorithm, in \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model to achieve optimal algorithm in cases where the detection is feasible.    
-%%
-But this empirical success on its own merits the use of these models. Furthermore, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
+But \red{the}\ignore{this} empirical success on its own merits the use of these models. Furthermore, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
 
 Second, graphical models have certain key representational advantages:
 \begin{itemize}
