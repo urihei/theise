@@ -9,9 +9,12 @@ Can a kernel be found such that the reproduced Hilbert space define a hypothesis
 I will now give short introduction to some of the ideas in the two fields which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
-Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $L$ possible labels (e.g., when classifying digits $L=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^p$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^p \times \Re^q \to \Re^L$. The output label for an input $\xx$ is given simply by:
+Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $R$ possible labels (e.g., when classifying digits $R=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^\nvars$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^\nvars \times \Re^q \to \Re^R$. The output label for an input $\xx$ is given simply by
+%%U
+\footnote{Without loss of generality we assume that the labels are $y \in 1,\ldots,R$}:
+%%
 \be
-y = \arg\max_{r\in 1,\ldots, L} f_r(\xx,\ww)
+y = \arg\max_{r\in 1,\ldots, R} f_r(\xx,\ww)
 \label{eq:argmax_classify}
 \ee
 Thus $f$ assigns a score $f_r(\xx,\ww)$ to each candidate label $i$, and the highest scoring label is returned.
@@ -24,14 +27,17 @@ As an example, the input could be an image and the output the category of the ob
 %When learning classifiers it is natural to restrict our attention to a class of functions $f \in \mathcal{F}$ (e.g., all linear classifiers, or all neural nets with one hidden layer). During training, our
 %goal is to return a function in $\mathcal{F}$ that performs well on the training data. Formally, consider a loss function $\ell(f(\xx),y)$ that measures how well 
 
-To define the learning problem, one first a loss function $\ell(f(\xx,\ww),y)$ which measures the error incurred when using a classifier with parameters $\ww$ to label an object $\xx$. in the case
-where the true label is $y$. One loss of interest is the zero-one loss of the classifier in \eqref{eq:argmax_classify}. Namely:\atodo{fill this in}
+To define the learning problem, one first define a loss function $\ell(f(\xx,\ww),y)$ which measures the error incurred when using a classifier with parameters $\ww$ to label an object $\xx$ in the case where the true label is $y$.
+One loss of interest is the zero-one loss of the classifier in \eqref{eq:argmax_classify}. Namely:
 \be
-\ell_{zo}(f(\xx,\ww),y) = 
+\ell_{zo}(f(\xx,\ww),y) \equiv \deltaF{\arg\max_r{f_r(\xx,\ww)} \neq y} \equiv \begin{cases}
+  0 & \arg\max_r{f_r(\xx,\ww)} = y \\
+  1 & \arg\max_r{f_r(\xx,\ww_r)} \neq y\\
+\end{cases}
 \ee
-However, since $\ell_{zo}$ is typically hard to optimize, other losses are used in practice. Here we focus on the hinge loss (a convex upper bound on the zero-one loss) defined as follows:\atodo{fill in}
+However, since $\ell_{zo}$ is typically hard to optimize, other losses are used in practice. Here we focus on the hinge loss (a convex upper bound on the zero-one loss) defined as follows:
 \be
-\ell_{h}(f(\xx,\ww),y) = 
+\ell_{h}(f(\xx,\ww),y) \equiv \max_{r}\left\{\deltaF{r \ne y} - f_y(\xx,\ww) + f_r(\xx,\ww)\right\}
 \ee
  
 The goal of learning is to find a classifier that minimizes the expected loss. Denote the true underlying distribution of $\xx,y$ by $P$. Then we would have liked to 
@@ -40,50 +46,52 @@ find $\ww$ such that:
 \expect{(\xx,y) \sim P}{\ell(f(\xx, \ww) ,y)}
 \label{eq:true_risk}
 \ee
-is minimized. Of course we do not know $P$, but assume we have IID samples from it (as in ML. See \atodo{complete section}).
+is minimized. Of course we do not know $P$, but assume we have IID samples from it (as in ML. See \secref{sec:max_likelihood}).
 
 
 %Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
-Assume we are given $N$ samples $D = \{(\xx^i,y_i)\}_{i=1}^N$  where $\xx^i \in \Re^p, y_i \in \cL$ sampled IID from some fixed distribution $P$. We will use this sample 
-to approximate the expected value in \eqref{eq:true_risk}. Namely, we will want to find a $\ww$ that minimizes the empirical loss:
+Assume we are given $\nsamples$ samples $D = \{(\xx^i,y^i)\}_{i=1}^\nsamples$  where $\xx^i \in \Re^\nvars, y^i \in 1,\ldots,R$ sampled IID from some fixed distribution $P$.
+We will use this sample to approximate the expected value in \eqref{eq:true_risk}.
+Namely, we will want to find a $\ww$ that minimizes the empirical loss:
  %\footnote{Since the data sample is finite we need to regularize the parameters, here we select the euclidean (or %Frobenius  norm in the multiclass classification) to be the regularize and $\lambda$ to be its weight's parameter.}.
 \be
-{1\over N} \sum_{i=1}^N \ell(f(\xx_i, \ww) ,y_i)
+{1\over \nsamples} \sum_{i=1}^\nsamples \ell(f(\xx^i, \ww) ,y^i)
 \ee
-To arrive at the classic Support Vector Machine formulation we introduce two further assumptions. First, we consider functions $f$ that are linear in some features $\phiv(\xx)\in\Re^q$ or $\xx$. 
-The parameters $\ww$ will be a set of $L$ vectors $\ww_i \in \Re^q$, and $f_r$ is defined as:
+To arrive at the classic Support Vector Machine formulation we introduce two further assumptions. First, we consider functions $f$ that are linear in some features $\phiv(\xx)\in\Re^q$ of $\xx$. 
+The parameters $\ww$ will be a set of $R$ vectors $\ww_i \in \Re^q$, and $f_r$ is defined as:
 \be
-f_r(\xx) = \ww_r \cdot \phiv(\xx)
+f_r(\xx, \ww) = \ww_r \cdot \phiv(\xx)
 \ee  
 %Moreover we will restrict $f$ to be linear $f(\xx, W) = \argmax_{r \in \cL}\{ \ww_r \cdot \phi(\xx)\}$ on some known feature map $\phi: \Re^p \to \Re^q, q \in \naturalNumbers$ \footnote{We abuse notation by giving the instance of group $\cL$ and its index the same notation}.
 %Finally even though, the most intuitive loss function is the zero one loss $\deltaF{f(\xx) \neq y}$.
 %This function is very hard to optimize since it is non-convex.
 %One known surrogate is the hinge loss function $\max\{0,1- y(\ww \cdot \phi(\xx))\}$ where $\cL = \{-1,1\}$ while in the multiclass case we have the extension $ \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_y \cdot \phi(\xx) + \ww_r \cdot \phi(\xx)\}$ \cite{crammer2002algorithmic}. All together the objective is:
-Finally, we add an quadratic regularization term $\lambda \|\ww\|^2$. This serves several purposes. First, it implies that the $\ww$ will be a linear combination of $\phiv(\xx_i)$ of the training data (this is known as the representer theorem. See \atodo{cite}). Second, it regularizes the weights towards low norms, which results in strong generalization error guarantees \atodo{Cite Shai paper on fast rates}. 
+Finally, we add an quadratic regularization term $\lambda \|\ww\|^2$. This serves several purposes. First, it implies that the $\ww$ will be a linear combination of $\phiv(\xx_i)$ of the training data (this is known as the representer theorem. See \cite{hofmann2008kernel}). Second, it regularizes the weights towards low norms, which results in strong generalization error guarantees \cite{sridharan2009fast}. 
 The resulting optimization problem (e.g., see \cite{crammer2002algorithmic}) is:
 \be
 \label{eq:svm_obj}
-\min_{W \in \Re^{|\cL|,q}} \sum_{i=1}^N \max_{r \in \cL}\{\deltaF{r \ne y} - \ww_{y_i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|\ww\|^2
+\min_{\ww \in \Re^{R,q}} \sum_{i=1}^\nsamples \max_{r}\{\deltaF{r \ne y} - \ww_{y^i} \cdot \phi(\xx^{i}) + \ww_r \cdot \phi(\xx^i)\} + \lambda \|\ww\|^2
 \ee
-Since this is a convex optimization problem, it has a convex dual \atodo{cite Boyd} whose solution also yields $\ww$. The dual variables in this case are vectors $\alphav_i\in\Re^L$ (for $i=1,\ldots,N$)
-and the dual optimization problem is:\atodo{What is $\beta$ below? Should be something with $\lambda$}
-\bea
+Since this is a convex optimization problem, it has a convex dual \cite{boyd2004convex} whose solution also yields $\ww$. The dual variables in this case are vectors $\alphav_i\in\Re^R$ (for $i=1,\ldots,\nsamples$)
+and the dual optimization problem is:
+\bean
 \label{eq:svm_obj_dual}
-\max_{A \in \Re^{N,|\cL|}}&& -\sum_{i,j}^N(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \beta\sum_i^N\alphav_i \cdot \mathbf{1}_{y_i}\\
+\max_{\alpha \in \Re^{\nsamples,R}}&& -\sum_{i,j}^\nsamples(\phi(\xx^i)\cdot\phi(\xx^j))(\alphav_i\cdot\alphav_j) + \lambda\sum_i^\nsamples\alphav_i \cdot \mathbf{1}_{y^i}\nonumber\\
 \text{subject to}:&& \forall i\ \ \alphav_i \leq \mathbf{1}_i, \text{ and } \alphav_i \cdot \mathbf{1} = 0
-\eea
-where $\mathbf{1}_i$ is the all zero vector except the coordinate $i$,  and $\mathbf{1}$ is the all ones vector. The mapping from dual variables $\alphav$ to primal $\ww$ is given by:\atodo{complete}
+\eean
+where $\mathbf{1}_i$ is the all zero vector except the coordinate $i$,  and $\mathbf{1}$ is the all ones vector. The mapping from dual variables $\alphav$ to primal $\ww$ is given by:
 \be
-\ww = 
+\ww_r = \frac{1}{\lambda} \sum_i^\nsamples (\deltaF{y^i=r} - \alpha_{i,r})\phi(\xx^i)
 \label{eq:alpha_to_w}
 \ee
 A nice property of \eqref{eq:svm_obj_dual} is that it only depends on the dot products of $\phiv$ vectors, and not on the vectors themselves. Thus to optimize it, one only needs the dot products 
 between training vectors. Furthermore, the structure of $\ww$ in \eqref{eq:alpha_to_w} implies that
-calculating $f(\xx_i;\ww)$ will also only require dot products. Namely: \atodo{complete expression for $f$}:
+calculating $f(\xx';\ww)$ will also only require dot products. Namely:
 \be
-f(\xx_i;\ww)
+f(\xx';\ww) = \frac{1}{\lambda} \sum_i^\nsamples (\deltaF{y^i=r} - \alpha_{i,r})\phi(\xx^i) \cdot \phi(\xx')
 \ee
-The fact that both learning and classification require only dot products is known as the kernel trick (e.g., see \atodo{cite textbook instead}.\cite{hofmann2008kernel}). One of its most exciting implications is that we can replace the original feature vector $\xx$ with arbitrary non-linear
+The fact that both learning and classification require only dot products is known as the kernel trick (e.g., see \cite{scholkopf2002learning}).
+One of its most exciting implications is that we can replace the original feature vector $\xx$ with arbitrary non-linear
 features $\phiv(\xx)$, as long as we can efficiently calculate dot products $\phiv(\xx)\cdot\phiv(\xx')$ for any two vectors $\xx$ and $\xx'$. The converse implication is that if we have a kernel function $K(\xx,\xx')$ that can be written as $K(\xx,\xx')=\phiv(\xx)\cdot\phiv(\xx')$ for some $\phiv(\xx)$, then $K$ can be used in both learning and inference as above. Our focus will be on the case where $\phiv$ is given. 
 
 \subsubsection{Extending Hypothesis Classes}
@@ -94,9 +102,7 @@ use $\alpha$ to define a new classifier:
 \ee
 It's clear that these classifiers are a superset of those defined via $f$, since we can always choose $\alpha(\bar{\ww}) = \delta(\bar{\ww}-\ww)$  and recover the classifier $f(\xx;\ww)$. 
 
-The advantage of the above formulation is that it is linear in $\alpha(\ww)$ and we can thus employ the powerful machinery and generlization theory of linear classifiers. This idea was explored in the past, and in particular in \atodo{cite kitchen sinks}. In \atodo{cite your aistats} we use this as a starting point for learning extensions of neural network models.   
- 
-\atodo{Unrelated to this chapter: fix the citation for the UAI paper. It's currently arxiv}
+The advantage of the above formulation is that it is linear in $\alpha(\ww)$ and we can thus employ the powerful machinery and generlization theory of linear classifiers. This idea was explored in the past, and in particular in \cite{NIPS2008_3495}. In \cite{heinemann2016improper} we use this as a starting point for learning extensions of neural network models.   
 
 \ignore{
 \subsubsection{Kernels}
@@ -169,16 +175,20 @@ When using kernel SVM the efficiency depend on the number of samples\footnote{Mo
 Moreover in both linear and kernel SVM, there is no principle way to integrate prior knowledge. This has grate importance in many fields where there is strong dependencies between the features and known structure for example the task of object recognition.
 }
 \subsection{Neural Network Models}
-Neural network (NN) models have recently revolutionized machine learning, by demonstrating significant performance improvements in applications like image categorization and speech recognition \atodo{cite}. A typical NN involves a sequence of linear projections and non-linear activation functions. In our context, we define a NN model as a function $f: \Re^p \times \Re^q \to \cL$ defined recursively as:
+Neural network (NN) models have recently revolutionized machine learning, by demonstrating significant performance improvements in applications like image categorization \cite{krizhevsky2012imagenet} and speech recognition \cite{hinton2012deep}. A typical NN involves a sequence of linear projections and non-linear activation functions.
+In our context, we define a NN model as a function $f: \Re^\nvars \times \Re^q \to 1,\ldots,R$ defined recursively as:
 \bea
 \label{eq:neural_networks}
-f(\xx, \wparams) &=& \argmax_{r \in \cL} \zz_{L}(\xx, \wparamsi{L})_r\\
+f(\xx, \wparams) &=& \argmax_{r} \zz_{L}(\xx, \wparamsi{L})_r\\
 \zz_{k}(\xx, \wparamsi{k}) &=& \sgn{W_k \zz_{k-1}(\xx, \wparamsi{k-1}}\\
 \zz_{1}(\xx,W_1) &=&  \sgn{W_1 \xx}
 \eea
-Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$,\atodo{define $\sgn{\xx}$ first as a scalar function and then explain that it operates elemenwise} $\wparamsi{k} = W_1,\ldots,W_k$, $W_i \in \Re^{l_i,l_{i-1}}$ and $\wparams = \wparamsi{L}$ where $L$ is the depth of the network and $l_i$ is the size of layer $i$ with $l_0 = p$.\atodo{Please do this notation more careully. Not clear what $\wparamsi{L}$ is}
 The $\sgn{x}$ function is as the activation function a simple non linear function.
-Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid).\footnote{We abuse notation by using the same symbol for function on scalars and vectors - applying the scalar function independently on each of the vector coordinates (result is a vector).}
+Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid).
+We abuse notation and when $\sgn{\xx}$ is applied to a vector,  it worked element-wise $\sgn{\xx} = [\sgn{\xx_1},\ldots,\sgn{\xx_q}]$.
+%Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$,\atodo{define $\sgn{\xx}$ first as a scalar function and then explain that it operates elemenwise}
+Further, $\wparamsi{k} = W_1,\ldots,W_k$ is a collection of matrices $W_1$ to $W_k$ and each matrix $W_i \in \Re^{l_i,l_{i-1}}$ where $l_i$ is the size of layer $i$ with $l_0 = \nvars$.
+The parameters of the whole network will be denoted by $\wparams = \wparamsi{L}$ where $L$ is the depth of the network.
 
 The resulting function $f$ is non-convex, and hence the standard loss minimization used in machine learning will correspond to a non-convex optimization problem. However, optimization algorithms like stochastic gradient descent can still be applied to the problem (since gradient can be calculated using back-propagation \cite{williams1986learning}), and empirically often converge to models that perform well. 
 
@@ -186,13 +196,13 @@ The resulting function $f$ is non-convex, and hence the standard loss minimizati
 Deep learning and kernel based learning are both highly influential approaches in the machine learning community. Each has its advantages, both theoretical and empirical. For example, kernel 
 methods offer the advantage of globally optimal convex optimization, while deep learning offers excellent empirical performance and a highly expressive hypothesis class that seems to be a good fit for practical domains.
 
-A natural and intriguing question is whether these two approaches can be combined. Indeed, in recent years, several works have addressed this issue, and our paper \atodo{cite aistats} also contributes to this effort.
+A natural and intriguing question is whether these two approaches can be combined. Indeed, in recent years, several works have addressed this issue, and our paper \cite{heinemann2016improper} also contributes to this effort.
 
-One nice observation made by several researchers \cite{le2007continuous,cho2009kernel} is that networks with a continuum of hidden units can be translated into a kernel based learning problem. Our paper  \atodo{cite aistats} uses some technical insights from these papers, but considers finite networks. Another relevant line of work is Bayesian neural networks \atodo{Cite Radford Neal} which also integrate over a continuum of neural net models.
+One nice observation made by several researchers \cite{le2007continuous,cho2009kernel} is that networks with a continuum of hidden units can be translated into a kernel based learning problem. Our paper  \cite{heinemann2016improper} uses some technical insights from these papers, but considers finite networks. Another relevant line of work is Bayesian neural networks \cite{neal1995bayesian} which also integrate over a continuum of neural net models.
 
-Another line of work linking deep learning and kernels considers random features, or equivalently random initializations of neural net models. Several authors have shown relations between this setup and kernels. \atodo{Cite Daniely, RahimiRecht, Raja Gires}
+Another line of work linking deep learning and kernels considers random features, or equivalently random initializations of neural net models. Several authors have shown relations between this setup and kernels\cite{rahimi2007random,giryes2015deep,daniely2016toward}.
 
-Finally, we note that kernels can be used to capture certain invariants of the input space, a goal shared by neural architectures. For such approaches see \atodo{cite Chris Bishop, scattering network and  other kernel work by Bruna}.
+Finally, we note that kernels can be used to capture certain invariants of the input space, a goal shared by neural architectures. For such approaches see \cite{bruna2013invariant}.\atodo{cite Chris Bishop, scattering network and  other kernel work by Bruna - I am not sure what you mean}.
 
 
 \ignore{

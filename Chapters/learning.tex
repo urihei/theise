@@ -18,7 +18,11 @@ For example, if one learns a model of diseases and symptomps, we would like the
 probability of a disease given a set of symptoms to be similar in real life and under the model. Note that from this perspective, we don't care whether the graph 
 structure or parameters are {\em close} to the real model. 
 
-In a world with no computation limitations the two objectives of learning the exact model and preforming exact inference coincide.\atodo{Explain what you mean in a footnote} Unfortunately, exact inference is NP-hard in the general case, and one is forced to use approximate inference (see \secref{sec:approx}).
+In a world with no computation limitations and infinite data the two objectives of learning the exact model and learning for answering queries coincide
+%%U
+\footnote{In this case, the exact model can be re-construct and by using exact inference the exact answers could be returned.}.
+%%
+Unfortunately, exact inference is NP-hard in the general case, and one is forced to use approximate inference (see \secref{sec:approx}).
 When our goal is to correctly answer queries, any learning procedure must take into account the approximate inference to be used on the learned model.
 
 Most of the research on learning graphical models seeks to reconstruct the true underlying model, under some metric. I will next provide a short survey of such approaches, first discussing structure learning and then parameter estimation.

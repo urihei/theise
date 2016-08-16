@@ -28,7 +28,7 @@ In the paper we present an algorithm to learn the structure and parameters of su
 The structure learning algorithm is a natural extension to \cite{chowLiu}, where we replace the tree constraint with the constraint on the girth. Parameter learning is also similar to Chow Liu, but with a subtle clamping procedure require to keep the HGCD property.\footnote{The procedure we provide is specific to the binary pairwise case. Generalization to more complex cases is non-trivial, as it requires a notion of interaction strength for the non-binary case.}. We provide several sample complexity results. 
  For structure learning, ww show that if training samples are generated from an HGCD model, then under certain conditions, the model can be exactly reconstructed. More importantly, we show that if the number of samples is large enough, then the error of the inference algorithm can be bounded, when averaged over queries.
 
-The third paper \atodo{secref} turns to the topic of integrating deep learning and kernels. In it, we show that extending the class of deep learning models results in a kernel based method. The relevant kernel can be calculated in closed form for some architectures and we provide a detailed analysis for such a case. We provide sample complexity results, highlight the fact that ease of optimization comes at the cost of exponentially more training samples. Empirical results show that method outperforms other kernel based method, and is competitive with some non kernel based ones.  
+The third paper \secref{sec:impnet} turns to the topic of integrating deep learning and kernels. In it, we show that extending the class of deep learning models results in a kernel based method. The relevant kernel can be calculated in closed form for some architectures and we provide a detailed analysis for such a case. We provide sample complexity results, highlight the fact that ease of optimization comes at the cost of exponentially more training samples. Empirical results show that method outperforms other kernel based method, and is competitive with some non kernel based ones.  
 
 %In the third paper \secref{sec:impnet} we present a kernel the hypothesis class of which is a combination of deep networks with a given network structure. This work follows the work of \cite{cho2009kernel}, although while their kernel relates to infinite networks, ours relates to a finite number of nodes.
 
@@ -44,11 +44,11 @@ where $Z(x_i;\thetav)$
 % = \sum_{\hat{\xx}, \hat{\xx}_i = x_i}  
 is the partition function when the $i$ variable is set to $x_i$.  
 
-This can naturally be turned into a Bethe based approximation by replacing the log partition function with its Bethe based approximation $A_B(\thetav)$ (see \atodo{ref equation in paper}). The resulting approximation is:
+This can naturally be turned into a Bethe based approximation by replacing the log partition function with its Bethe based approximation $A_B(\thetav)$ (see eq $5$ in \secref{sec:lwbethe} or \eqref{eq:bethe_approximation} \todo{ref equation in paper}). The resulting approximation is:
 \be
 \tau_i^{\thetav}(x_i)= \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetav)}} .~
 \ee
-There are several interesting theoretical and algorithmic issues with this proposal. First, it requires a different partition function estimate for each variable $X_i$ and assignment $x_i$, and this translates to many different BP runs. However, it's conceivable that these BP runs will have similar computation trees, and thus computation may be saved. A second question is how good this approximation can be in theory. For example, if $A_B(\thetav)$ corresponds to the exact minimum of the Bethe partition function\footnote{Note that we do not have the $\arg\min$ problem of marginal estimation.}, what can be said about the quality of approximation for different models. Third, what is the best way to learn parameters $\thetav$ is this is the inference method.
+There are several interesting theoretical and algorithmic issues with this proposal. First, it requires a different partition function estimate for each variable $X_i$ and assignment $x_i$, and this translates to many different BP runs. However, it's conceivable that these BP runs will have similar computation trees, and thus computation may be saved. A second question is how good this approximation can be in theory. For example, if $A_B(\thetav)$ corresponds to the exact minimum of the Bethe partition function\footnote{Note that we do not have the $\arg\min$ problem of marginal estimation.}, what can be said about the quality of approximation for different models. Third, what is the best way to learn parameters $\thetav$ if this is the inference method.
 
 Our HGCD results show that in some cases, the BP computation tree should be truncated to a tree shaped neighbourhood. An generalization of this approach is to assume that each probabilistic query corresponds to a truncated computation tree. A moment matching objective for such a process may be devised, and again there are many interesting algorithmic and theoretical questions.  
 
@@ -65,14 +65,14 @@ The inference will be defined as recalculating the computation tree for any assi
 
 Pseudo-Likelihood (PL) is also an interesting algorithm in the context of inferning. On the one hand, learning with PL is consistent. On the other hand, PL does not imply an inference algorithm. A fascinating question in this context is whether there exists an inference algorithm that is ``compatible'' with PL. As PL is consistent, such an algorithm in the exact sense is unlikely to be found.
 But, can an efficient algorithm be found that will guarantee moment matching? An interesting
-step in this direction was recently proposed in \atodo{cite this: https://arxiv.org/pdf/1605.07686.pdf}
+step in this direction was recently proposed in \cite{bertasius2016local}.
 %Note that a moment in PL means not only the factor itself, but includes its neighbourhood as well.
 
 PL is an instance of a larger set of methods, called composite likelihood. While PL breaks down the probability to each vertex and its neighbours, composite likelihood breaks it down to larger sets.
 As long as each set is easy to calculate, the time complexity does not change much - though sample complexity depends on the larger set and its neighbours.
-An interesting direction will be to optimize, during learning, how the model should be broken down - and what the best sets are.\atodo{cite Guy Lebanon paper on CL}
+An interesting direction will be to optimize, during learning, how the model should be broken down - and what the best sets are \cite{dillon2010stochastic}.
 
-Approximate inference in learning and probabilistic queries will continue to be utilized in the near future. This is also true in the age of deep learning, where generative models are highly useful, and still benefit from variational approximations. \atodo{cite Variational Autoencoder by Kingma and Welling} 
+Approximate inference in learning and probabilistic queries will continue to be utilized in the near future. This is also true in the age of deep learning, where generative models are highly useful, and still benefit from variational approximations \cite{kingma2013auto}.
 I expect questions such as those raised here to be of relevance for these future works as well. 
 
 %Hence, its implications need further research for both aspects -  using the approximate algorithm in the learning process, and the use of the model with a specific approximate algorithm.

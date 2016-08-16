@@ -179,7 +179,11 @@ In their proof, they used the important work of  \cite{vontobel2013counting}, in
 
 To conclude, the connection between BP and Bethe contributes to the understanding of BP and can result in practical improvements.
 The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.\atodo{What does that mean?}
-Finally, we mention another interpretation as a re-parametrization algorithm. In this view, BP changes the parametrization of the MRF parameters $\thetav$ in order to optimize a bound on the partition function. For more details please refer to  \cite{wainwright2002stochastic}.\atodo{Better to give a paper here}
+%%U
+So if BP does not converge, the result is not in the local polytope and hence can not be related to the Bethe free energy.
+In other words, BP dos not minimize the Bethe free energy, but seek out after other goal, that when reached, it minimize the Bethe free energy. 
+%%
+Finally, we mention another interpretation as a re-parametrization algorithm. In this view, BP changes the parametrization of the MRF parameters $\thetav$ in order to optimize a bound on the partition function. For more details please refer to  \cite{wainwright2001tree,wainwright2002stochastic}.
 \ignore{
 \be
 \mu_k(x_k;\thetav) = \frac{1}{Z(\thetav)}\sum_{\substack{\xx \\
