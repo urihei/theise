@@ -4,9 +4,10 @@ Given a distribution $P(\xx;\exact{\thetav})$ as in \eqref{eq:basic_model},
 the structure learning problem is to find the exact edge set $\exact{E}$, given a data set of $\nsamples$ IID samples from $P(\xx;\exact{\thetav})$.
 
 I will start by presenting the sample and time complexity of the problem stated above. 
-If the graph is known to be {\em some} tree, the exact structure can be found by maximum spanning tree, where the weights are the empirical mutual information between any two vertices. This is the classic algorithm of Chow and Liu (see \cite{chowLiu}). Later, \cite{tan2011large} proved that sample complexity for this method is $\Omega(\log({\nvars}))$
+If the graph is known to be {\em some} tree, the exact structure can be found by maximum spanning tree, where the weights are the empirical mutual information between any two vertices. This is the classic algorithm of Chow and Liu (see \cite{chowLiu}). Later, \cite{tan2011large} proved that sample complexity for this method is $\Omega(\log({\nvars}))$.
 %%U
-\footnote{The definition of sample complexity in structure learning is as follow. Let $\nvars$ be the number of variables, $E$ be the result of an algorithm for a data-set of size $\nsamples$ and $\exact{E}$ be the true edge set. We say that the algorithm has sample complexity of $g$, if it could be guaranteed that if the number of samples $\nvars$ is bigger that $g+O(\log\frac{1}{\delta})$ then the probability of error $E \neq \exact{E}$ is smaller than $\delta$}.\todo{Explain in footnote what sample complexity is in this case}
+\todo{Explain in footnote what sample complexity is in this case}
+\footnote{\red{The definition of sample complexity in structure learning is as follow. Let $\nvars$ be the number of variables, $E$ be the result of the algorithm for a data-set of size $\nsamples$ and $\exact{E}$ be the true edge set. The algorithm has sample complexity of $g$, if it guarantee to return $E^*$ with probability grater than $1-\delta$ if the number of samples $\nvars$ is bigger that $O(g\log\frac{1}{\delta})$}.}
 %%
 In the general case, there seem to be four parameters governing the complexity of structure learning.
 The first is the number of vertices $\nvars$.The second is the maximum degree of the graph, which we denote by $\dmax = \max_{i \in V} d_i$.
@@ -15,16 +16,20 @@ The third and the fourth parameters quantify the strength of the interaction bet
 In the Ising model\footnote{The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$}, these last two parameters are easily expressed; for example, in \cite{santhanam2012information} the authors define $\lambda =
 \min_{ij} |\theta_{ij}|$ and $\omega = \max_i \sum_{j \in \nei{i}} |\theta_{ij}|$.
 %%U
+\red{
 However, in other models (where the cardinality of each variable is greater than two, or for non pairwise models), it is unknown how to express these quantities - the strength of the interaction between the variables as a function of the model parameters.
-Hence bounds on non-binary models include parameters that restrict the difference between probabilities instead of model parameters. 
+Hence bounds on non-binary models include parameters that restrict the difference between probabilities instead of model parameters.
+}
 \todo{I don't understand this last sentence. Rephrase.}
 %%
-Given the above parameters, the sample complexity bounds are $\nsamples > \Omega(\dmax \log \nvars)$\cite{bresler2008reconstruction} in the general case, and for the Ising model $\nsamples > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log \nvars)$\cite{santhanam2012information}\footnote{Note that the bound is looser in the general case. This is a result of dropping some model dependent factors - these factors may depend on $d$. See \cite{bresler2008reconstruction} for details}.
+Given the above parameters, the sample complexity lower bounds are $\nsamples > \Omega(\dmax \log \nvars)$\cite{bresler2008reconstruction} in the general case, and for the Ising model $\nsamples > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log \nvars)$\cite{santhanam2012information}\footnote{Note that the bound is looser in the general case. This is a result of dropping some model dependent factors - these factors may depend on $d$. See \cite{bresler2008reconstruction} for details}.
 %%U
-\todo{Also, this looks like a lower bound, but it’s actually an upper bound so clarify}
-This means that there exist a constant $c$ such that if the number of samples $\nsamples$ are smaller than $c \max\{\dmax^2, \lambda^{-2}\}\log \nvars$ (for Ising models) then every algorithm can not recover $\exact{E}$ with probability grater then $0.5$.
+\todo{Also, this looks like a lower bound, but it’s actually an upper bound so clarify.}
+\red{
+  Lower bound in this context means, that any algorithm given less samples than the bound can not insure success with high probability.
+  }
 %%
-Lower bound on time complexity of $\Omega(p^{\frac{\dmax}{2}})$ were given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithms using an oracle that returns the expectation of any function with no direct access to the data.}.
+Lower bound on time complexity of $\Omega(\nvars^{\frac{\dmax}{2}})$ were given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithms using an oracle that returns the expectation of any function with no direct access to the data.}.
 
 There are many variants of structure learning algorithms, and I will give only a partial list. Moreover, the algorithms differ in what is assumed to be given as input, what is the underlying model, and other assumptions, so direct comparison is not always possible. In the following, $a$ will denote parameters (other than $\nvars$, $\dmax$) that depend on the model, usually expressing bounds on interaction strength.
 
