@@ -1,19 +1,19 @@
 % !TEX root =../main.tex
 \subsection{Learning Graphical Models}
 \label{sec:learning}
-\red{Learning GM is usually divided to two different tasks, structure learning and parameter learning.
-  Structure learning try to find the dependency structure of the distribution.
-  While in parameter learning, the exact value of each parameter is of interest \footnote{Structure learning can be seen as a sub task of parameters learning. In the pairwise model, in specific parametrization, if the parameters is zero no edge exist between the two variables. So the structure may deduced by learning the parameters of the complete graph. Having the parameters the edges are the the ones that the corresponding parameters are far from zero.} and usually the model structure is given.
-  Evaluation of the to tasks is different as well.
+\red{Learning GM is usually divided into two different tasks, structure learning and parameter learning.
+  Structure learning attempts to find the dependency structure of the distribution,
+  while in parameter learning, the exact value of each parameter is of interest \footnote{Structure learning can be seen as a sub-task of parameters learning. In the pairwise model, in specific parametrization, if a parameter is zero, then no edge exists between the corresponding two variables. So the structure may deduced by learning the parameters of the complete graph. Having the parameters, the edges are the the ones that the corresponding parameters of which are far from zero.} and usually the model structure is given.
+  Evaluation of the two tasks is different as well.
   In structure learning the goal is simple - reconstruction of the dependency graph.
   }
-Estimating the actual values of the parameters $\exact{\theta}_{ij}(x_i,x_j)$ is usually not a well defined task, since in the standard MRF parametrization, multiple 
+Estimating the actual values of the parameters $\exact{\theta}_{ij}(x_i,x_j)$ is usually not a well-defined task, since in the standard MRF parametrization, multiple 
 parameter values can correspond to the same distribution \footnote{Formally, two parameters $\thetav \neq \tilde{\thetav}$, while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$}.
-This property is known as re-parameterization and it plays an important role in Belief Propagation (see \secref{sec:belief}).
+This property is known as re-parameterization, and it plays an important role in Belief Propagation (see \secref{sec:belief}).
 \red{
-  Hence our goal in parameters learning is finding parameters such that $P(\xx;\thetav)$ will be as close as  possible to $P(\xx;\exact{\thetav})$.
-  An objective is called consist if given infinite number of samples (and the correct structure) the maximizer of the objective $\thetav$ satisfy $P(\xx;\thetav) = P(\xx;\exact{\thetav})$.
-  This lead to the importance of consistency in choosing objectives for parameter learning.
+  Hence our goal in parameters learning is finding parameters such that $P(\xx;\thetav)$ will be as close as possible to $P(\xx;\exact{\thetav})$.
+  An objective is called consist, if given an infinite number of samples (and the correct structure), the maximizer of the objective $\thetav$ satisfies $P(\xx;\thetav) = P(\xx;\exact{\thetav})$.
+  This leads to the importance of consistency in choosing objectives for parameter learning.
   }
 
 %\blue{In what follows, we consider the problem of learning the parameters $\thetav$ of an MRF $P(\xx;\thetav)$.}

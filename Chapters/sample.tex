@@ -14,7 +14,7 @@ P\left[|\mu^{\thetav}_i(x_i) - \hat{\mu}_i(x_i)| > \epsilon\right] < 2\exp{-\fra
 \ee
 This in turn implies that with probability greater than $1-\delta$ we will need $O(\frac{\log(\delta) |\cX_i|^2}{\epsilon^2})$ samples to reach accuracy $\epsilon$.
 
-There is however one major difficulty with the above approach.
+There is, however, one major difficulty with the above approach.
 Namely, that sampling IID from $P(\xx;\theta)$ is hard \footnote{This can be easily seen from redction to q-coloring, for example \cite{levin2009markov, bordewich2016mixing}}.
 How, then, can a model be sampled, even approximately?
 
@@ -28,8 +28,8 @@ define things clearly.}
 %An MCMC sampler defines a markov chain, where at any given point in the sampling process a new sample $\xx$ is generated based on the previous sample.
 To define a Markov chain, one needs to define the transition matrix between any two states.
 %%U
-\red{In our case, each state is an assignment $\xx$ and the transition matrix describe the probability to move from state $\xx$ to state $\xx'$.
-Hence the matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$ and the matrix dimensions are $T \in [0,1]^{|\cX|,|\cX|}$.}
+\red{In our case, each state is an assignment $\xx$, and the transition matrix describes the probability to move from state $\xx$ to state $\xx'$.
+Hence, the matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$, and the matrix dimensions are $T \in [0,1]^{|\cX|,|\cX|}$.}
 %%
 %The matrix rows should sum to one $\sum_{\xx'} T_{\xx,\xx'} = 1$, the coordinate $A_{\xx,j}$ defining the probability to move from state $i$ to state $j$.
 %In MCMC, this matrix of dimensions is $T \in [0,1]^{|\cX|,|\cX|}$, meaning that each state is a full assignment of the model variables. 
@@ -50,9 +50,9 @@ Note that $Q(\xx|\xx')$ must only be irreducible
 %%U
 \red{
 \footnote{Irreducible defined: for all $\xx,\xx_0 \in \cX$ there exists a $k \in \naturalNumbers$ and $\xx^1, \ldots, \xx^k=\xx$, such that $\prod_{i=1}^k Q(\xx_i|\xx_{i-1}) >0$ - There is a positive probability to move from every $\xx_0$ to any $\xx$ in finite number of steps}.
-It does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy to sample distribution.
-Sampling this Markov chain is easy, being in state $\xx$ a possible next state $\xx'$ is chosen by the distribution $Q(\xx' |\xx)$ and is accepted with probability  $\frac{Q(\xx|\xx')P(\xx')}{Q(\xx'|\xx)P(\xx)}$.
-Hence only $\frac{P(\xx)}{P(\xx')} $ is needed to be computed , hence the partition function is canceled, and the quantity is easy to calculate.}
+It does not necessarily have to be symmetric; hence, it could be the distribution over a tree or any easy-to-sample distribution.
+Sampling this Markov chain is easy; being in state $\xx$, a possible next state $\xx'$ is chosen by the distribution $Q(\xx' |\xx)$, and is accepted with probability  $\frac{Q(\xx|\xx')P(\xx')}{Q(\xx'|\xx)P(\xx)}$.
+Hence, only $\frac{P(\xx)}{P(\xx')} $ is needed to be computed , and therefore the partition function is canceled, and the quantity is easy to calculate.}
 %%
 
 Glauber chains, or Gibbs sampler, is another method to define the Markov transition matrix.
