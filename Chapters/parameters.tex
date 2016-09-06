@@ -63,27 +63,29 @@ as a constraint on the learned distribution being able to re-generate the empiri
 
 The ML method has other desirable qualities:\footnote{These hold under faily general regularity conditions.}
 \begin{itemize}
-\item Consistency: namely when $\nsamples \to \infty$, the exact parameters $\lim_{\nsamples \to \infty} \arg \max_{\thetav} p(X^\nsamples;\theta) =  \exact{\thetav}$ will be recovered
+\item \red{Consistency: namely when $\nsamples \to \infty$, the learned parameters $\thetav^\nsamples$ satisfy $P(\xx;\theta^M) =  P(\xx;\exact{\thetav})$}
+  %the exact parameters $\lim_{\nsamples \to \infty} \arg \max_{\thetav} p(X^\nsamples;\theta) =  \exact{\thetav}$ will be recovered
   %%U
-  \footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$. But this condition mat be dropped. Denote the maximum likelihood parameter by $\thetabv(\nsamples)$. Consistency could be define by $\lim_{\nsamples \to \infty} \expect{\exact{\thetav}}{\frac{P(\xx;\thetabv(M))}{P(\xx;\exact{\thetav})}} = 0$ with no uniqueness condition}.\todo{You can express consistency in terms of distribution and then there's no issue of uniqueness.}
+%  \footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$. But this condition mat be dropped. Denote the maximum likelihood parameter by $\thetabv(\nsamples)$. Consistency could be define by $\lim_{\nsamples \to \infty} \expect{\exact{\thetav}}{\frac{P(\xx;\thetabv(M))}{P(\xx;\exact{\thetav})}} = 0$ with no uniqueness condition}.\todo{You can express consistency in terms of distribution and then there's no issue of uniqueness.}
   %%
 \item Efficiency:\cite{cramer2016mathematical} At the limit, no other consistent estimator has a lower mean squared error than ML. 
 \item Asymptotic Normality: Given sufficient data, the ML estimator will have a Gaussian distribution.
 \end{itemize}
 
-Despite these desirable facts, it should be noted that ML does not dominate all other estimators for finite data. For estimating MRFs, ML suffers from several
-additional drawbacks. The first and most important is that finding the ML estimator is computationally hard. This is intuitively sensible since the ML objective and gradient involve partition functions and marginals, both of which are hard. This fact on its own doesn't rule out an the existence of an efficient algorithm that sidesteps partitions and marginals.
+Despite these desirable facts, it should be noted that ML does not dominate all other estimators for finite data.
+For estimating MRFs, ML suffers from several \ignore{additional} drawbacks. The first and most important is that finding the ML estimator is computationally hard. This is intuitively sensible since the ML objective and gradient involve partition functions and marginals, both of which are hard. This fact on its own doesn't rule out an the existence of an efficient algorithm that sidesteps partitions and marginals.
 However, the intuition of hardness is indeed confirmed by recent results form \cite{bresler2014hardness} and \cite{montanari2015computational}.
 %%U
+\red{
 They show that by using only the empirical marginals (with cardinality as the model factors) and not the whole data, no algorithm can efficiently learn the model parameters unless  $NP = RP$\footnote{RP - randomized polynomial, an polynomial algorithm that use randomness}.
 %if $NP \neq RP$ then no algorithm using only the model marginals (marginals corresponding to the model parameters) can learn the model parameters.
 \todo{Not clear what the result is.} 
 Hence, if a time- efficient algorithm that finds the ML parameter is to be found, it must use marginals with higher cardinality.
 For example PL use marginals with cardinalities that is higher than the model factors.
-\todo{Also not clear.}
-%In order to use projection gradient the input to the learning algorithm must be the same cardinality as the output  - no loss of information
-%%
-Thus, exact ML estimation is impossible for general MRFs. It is natural to turn to approximate inference methods to obtain an approximate ML estimator.
+%\todo{Also not clear.}
+}%%
+Thus, exact ML estimation is impossible for general MRFs.
+It is natural to turn to approximate inference methods to obtain an approximate ML estimator.
 In the next section we describe such an approach, focusing on BP as the approximate inference method.
 
 \subsubsection{Maximum Likelihood with BP as the approximate inference}
@@ -106,7 +108,7 @@ The resulting objective, which we call the Bethe likelihood, is:
 \bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
 \ee
 The function $\bethelikelihood{X;\thetav}$ is convex function in $\thetav$, since $A_B(\thetav)$ is a convex function of $\thetav$. (Note that it is indeed convex, but not smooth). 
-Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.\atodo{cite Stephen Bach who shows this - did not find this citation can you be more specific.(proved it in the past)} % (see \appref{})
+Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.\atodo{cite Stephen Bach who shows this - did not find this citation can you be more specific.(I proved it in the past)} % (see \appref{})
 
 
 When the graph is a tree, the Bethe likelihood is exact, and in fact the optimal parameters can be found in closed form.
@@ -186,7 +188,8 @@ Normalizing and taking the log, the optimization of PL can be written as,
 %&&\frac{1}{N} \log \left(\prod_{n=1}^N \prod_{i \in V} p(x^n_i | \xx^n_{\nei{i};\thetav})\right) \\ 
 %&=&\sum_{i \in V}\frac{1}{N}\sum_{n=1}^N \sum_{j \in \nei{i}} \theta_{ij}(x^n_i,x^n_j) + \theta_i(x^n_i)\\
 %&&-\log\left(\sum_{\tilde{x}_i \in \cX}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x^n_j) + \theta_i(\tilde{x}_i)}\right) \\
-&=& \max_{\thetav} \sum_{i \in V} \sum_{j \in \nei{i}}\sum_{x_i,x_j} \mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j) + \sum_{x_i}\mub_i(x_i)\theta_i(x_i)\\ 
+&=& \max_{\thetav} \sum_{i \in V} \sum_{j \in \nei{i}}\sum_{x_i,x_j} \mub_{ij}(x_i,x_j)\theta_{ij}(x_i,x_j)\\
+&&+ \sum_{x_i}\mub_i(x_i)\theta_i(x_i)\nonumber\\
 &&-\sum_{\xx_{\nei{i}}} \mub_{\nei{i}}(\xx_{\nei{i}})\log\left(\sum_{\tilde{x}_i}\exp{\sum_{j \in \nei{i}} \theta_{ij}(\tilde{x}_i,x_j) + \theta_i(\tilde{x}_i)}\right)\nonumber
 \eean
 And the derivatives \footnote{The pairwise derivatives are similar.} are,
@@ -209,8 +212,10 @@ This gives intuition to why PL is less sample efficient. Namely, it needs to app
 %Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
 If one considers the result by \cite{bresler2014hardness} and \cite{montanari2015computational}, this is not surprising - any efficient estimation algorithm, is bound to use higher order marginals.
 
-The most important property of PL is that it is consistent. Namely, if data is generated by $P(\xx;\thetav^*)$ for an MRF with the same structure as the learned one, then as $N\to\infty$ PL will find parameters that correspond to the distribution $P(\xx;\thetav^*)$.
-\atodo{You didn't say anything about consistency, unless I missed something and we now have it twice. Please check. - I did not understand what you mean.}
+\red{ Note that as ML, PL is a consist.}
+\ignore{
+The most important property of PL is that it is consistent. Namely, if data is generated by $P(\xx;\thetav^*)$ for an MRF with the same structure as the learned one, then as $N\to\infty$ PL will find parameters that correspond to the distribution $P(\xx;\thetav^*)$.}
+\atodo{You didn't say anything about consistency, unless I missed something and we now have it twice. Please check.}
 Other characteristics of PL, such as $\thetav$ being asymptotically normally distributed, can be derived from the more general family of composite likelihood, see \cite{varin2011overview}.
 \ignore{
 Another view point of PL is, that instead of approximating the likelihood, it just preforming ML on the conditional marginals. 
@@ -236,7 +241,8 @@ Contrastive Divergance (CD) \cite{hinton2002training} was designed for models wh
 One way to approximate these marginals is by MCMC (see \secref{sec:sampling}).
 Preforming only a small number of steps - usually one - to evaluate $p(x_i,x_j;\thetav)$, results in CD. Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive}, but its success in learning Restricted Boltzmann Machine (RBM) in highlights its importance.
 
-In contrast to the previous methods,  \cite{abbeel2006learning} give a closed form equation for parameter estimation.
+\red{
+  In contrast to the previous methods,  \cite{abbeel2006learning} give a closed form equation for parameter estimation.
 Using the ideas from the proof of the Hammersley Clifford theorem,  they estimate the canonical factors, hence learning the graph parameters.
 %%U
 More specifically, to simplify presentation I will focus on the pairwise case, set a fix assignment $\tilde{\xx}$, the pairwise canonical factor is :
@@ -274,8 +280,11 @@ Note the resemblance of  \eqref{eq:abbeel} to the PL equation.
 }
 Indeed, in \cite{bradley2012sample} it is proven that the two methods give the same results;
 they include a compression of the sample complexity of this method, PL (more accurately, composite likelihoods) and ML.
+}
 
-In another approach to avoiding partition function estimation, \cite{hyvarinen2007some} use the ratio between the probability of two assignments, which eliminates the partition function. Note that using the ratio is basically similar to using the conditional probability, and indeed \cite{marlin2010inductive} and \cite{marlin2012asymptotic} compare the ratio based  methods to pseudo-likelihood and explain the differences. Other methods like \cite{mizrahi2014icml} simply disconnect each clique from its neighbors, and learn each factor independently.
+In another approach to avoiding partition function estimation, \cite{hyvarinen2007some} use the ratio between the probability of two assignments, which eliminates the partition function.
+Note that using the ratio is basically similar to using the conditional probability, and indeed \cite{marlin2010inductive} and \cite{marlin2012asymptotic} compare the ratio based  methods to pseudo-likelihood and explain the differences.
+Other methods like \cite{mizrahi2014icml} simply disconnect each clique from its neighbors, and learn each factor independently.
 %\footnote{It assumes independence of the clique neighbors from their other neighbors. However it is not clear how it effects the sample complexity, and non is given in the paper.\atodo{Not sure what this comment means.}}.
 
 To conclude, ML has many desirable statistical properties, but no time efficient algorithm is known. Moreover, it was proven by \cite{bresler2014hardness} and \cite{montanari2015computational} that under reasonable assumptions no algorithmcan optimize ML efficiently. On the other hand, PL is time efficient but its sample complexity is worse than that of ML. Methods like composite likelihood can give better sample complexity results, while still being time efficient.
@@ -290,7 +299,6 @@ should also be taken into account during learning. This point was formulated
 elegantly in \cite{wainwright2006estimating}, where it shown both theoretically and empirically that learning and inference should be matched (e.g., exact learning with approximate inference is worse than approximate learning with approximate inference). Note that in that paper, the structure of the model was given.  An interesting question remains, how learning should be preformed when
 the structure is not given, and the goal is preforming inference on
 the learned model.
-
 The above interplay between learning and inference has recently been coined the term ``inferning''\cite{rohanimanesh2009training}
 
 The complexity of inference for a given model is exponential in its tree-width \cite{robertson1983graph,robertson1994quickly}.
@@ -306,6 +314,7 @@ Formally a ``long'' cycle corresponds to negligible correlation between vertices
 %In other words, in models where in the influential surrounding are trees, inference is plausible.
 In our paper \cite{heinemann2014inferning} the structure and parameters are learned such the resulting model has the above tree-like properties.
 %
+
 Fast mixing models are another model family,  known to have good approximation inference algorithms.
 As explained above  \secref{sec:sampling}, if mixing is rapid, then sampling from the distribution is feasible, resulting in a theoretical guarantees for approximate inference. 
 In the paper \cite{domke2015maximum}, a learning algorithm is presented, that guarantees returning a model which belongs to the fast mixing model family,

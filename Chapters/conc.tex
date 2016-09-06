@@ -1,7 +1,24 @@
 % !TEX root =../main.tex
 \chapter{Conclusion and Discussion } % Main chapter title
-\label{con} % For referencing the chapter elsewhere, use \ref{con} 
+\label{con} % For referencing the chapter elsewhere, use \ref{con}
+\red{
+  Learning usually try to find the exact model.
+  This translate for finding the model that minimize some empirical loss out of some hypothesis class.
+  In this thesis I was trying to understand the implication diverting from this scheme.
+  The first paper goal is to understand the implication of changing the loss from the exact likelihood to the Bethe likelihood.
+  Models are learned for use, hence the objective should optimize the quality of the use.
+  In GM this is usually not the case.
+  %The quality of the use is not part of the above objective.
+  The second paper present a learning algorithm that can guarantee the quality of using the learned model.
+  Choosing a correct hypothesis class is a crucial choice in the learning process.
+  A good hypothesis class has enough expressive power to model complex function while not too much to reach over-fitting.
+  Another quality, that sometimes set aside, is that it could be learned efficiently.
+  In the third paper, the deep networks  hypothesis class, that proved to have the first quality, is extend to allow efficient learning.
+  I will now give a short summery for each of the papers.
+  }
+\ignore{
 The title of this thesis ``Learning Using Approximate Inference'',\atodo{Is this the title?}  addresses two practical aspects of using complex graphical models. First, parameter learning in these models typically involves approximations (due to intractability of partition functions and marginals). Second, after learning, when the models are used to answer new queries, approximate inference is typically used. It is thus natural to study the manner in which these two steps interact, and this is indeed the goal of the first two chapters of this thesis. 
+}
 
 The first paper we present in \secref{sec:lwbethe} clarifies the implication of using loopy belief propagation (BP) as the approximate inference method during the learning process. We focus on the task of moment matching, and show that it is closely related to maximizing the Bethe likelihood (an approximation to the true likelihood). Our surprising finding is that even though Bethe likelihood is concave, its maximization does not necessarily result in moment matching. In fact, a more radical conclusion arises. Namely, that some moments can simply not be attained using belief propagation.  
 
@@ -25,10 +42,17 @@ To show theoretical guarantees in this case, we focus on a regime where BP is kn
 namely the family of High Girth Correlation Decay (HGCD) models. HGCD models are graphical models where the marginals of each variable are determined mostly by their tree shaped neighborhood, rather than  by longer cycles. 
 
 In the paper we present an algorithm to learn the structure and parameters of such models model.
-The structure learning algorithm is a natural extension to \cite{chowLiu}, where we replace the tree constraint with the constraint on the girth. Parameter learning is also similar to Chow Liu, but with a subtle clamping procedure require to keep the HGCD property.\footnote{The procedure we provide is specific to the binary pairwise case. Generalization to more complex cases is non-trivial, as it requires a notion of interaction strength for the non-binary case.}. We provide several sample complexity results. 
- For structure learning, ww show that if training samples are generated from an HGCD model, then under certain conditions, the model can be exactly reconstructed. More importantly, we show that if the number of samples is large enough, then the error of the inference algorithm can be bounded, when averaged over queries.
+The structure learning algorithm is a natural extension to \cite{chowLiu}, where we replace the tree constraint with the constraint on the girth.
+Parameter learning is also similar to Chow Liu, but with a subtle clamping procedure require to keep the HGCD property\footnote{The procedure we provide is specific to the binary pairwise case. Generalization to more complex cases is non-trivial, as it requires a notion of interaction strength for the non-binary case.}.
+We provide several sample complexity results. 
+For structure learning, we show that if training samples are generated from an HGCD model, then under certain conditions, the model can be exactly reconstructed.
+More importantly, we show that if the number of samples is large enough, then the error of the inference algorithm can be bounded, when averaged over queries.
 
-The third paper \secref{sec:impnet} turns to the topic of integrating deep learning and kernels. In it, we show that extending the class of deep learning models results in a kernel based method. The relevant kernel can be calculated in closed form for some architectures and we provide a detailed analysis for such a case. We provide sample complexity results, highlight the fact that ease of optimization comes at the cost of exponentially more training samples. Empirical results show that method outperforms other kernel based method, and is competitive with some non kernel based ones.  
+The third paper \secref{sec:impnet} turns to the topic of integrating deep learning and kernels.
+In it, we show that extending the class of deep learning models results in a kernel based method.
+The relevant kernel can be calculated in closed form for some architectures and we provide a detailed analysis for such a case.
+We provide sample complexity results, highlight the fact that ease of optimization comes at the cost of exponentially more training samples.
+Empirical results show that method outperforms other kernel based method, and is competitive with some non kernel based ones.  
 
 %In the third paper \secref{sec:impnet} we present a kernel the hypothesis class of which is a combination of deep networks with a given network structure. This work follows the work of \cite{cho2009kernel}, although while their kernel relates to infinite networks, ours relates to a finite number of nodes.
 

@@ -4,13 +4,13 @@ Given a distribution $P(\xx;\exact{\thetav})$ as in \eqref{eq:basic_model},
 the structure learning problem is to find the exact edge set $\exact{E}$, given a data set of $\nsamples$ IID samples from $P(\xx;\exact{\thetav})$.
 
 I will start by presenting the sample and time complexity of the problem stated above. 
-If the graph is known to be {\em some} tree, the exact structure can be found by maximum spanning tree, where the weights are the empirical mutual information between any two vertices. This is the classic algorithm of Chow and Liu (see \cite{chowLiu}). Later, \cite{tan2011large} proved that sample complexity for this method is $\Omega(\log({\nvars}))$.
-%%U
-\todo{Explain in footnote what sample complexity is in this case}
-\footnote{\red{The definition of sample complexity in structure learning is as follow. Let $\nvars$ be the number of variables, $E$ be the result of the algorithm for a data-set of size $\nsamples$ and $\exact{E}$ be the true edge set. The algorithm has sample complexity of $g$, if it guarantee to return $E^*$ with probability grater than $1-\delta$ if the number of samples $\nvars$ is bigger that $O(g\log\frac{1}{\delta})$}.}
+If the graph is known to be {\em some} tree, the exact structure can be found by maximum spanning tree, where the weights are the empirical mutual information between any two vertices. This is the classic algorithm of Chow and Liu (see \cite{chowLiu}). Later, \cite{tan2011large} proved that sample complexity for this method is $\Omega(\log({\nvars}))$%%U
+%\todo{Explain in footnote what sample complexity is in this case}
+\footnote{\red{The definition of sample complexity in structure learning is as follow. Let $\nvars$ be the number of variables, $E$ be the result of the algorithm for a data-set of size $\nsamples$ and $\exact{E}$ be the true edge set. The algorithm has sample complexity of $g$, if it guarantee to return $E^*$ with high probability if the number of samples $\nvars$ is bigger that $g$}.}.
 %%
 In the general case, there seem to be four parameters governing the complexity of structure learning.
-The first is the number of vertices $\nvars$.The second is the maximum degree of the graph, which we denote by $\dmax = \max_{i \in V} d_i$.
+The first is the number of vertices $\nvars$.
+The second is the maximum degree of the graph, which we denote by $\dmax = \max_{i \in V} d_i$.
 The third and the fourth parameters quantify the strength of the interaction between the variables.
 
 In the Ising model\footnote{The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$}, these last two parameters are easily expressed; for example, in \cite{santhanam2012information} the authors define $\lambda =
@@ -19,12 +19,11 @@ In the Ising model\footnote{The Ising model is a pairwise binary model where $\c
 \red{
 However, in other models (where the cardinality of each variable is greater than two, or for non pairwise models), it is unknown how to express these quantities - the strength of the interaction between the variables as a function of the model parameters.
 Hence bounds on non-binary models include parameters that restrict the difference between probabilities instead of model parameters.
-}
-\todo{I don't understand this last sentence. Rephrase.}
+}%\todo{I don't understand this last sentence. Rephrase.}
 %%
 Given the above parameters, the sample complexity lower bounds are $\nsamples > \Omega(\dmax \log \nvars)$\cite{bresler2008reconstruction} in the general case, and for the Ising model $\nsamples > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log \nvars)$\cite{santhanam2012information}\footnote{Note that the bound is looser in the general case. This is a result of dropping some model dependent factors - these factors may depend on $d$. See \cite{bresler2008reconstruction} for details}.
 %%U
-\todo{Also, this looks like a lower bound, but it’s actually an upper bound so clarify.}
+%\todo{Also, this looks like a lower bound, but it’s actually an upper bound so clarify.}
 \red{
   Lower bound in this context means, that any algorithm given less samples than the bound can not insure success with high probability.
   }
@@ -36,7 +35,7 @@ There are many variants of structure learning algorithms, and I will give only a
 When the MRF involves continuous variables, and corresponds to Gaussian multivariate distributions, the problem becomes easier, since it is equivalent to the estimation of the non-zeros cell in the inverse of the covariance matrix. Examples of algorithms solving this problem are \cite{meinshausen2006high, yuan2007model, friedman2008sparse}. 
 
 The maximum degree $\dmax$ plays an important role in structure learning.
-\todo{Why just lower bounds. Not upper as well?}
+%\todo{Why just lower bounds. Not upper as well?}
 Many algorithms \cite{bresler2008reconstruction, abbeel2006learning} assume $\dmax$ is provided as input to the algorithm.
 Knowing this quantity, an exhaustive search over all subsets of size $\dmax$ (or a function of it) is preformed, in order to find each vertex's neighbors.
 In\cite{bresler2008reconstruction} the time complexity of the algorithm is $O({\nvars}^{2\dmax+1}\log \nvars)$ and sample complexity is $O(\dmax a \log \nvars)$.
@@ -57,32 +56,35 @@ By adding this condition on the true model, \cite{bresler2008reconstruction} imp
 If it is further assumed that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree), then greedy algorithms such as \cite{netrapalli2010greedy, anandkumar2013learning} may be applied.
 In \cite{anandkumar2013learning}, the authors preform a greedy algorithm with time complexity of $O(\dmax^{2\dmax}{\nvars})$ and sample complexity of $O(\dmax^2\log \nvars)$, but focus only on the pairwise case.  
 
-In \cite{ravikumar2010high} a different approach is considered. Their algorithm is based on the optimization of the conditional likelihood of a vertex, given all the other vertices with $l_1$ regularization - $\max_{\thetav} \frac{1}{\nsamples}\sum_m^{\nsamples} \log P(x^{m}_i| \xx^m_{\setminus i};\thetav) - \lambda \sum_{ij} |\theta_{ij}|$.
-Given the optimal $\thetav$, the neighborhood set is defined by $\nei{i} = \{\theta_{ij} : |\theta_{ij} > \alpha\}$, where $\alpha$ is a threshold based on the graph parameters.
+In \cite{ravikumar2010high} a different approach is considered. Their algorithm is based on the optimization of the conditional likelihood of a vertex, given all the other vertices with $l_1$ regularization - $\max_{\thetav} \frac{1}{\nsamples}\sum_m \log P(x^{m}_i| \xx^m_{\setminus i};\thetav) - \lambda \sum_{ij} |\theta_{ij}|$.
+Given the optimal $\thetav$, the neighborhood set is defined by $\nei{i} = \{\theta_{ij} : |\theta_{ij}| > \alpha\}$, where $\alpha$ is a threshold based on the graph parameters.
 Under certain conditions, the algorithm reconstructs $E$ with high probability, in time complexity of $O({\nvars}^4)$ and sample complexity of $O( \dmax^3 \log {\nvars})$.
 Note that this algorithm is not very sensitive to the selection of $\alpha$ - and furthermore, the authors suggest how to approximate it.
 The algorithm is also very practical.
 Its main drawback, is that the conditions (or parameters) that guarantee its success are not directly related to the model parameters, and hence it is very hard to compare it to other such algorithms. Another problem is the assumption of pairwise interaction.     
 
 %%U
+\red{
 Focusing on Ising models,  \cite{bresler2015efficiently} give a time efficient algorithm with time complexity of $O(p^2\log p)$ but sample complexity of $O( f(a,\dmax) \log p)$ where $f(a,\dmax)$ is a function involve the interaction strength and it doubly-exponentially in $\dmax$.
 %As previous algorithms, it assume a parameter, which lower bound the interaction strength, is given to the algorithm.
-Since to ensure correct results, all the samples must be used, the time complexity is the maximum between the above time and sample complexity, as in all learning algorithm. 
+Since to ensure correct results, all the samples must be used, the time complexity is the maximum between the time and sample complexity, as in all learning algorithm. 
 % of the when a threshold (the minimum difference of the probability when one of its neighbors changes its assignment)
 It is interesting that by a greedy algorithm structure reconstruction could be ensured.
 Their algorithm has two stages: First it collects a pseudo-neighborhood for a specific vertex - a set that includes the correct neighborhood.
 Then by iterating over all this set, it removes vertices that do not change the conditional probability.
 Note that this algorithm cannot be extended to non-pairwise models which may imply that only in Ising models greedy algorithm could work.
-\todo{The definition in brackets is completely unclear, and also unclear how it relates to previous methods you discussed}
+}
+%\todo{The definition in brackets is completely unclear, and also unclear how it relates to previous methods you discussed}
 %%
 
 To summarize: in most of the above approaches, the maximum degree must be provided as input, and plays a key role in sample and algorithmic complexity.
 In most such cases, the sample and time complexity are very close to the known lower bounds.
 %%U
+\red{
 %Hence, the next challenge is to define the necessary assumptions in order to allow efficient structure learning.
-\todo{Not sure what this last sentence means in this context. - i delete it}
+%\todo{Not sure what this last sentence means in this context. - i delete it}
 The question what are the necessary conditions to allow time efficient (not exponential in $\dmax$) learning is in order.
-Correlation decay was considered as an option to such condition in \cite{montanari2009graphical}, but \cite{bresler2014structure} shows that it, in fact, is not a necessary one.
+Correlation decay was considered as an option to such condition in \cite{montanari2009graphical}, but \cite{bresler2014structure} shows that it, in fact, is not a necessary one.}
 %%
 Another problem (which is sometimes ignored) is the additional step-up in difficulty when the factor size is not bounded (or is as large as $\dmax$). 
 I believe that the conditions under which a model with a bounded factor size and an unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}, may constitute a very interesting research direction.

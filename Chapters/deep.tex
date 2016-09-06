@@ -183,11 +183,11 @@ f(\xx, \wparams) &=& \argmax_{r} \zz_{L}(\xx, \wparamsi{L})_r\\
 \zz_{k}(\xx, \wparamsi{k}) &=& \sgn{W_k \zz_{k-1}(\xx, \wparamsi{k-1}}\\
 \zz_{1}(\xx,W_1) &=&  \sgn{W_1 \xx}
 \eea
-The $\sgn{x}$ function is as the activation function a simple non linear function.
+The $\sgn{x}$ function is the activation function a simple non linear function.
 Examples for such functions are $\sgn{x} = \deltaF{x > 0}$ (zero one), $\sgn{x} = \deltaF{x > 0}x$ (ReLu) or $\sgn{x} = \frac{1}{1+\exp{-x}}$ (sigmoid).
 We abuse notation and when $\sgn{\xx}$ is applied to a vector,  it worked element-wise $\sgn{\xx} = [\sgn{\xx_1},\ldots,\sgn{\xx_q}]$.
 %Where $\sgn{\xx}$ is a function $\Re^q \to \Re^q$,\atodo{define $\sgn{\xx}$ first as a scalar function and then explain that it operates elemenwise}
-Further, $\wparamsi{k} = W_1,\ldots,W_k$ is a collection of matrices $W_1$ to $W_k$ and each matrix $W_i \in \Re^{l_i,l_{i-1}}$ where $l_i$ is the size of layer $i$ with $l_0 = \nvars$.
+Further, $\wparamsi{k} = W_1,\ldots,W_k$ is a collection of matrices $W_1$ to $W_k$, each matrix $W_i \in \Re^{l_i,l_{i-1}}$ where $l_i$ is the size of layer $i$ with $l_0 = \nvars$.
 The parameters of the whole network will be denoted by $\wparams = \wparamsi{L}$ where $L$ is the depth of the network.
 
 The resulting function $f$ is non-convex, and hence the standard loss minimization used in machine learning will correspond to a non-convex optimization problem. However, optimization algorithms like stochastic gradient descent can still be applied to the problem (since gradient can be calculated using back-propagation \cite{williams1986learning}), and empirically often converge to models that perform well. 
