@@ -1,22 +1,22 @@
 % !TEX root =../main.tex
 \subsection{Learning Graphical Models}
 \label{sec:learning}
-In what follows, we consider the problem of learning the parameters $\thetav$ of an MRF $P(\xx;\thetav)$. Before presenting learning methods, it is instructive to discuss why we want to learn models in the first place (it is generally good practice in life to understand why you are doing something before actually doing it). 
+In what follows, we consider the problem of learning the parameters $\thetav$ of an MRF $P(\xx;\thetav)$.
+Before presenting learning methods, it is instructive to discuss why we want to learn models in the first place (it is generally good practice in life to understand why you are doing something before actually doing it). 
 In many domains, the main interest in learning is to {\em understand} the statistical behavior of a set of random variables.
-For example, one may wish to find the minimum set of variables that can directly explain a specific variable is (i.e., its neighbors in the MRF graph), or which variable has the greatest effect on another variable, etc. Such questions
-usually translate to questions about the structure of the MRF, namely what 
-is the underlying graph, or equivalent which $\theta_{ij}$ are close to zero. Methods for learning the graph are known as structure learning, and will be discussed further later. 
+For example, one may wish to find the minimum set of variables that can directly explain a specific variable is (i.e., its neighbors in the MRF graph), or which variable has the greatest effect on another variable, etc.
+\ignore{
+  Such questions usually translate to questions about the structure of the MRF, namely what is the underlying graph, or equivalent which $\theta_{ij}$ are close to zero.
+  Methods for learning the graph are known as structure learning, and will be discussed further later.
+}
 
 %\atodo{Not sure about this argument (commented below). If you just care about Markov blanket, you don't need an accurate description of the distribution. What do you want to say here?}
 %For such a purpose, learning an accurate description of $P(\xx)$ is a desirable  goal of learning\footnote{In structure learning this sums down to the difference between the two edges sets $ \min_{E} |\exact{E}\setminus (\exact{E} \cap E)| + |E \setminus (\exact{E} \cap E)|$.
 
-Estimating the actual values of the parmaeters $\theta_{ij}(x_i,x_j)$ is usually not a well defined task, since in the standard MRF parameterization, multiple 
-parameter values can correspond to the same distribution.\footnote{Formally, two parameters $\thetav \neq \tilde{\thetav}$, while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$} This property is known as re-parameterization and it plays an important role in Belief Propagation (see \secref{sec:belief})
-
-We turn to one of the main goals of learning models, which is answering probabilistic queries. When querying a model, one would like the answer to be as similar as possible to the answer under the true underlying distribution.
-For example, if one learns a model of diseases and symptomps, we would like the
-probability of a disease given a set of symptoms to be similar in real life and under the model. Note that from this perspective, we don't care whether the graph 
-structure or parameters are {\em close} to the real model. 
+\red{Another goal for learning models} \blue{We turn to one of the main goals of learning models, which} is answering probabilistic queries.
+When querying a model, one would like the answer to be as similar as possible to the answer under the true underlying distribution.
+For example, if one learns a model of diseases and symptomps, we would like the probability of a disease given a set of symptoms to be similar in real life and under the model.
+Note that from this perspective, we don't care whether the graph structure or parameters are {\em close} to the real model. 
 
 %%U
 In a world with no computation limitations and infinite data the two objectives of learning the exact model and learning for answering queries coincide
@@ -24,6 +24,22 @@ In a world with no computation limitations and infinite data the two objectives 
 %%
 Unfortunately, exact inference is NP-hard in the general case, and one is forced to use approximate inference (see \secref{sec:approx}).
 When our goal is to correctly answer queries, any learning procedure must take into account the approximate inference to be used on the learned model.
+
+
+\red{Learning the parameter is usually divided to two different tasks, structure learning and parameter learning.
+  Structure learning try to find the dependency structure of the distribution.
+  While in parameter learning, the exact value of each parameter is of interest (in the former only if it is zero or not is of interest) and usually the model structure is given.
+  Evaluation of the to tasks is different as well.
+  In structure learning the goal is simple - reconstruction of the dependency graph.
+  }
+  
+Estimating the actual values of the parmaeters $\theta_{ij}(x_i,x_j)$ is usually not a well defined task, since in the standard MRF parameterization, multiple 
+parameter values can correspond to the same distribution \footnote{Formally, two parameters $\thetav \neq \tilde{\thetav}$, while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$}.
+This property is known as re-parameterization and it plays an important role in Belief Propagation (see \secref{sec:belief})
+\red{
+  Hence our goal in parameters learning is finding parameter such that $P(\xx;\thetav)$ will be as close as  possible to $P(\xx;\exact{\thetav})$.
+  An objective is called consist if given infinite number of samples (and the correct structure) the maximizer satisfy $P(\xx;\thetav) = P(\xx;\exact{\thetav})$.
+  }
 
 Most of the research on learning graphical models seeks to reconstruct the true underlying model, under some metric. I will next provide a short survey of such approaches, first discussing structure learning and then parameter estimation.
 %First is structure leraning, namely learning the edges of the graph $E$,
