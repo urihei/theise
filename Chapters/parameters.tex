@@ -1,8 +1,8 @@
 \subsection{Parameter Estimation}
 %As in the previous section, I will start with the problem definition. 
-In the previous section we considered the problem of learning the MRF graph structure. We now turn to the problem of learning the model parameters $\thetav$ assuming the graph $G$ is known. This task is known as parameter learning or parameter estimation.
+In the previous section we considered the problem of learning the MRF graph structure. We now turn to the problem of learning the model parameters $\thetav$, assuming the graph $G$ is known. This task is known as parameter learning or parameter estimation.
 
-In what follows we will sometime assume that there is a {\em true} underlying MRF generating the training data, and denote its parameter by $\exact{\thetav}$ and the corresponding MRF by $P(\xx; \exact{\thetav})$. As mentioned earlier, it is usually not a good idea to try and recover $\exact{\thetav}$ since multiple $\thetav$ vectors may correspond to the same distribution (in other words the parameters are not identifiable). A better defined goal is to find {\em any} parameter $\thetav$ such that $P(\xx; \exact{\thetav})$ is as close as possible to $P(\xx; \exact{\thetav})$. This of course cannot be achieved in general since we do not known $\exact{\thetav}$  but rather have IID samples from it. Furthermore, there are difficulties arising from hardness of inference, which we discuss later.
+In what follows we will sometime assume that there is a {\em true} underlying MRF generating the training data, and denote its parameter by $\exact{\thetav}$ and the corresponding MRF by $P(\xx; \exact{\thetav})$. As mentioned earlier, it is usually not a good idea to try and recover $\exact{\thetav}$, since multiple $\thetav$ vectors may correspond to the same distribution (in other words, the parameters are not identifiable). A better-defined goal is to find {\em any} parameter $\thetav$ such that $P(\xx; \exact{\thetav})$ is as close as possible to $P(\xx; \exact{\thetav})$. This of course cannot be achieved in general, since we do not know $\exact{\thetav}$,  but rather have IID samples from it. Furthermore, there are difficulties arising from hardness of inference, which we discuss later.
 
 We begin by reviewing the maximum likelihood method, which offers a natural approach to parameter estimation from samples.
 
@@ -40,7 +40,7 @@ Here $\mubv$ are the empirical pairwise and singleton marginals, ordered in the 
 \mub_i(x_i) = \frac{1}{\nsamples}\sum_{n=1}^{\nsamples} \deltaF{x_i=x_i^n },\ \
 \mub_{ij}(x_i,x_j)  = \frac{1}{\nsamples}\sum_{n=1}^{\nsamples} \deltaF{x_i=x_i^n \land  x_j=x_j^n}
 \ee
-note the close similarity between \eqref{eq:ML} and \eqref{eq:conjugate_partition}
+Note the close similarity between \eqref{eq:ML} and \eqref{eq:conjugate_partition}.
 
 
 Since the $\thetav$ that maximizes $\ell(\thetav)$ is sought,
@@ -51,8 +51,8 @@ we set the gradient to zero to characterize the optimal parameters.
 \label{eq:ml_derv_pairs}
 \frac{ \partial \likelihood{X;\thetav}}{\partial \theta_{ij}(x_i,x_j)} &= \mub_{ij}(x_i,x_j) - \frac{ \partial \log(Z(\thetav))}{\partial \theta_{ij}(x_i,x_j)} =& \mub_{ij}(x_i,x_j) - p(x_i,x_j;\thetav)
 \eean
-where we used the experssion for the gradient of $A(\thetav)$ in \eqref{eq:pratition_derivative}.
-Setting the gradient to zero we arrive at the following simple characterization, known as moment matching:
+where we used the expression for the gradient of $A(\thetav)$ in \eqref{eq:pratition_derivative}.
+Setting the gradient to zero, we arrive at the following simple characterization, known as moment matching:
 \be
 \label{eq:moment_matching}
 \mub_i(x_i) = P(x_i;\thetav), \ \ \ \mub_{ij}(x_i,x_j) = P(x_i,x_j;\thetav)
@@ -61,27 +61,27 @@ In other words, the marginals of the learned model should be identical
 to the empirical ones. This condition is very intuitive, and can be viewed
 as a constraint on the learned distribution being able to re-generate the empirical marginals.
 
-The ML method has other desirable qualities:\footnote{These hold under faily general regularity conditions.}
+The ML method has other desirable qualities:\footnote{These hold under fairly general regularity conditions.}
 \begin{itemize}
 \item \red{Consistency: namely when $\nsamples \to \infty$, the learned parameters $\thetav^\nsamples$ satisfy $P(\xx;\theta^M) =  P(\xx;\exact{\thetav})$}
   %the exact parameters $\lim_{\nsamples \to \infty} \arg \max_{\thetav} p(X^\nsamples;\theta) =  \exact{\thetav}$ will be recovered
   %%U
 %  \footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$. But this condition mat be dropped. Denote the maximum likelihood parameter by $\thetabv(\nsamples)$. Consistency could be define by $\lim_{\nsamples \to \infty} \expect{\exact{\thetav}}{\frac{P(\xx;\thetabv(M))}{P(\xx;\exact{\thetav})}} = 0$ with no uniqueness condition}.\todo{You can express consistency in terms of distribution and then there's no issue of uniqueness.}
   %%
-\item Efficiency:\cite{cramer2016mathematical} At the limit, no other consistent estimator has a lower mean squared error than ML. 
+\item Efficiency: \cite{cramer2016mathematical} At the limit, no other consistent estimator has a lower mean squared error than ML. 
 \item Asymptotic Normality: Given sufficient data, the ML estimator will have a Gaussian distribution.
 \end{itemize}
 
 Despite these desirable facts, it should be noted that ML does not dominate all other estimators for finite data.
-For estimating MRFs, ML suffers from several \ignore{additional} drawbacks. The first and most important is that finding the ML estimator is computationally hard. This is intuitively sensible since the ML objective and gradient involve partition functions and marginals, both of which are hard. This fact on its own doesn't rule out an the existence of an efficient algorithm that sidesteps partitions and marginals.
-However, the intuition of hardness is indeed confirmed by recent results form \cite{bresler2014hardness} and \cite{montanari2015computational}.
+For estimating MRFs, ML suffers from several \ignore{additional} drawbacks. The first and most important is that finding the ML estimator is computationally hard. This is intuitively sensible since the ML objective and gradient involve partition functions and marginals, both of which are hard. This fact on its own does not rule out the existence of an efficient algorithm that sidesteps partitions and marginals.
+However, the intuition of hardness is indeed confirmed by recent results from \cite{bresler2014hardness} and \cite{montanari2015computational}.
 %%U
 \red{
 They show that by using only the empirical marginals (with cardinality as the model factors) and not the whole data, no algorithm can efficiently learn the model parameters unless  $NP = RP$\footnote{RP - randomized polynomial, an polynomial algorithm that use randomness}.
 %if $NP \neq RP$ then no algorithm using only the model marginals (marginals corresponding to the model parameters) can learn the model parameters.
 \todo{Not clear what the result is.} 
 Hence, if a time- efficient algorithm that finds the ML parameter is to be found, it must use marginals with higher cardinality.
-For example PL use marginals with cardinalities that is higher than the model factors.
+For example, PL uses marginals with cardinalities that are higher than the model factors.
 %\todo{Also not clear.}
 }%%
 Thus, exact ML estimation is impossible for general MRFs.
@@ -95,7 +95,7 @@ In the next section we describe such an approach, focusing on BP as the approxim
 %% BP is a successful algorithm for finding the marginals,
 %% so using it to find the marginals seems like a good choice.
 %% But what does it optimize exactly?
-The likelihood function $\likelihood{X;\thetav}$ in \eqref{eq:ML} is hard to evaluate due to the the log partition function $A(\thetav)$ and its gradient is hard to calculate since it involves marginals.
+The likelihood function $\likelihood{X;\thetav}$ in \eqref{eq:ML} is hard to evaluate due to the the log partition function $A(\thetav)$, and its gradient is hard to calculate since it involves marginals.
 Both these difficulties can be avoided if one replaces the $A(\thetav)$ with its Bethe approximation $A_B(\thetav)$ in \eqref{eq:bethe_approximation}.
 %% Using the variation stand point, \eqref{eq:ML} can be written as
 %% \be
@@ -107,7 +107,7 @@ The resulting objective, which we call the Bethe likelihood, is:
 \label{eq:bethe_like}
 \bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
 \ee
-The function $\bethelikelihood{X;\thetav}$ is convex function in $\thetav$, since $A_B(\thetav)$ is a convex function of $\thetav$. (Note that it is indeed convex, but not smooth). 
+The function $\bethelikelihood{X;\thetav}$ is a convex function in $\thetav$, since $A_B(\thetav)$ is a convex function of $\thetav$ (note that it is indeed convex, but not smooth). 
 Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.\atodo{cite Stephen Bach who shows this - did not find this citation can you be more specific.(I proved it in the past)} % (see \appref{})
 
 
@@ -128,17 +128,17 @@ They are defined as,
 When the graph is not a tree, a natural approach is to perform gradient descent on the Bethe likelihood.
 The gradient of $\bethelikelihood{X;\thetav}$ turns out to be the empirical marginals minus the BP marginals, where the  latter are the argmax of the optimization problem  \eqref{eq:bethe_approximation}.
 However, as mentioned earlier, these are also hard to calculate exactly, due to non-convexity of Bethe free energy.
-A compromise is to run BP on $\thetav$ and (assuming convergence) and using the resulting marginals in the gradient.
+A compromise is to run BP on $\thetav$ and (assuming convergence) using the resulting marginals in the gradient.
 This is indeed a common heuristic, but not much can be guaranteed about its results.
 
-The Bethe ML approximation is also implicit in other approximate learningm methods.
-For example in \cite{ganapathi2012constrained}, ML is optimized via its dual - maximizing the entropy with moment matching constraints.
+The Bethe ML approximation is also implicit in other approximate learning methods.
+In \cite{ganapathi2012constrained}, for example, ML is optimized via its dual - maximizing the entropy with moment matching constraints.
 Since this problem is hard, the problem is relaxed in the same way as the Bethe - using the local marginal polytope instead of the marginal polytope, and using the Bethe entropy instead of the exact one\footnote{Note that if no other constraints are found, the moment matching condition in the Bethe entropy maximization fully specifies the solution}.
 %so, in fact, trying to optimize an objective that is similar to the Bethe likelihood 
-Than to optimize the relaxed objective, the Bethe marginals must be found - which is achieved by \cite{yuille2002cccp}.
-\todo{Not sure what this means in the current context. Is this what Ganapathi does? - Yes this is how he calculate the Bethe marginals}
+Then, to optimize the relaxed objective, the Bethe marginals must be found - which is achieved by \cite{yuille2002cccp}.
+\todo{Not sure what this means in the current context. Is this what Ganapathi does? - Yes this is how he calculates the Bethe marginals}
 
-In \cite{heinemann2012cannot} we ask a basic question regarding the above approximation. Assume that BP marginals {\em can} be calculated exactly. What can one deduce about the resulting ML estimate. We provide a set of rather surprising results that specify when such a procedure will succeed and when it will not.
+In \cite{heinemann2012cannot} we ask a basic question regarding the above approximation. Assume that BP marginals {\em can} be calculated exactly. What can one deduce about the resulting ML estimate? We provide a set of rather surprising results that specify when such a procedure will succeed and when it will not.
 
 \ignore{
 But let us return to the optimization of the Bethe ML.
@@ -161,10 +161,10 @@ Note that this result also has relevance to the paper of \cite{ganapathi2012cons
 
 %We next review another p onsider an approximation to the ML Pseudo-Likelihood.
 \subsubsection{Pseudo-Likelihood}
-The Pseudo-Likelihood (PL) method, first introduced by \citet{besag1975statistical}, is an elegant parameter estimation method that is both computationally efficient approach and consistent. It is the first of a larger family of likelihood approximations called composite likelihood \cite{lindsay1988composite}.
+The Pseudo-Likelihood (PL) method, first introduced by \citet{besag1975statistical}, is an elegant parameter estimation method that is both consistent and a computationally- efficient approach. It is the first of a larger family of likelihood approximations called composite likelihood \cite{lindsay1988composite}.
 
 PL begins by noting that the likelihood may be written as $P(\xx;\thetav) = \prod_{i=1}^{\nvars} P(x_i |x_1,\ldots x_{i-1})$.
-It then proceeds by conditioning on all variables instead of the first $i-1$ ones. Namely it considers the following {\em approximate} likelihood:
+It then proceeds by conditioning on all variables instead of the first $i-1$ ones. Namely, it considers the following {\em approximate} likelihood:
 \be
 pl(\xx;\thetav) = \prod_{i=1}^{\nvars} P(x_i |\xx_{\setminus i};\thetav) = \prod_{i=1}^{\nvars} P(x_i |\xx_{\nei{i}};\thetav)
 \ee
@@ -203,16 +203,16 @@ And the derivatives \footnote{The pairwise derivatives are similar.} are,
 \frac{\partial pl(X^n;\thetav)}{\partial \theta_{i}(x_i)} =  \mub_i(x_i) - \sum_{\xx_{\nei{i}}} \mub_{\nei{i}}(\xx_{\nei{i}}) p(x_i|\xx_{\nei{i}};\thetav)
 \ee
 
-The first thing to note is that \eqref{eq:pl_maximization} is easy to optimize, since both it and its derivative (\eqref{eq:pl_derivative}) involve only conditional probabilities of indvidual variables. Also the sum over $\xx_{\nei{i}}$ doesn't involve all these assignments.\footnote{Which would have been exponential in the degree.} but only ones which had non-zero empirical probability, and thus is limited to $\nsamples$ elements. 
+The first thing to note is that \eqref{eq:pl_maximization} is easy to optimize, since both it and its derivative (\eqref{eq:pl_derivative}) involve only conditional probabilities of indvidual variables. Also, the sum over $\xx_{\nei{i}}$ doesn't involve all these assignments,\footnote{which would have been exponential in the degree.} but rather only ones which had non-zero empirical probability, and thus is limited to $\nsamples$ elements. 
 %sum over the neighbor variables, not the whole models.
 As a consequence, optimizing by gradient descent is plausible.
 Second, note that \eqref{eq:pl_derivative} gives us a similar condition to the moment matching condition \eqref{eq:moment_matching} of ML.
 The difference arises from the fact that only the conditional probability is estimated, hence the need to sum over all neighbor values.
-This gives intuition to why PL is less sample efficient. Namely, it needs to approximate not only the factor's marginals but marginals of the factor and its neighbors.
+This gives intuition to why PL is less sample-efficient. Namely, it needs to approximate not only the factor's marginals but marginals of the factor and its neighbors.
 %Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
 If one considers the result by \cite{bresler2014hardness} and \cite{montanari2015computational}, this is not surprising - any efficient estimation algorithm, is bound to use higher order marginals.
 
-\red{ Note that as ML, PL is a consist.}
+\red{ Note that as ML, PL is consistent.}
 \ignore{
 The most important property of PL is that it is consistent. Namely, if data is generated by $P(\xx;\thetav^*)$ for an MRF with the same structure as the learned one, then as $N\to\infty$ PL will find parameters that correspond to the distribution $P(\xx;\thetav^*)$.}
 \atodo{You didn't say anything about consistency, unless I missed something and we now have it twice. Please check.}
@@ -226,16 +226,16 @@ While the pairwise change, so it include only one of the summation - hence a mor
 
 The first reason to use PL and not ML is time complexity.
 While PL parameters can easily be computed via gradient descent, no efficient way is known to recover ML parameters.
-The question whether there are cases when PL gives better results than ML remains open.
-When the true underlying model has the same structure of the learned MRF, it was shown that ML is more efficient than PL, \cite{liang2008asymptotic}.
+The question whether there are cases when PL gives better results than ML, remains open.
+When the true underlying model has the same structure of the learned MRF, it was shown that ML is more efficient than PL \cite{liang2008asymptotic}.
 In cases where the underlying model does not have this structure (i.e., the more realistic case), it is not clear which method is better (see \cite{varin2011overview} for discussion).
 An interesting direction for research is to design an inference algorithm tailored for PL.
 Namely, design an efficient inference algorithm such that it is guaranteed to return the empirical marginals when the model parameter were learned using PL.
 This may have important implications, as discussed in \secref{sec:inferning}.
 
 \subsubsection{Other Methods}
-In the brief review above we covered ML and PL approaches. There are of course 
-many variants of these, as well as methods based on different principles. Of theese, a key one, is methods based on sampling, which we discussed in the context of approximate inference. A natural sampling based approach to learning is to estimate marginals via sampling and then use those in the gradient of the likelihood in \eqref{eq:ml_derv_single}. We briefly mention some other methods below.
+In the brief review above, we covered ML and PL approaches.
+There are, of course, many variants of these, as well as methods based on different principles. Of these, a key one is methods based on sampling, which were discussed in the context of approximate inference. A natural sampling-based approach to learning is to estimate marginals via sampling, and then use those in the gradient of the likelihood in \eqref{eq:ml_derv_single}. We briefly mention some other methods below.
  
 Contrastive Divergance (CD) \cite{hinton2002training} was designed for models where some of the variables are unobserved, but it could be used on the fully observed case. Recall from \eqref{eq:ml_derv_single} and \eqref{eq:ml_derv_pairs}, that the reason gradient-descent is impractical,  is the hardness of evaluating the marginals according to the parameters $p(x_i,x_j;\thetav)$. 
 One way to approximate these marginals is by MCMC (see \secref{sec:sampling}).
@@ -245,14 +245,14 @@ Preforming only a small number of steps - usually one - to evaluate $p(x_i,x_j;\
   In contrast to the previous methods,  \cite{abbeel2006learning} give a closed form equation for parameter estimation.
 Using the ideas from the proof of the Hammersley Clifford theorem,  they estimate the canonical factors, hence learning the graph parameters.
 %%U
-More specifically, to simplify presentation I will focus on the pairwise case, set a fix assignment $\tilde{\xx}$, the pairwise canonical factor is :
+More specifically, to simplify presentation I will focus on the pairwise case. Set a fix assignment $\tilde{\xx}$, the pairwise canonical factor is :
 \bean
 \label{eq:HC_param}
 \theta^{\dagger}_{ij}(x_i,x_j) &=& \log P(x_i,x_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}}) -\log P(x_i,\tilde{x}_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}})\nonumber\\
 && - \log P(\tilde{x}_i,x_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}})+ \log P(\tilde{x}_i,\tilde{x}_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}})
 \eean
 while $\theta^{\dagger}_i(x_i)$ follows in the same way. 
-Similarly to Hammersley Clifford theorem, it can be proved that any positive Gibbs distribution with pairwise interaction can be express as $P(\xx;\thetav) = P(\tilde{\xx}) \exp{\sum_{ij} \theta^{\dagger}_{ij}(x_i,x_j) + \sum_{i}\theta^{\dagger}_i(x_i)}$.
+Similarly to Hammersley-Clifford theorem, it can be proven that any positive Gibbs distribution with pairwise interaction can be expressed as $P(\xx;\thetav) = P(\tilde{\xx}) \exp{\sum_{ij} \theta^{\dagger}_{ij}(x_i,x_j) + \sum_{i}\theta^{\dagger}_i(x_i)}$.
 Using this fact for learning, the parameters can be estimated by using the empirical distribution in \eqref{eq:HC_param}.
 Note the resemblance of  \eqref{eq:HC_param} to the PL equation.
 \ignore{
@@ -283,23 +283,23 @@ they include a compression of the sample complexity of this method, PL (more acc
 }
 
 In another approach to avoiding partition function estimation, \cite{hyvarinen2007some} use the ratio between the probability of two assignments, which eliminates the partition function.
-Note that using the ratio is basically similar to using the conditional probability, and indeed \cite{marlin2010inductive} and \cite{marlin2012asymptotic} compare the ratio based  methods to pseudo-likelihood and explain the differences.
-Other methods like \cite{mizrahi2014icml} simply disconnect each clique from its neighbors, and learn each factor independently.
+Note that using the ratio is basically similar to using the conditional probability, and indeed \cite{marlin2010inductive} and \cite{marlin2012asymptotic} compare the ratio-based  methods to pseudo-likelihood and explain the differences.
+Other methods, like \cite{mizrahi2014icml}, simply disconnect each clique from its neighbors, and learn each factor independently.
 %\footnote{It assumes independence of the clique neighbors from their other neighbors. However it is not clear how it effects the sample complexity, and non is given in the paper.\atodo{Not sure what this comment means.}}.
 
-To conclude, ML has many desirable statistical properties, but no time efficient algorithm is known. Moreover, it was proven by \cite{bresler2014hardness} and \cite{montanari2015computational} that under reasonable assumptions no algorithmcan optimize ML efficiently. On the other hand, PL is time efficient but its sample complexity is worse than that of ML. Methods like composite likelihood can give better sample complexity results, while still being time efficient.
+To conclude, ML has many desirable statistical properties, but no time efficient algorithm is known. Moreover, it was proven by \cite{bresler2014hardness} and \cite{montanari2015computational} that under reasonable assumptions, no algorithm can optimize ML efficiently. On the other hand, PL is time efficient but its sample complexity is worse than that of ML. Methods like composite likelihood can give better sample complexity results, while still being time efficient.
 
 \subsection{Inferning}
 \label{sec:inferning}
 In a world without computation limitation, learning the exact model,
-and using exact inference is always optimal. In our world, however, it
+and using exact inference, is always optimal. In our world, however, it
 is not always the case.  If the quality of a model is measured by the accuracy
 of its inference predictions, then the approximate inference algorithm used
 should also be taken into account during learning. This point was formulated
 elegantly in \cite{wainwright2006estimating}, where it shown both theoretically and empirically that learning and inference should be matched (e.g., exact learning with approximate inference is worse than approximate learning with approximate inference). Note that in that paper, the structure of the model was given.  An interesting question remains, how learning should be preformed when
 the structure is not given, and the goal is preforming inference on
 the learned model.
-The above interplay between learning and inference has recently been coined the term ``inferning''\cite{rohanimanesh2009training}
+The above interplay between learning and inference has recently been coined the term ``inferning'' \cite{rohanimanesh2009training}
 
 The complexity of inference for a given model is exponential in its tree-width \cite{robertson1983graph,robertson1994quickly}.
 Therefore it would be desirable to learn bounded tree-width models.
@@ -309,13 +309,13 @@ This, however, turns out to be a hard problem in itself \cite{srebro2001maximum}
 Another class of interesting models is where the inference algorithm is not exact, but still guaranteed to return a good approximation. 
 As mentioned earlier (see here \ref{sec:belief} ), running BP on models that are tree-like can be shown to return a good approximation \cite{dembo2010ising}.
 Tree-like models are models that are locally trees, but allow long cycles.
-Formally a ``long'' cycle corresponds to negligible correlation between vertices or a vertex and a group. This property is also known as correlation decay (see \secref{sec:structure} for further discussion).
+Formally, a ``long'' cycle corresponds to negligible correlation between vertices or a vertex and a group. This property is also known as correlation decay (see \secref{sec:structure} for further discussion).
 \ignore{ $\epsilon$ influence of the assignment of two vertices on each other (or on a group of vertices to a vertex).}
 %In other words, in models where in the influential surrounding are trees, inference is plausible.
-In our paper \cite{heinemann2014inferning} the structure and parameters are learned such the resulting model has the above tree-like properties.
+In our paper \cite{heinemann2014inferning}, the structure and parameters are learned such that the resulting model has the above tree-like properties.
 %
 
 Fast mixing models are another model family,  known to have good approximation inference algorithms.
-As explained above  \secref{sec:sampling}, if mixing is rapid, then sampling from the distribution is feasible, resulting in a theoretical guarantees for approximate inference. 
+As explained above in \secref{sec:sampling}, if mixing is rapid, then sampling from the distribution is feasible, resulting in a theoretical guarantee for approximate inference. 
 In the paper \cite{domke2015maximum}, a learning algorithm is presented, that guarantees returning a model which belongs to the fast mixing model family,
 thereby guaranteeing the quality of inference approximations.

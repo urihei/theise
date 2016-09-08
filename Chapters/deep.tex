@@ -1,12 +1,12 @@
 % !TEX root =../main.tex
 \section{Deep Learning and Kernels}
-This section try to use two facts.
+This section attempts to use two facts.
 The first is that kernels allow SVM to produce non-linear classifiers in the input space.
-In other words, the use of kernels change the hypothesis class from linear in the input space to linear in the kernel reproduced Hilbert space.
-The second fact is that the success of deep learning drive to the a believe that deep networks describe a good hypothesis class.
-Combining the two seem the logical next step.
+In other words, the use of kernels changes the hypothesis class from linear in the input space to linear in the kernel reproduced Hilbert space.
+The second fact is that, the success of deep learning drives to the belief that deep networks describe a good hypothesis class.
+Combining the two seems the logical next step.
 Can a kernel be found such that the reproduced Hilbert space define a hypothesis class that is the same as the hypothesis class deep networks induce.
-I will now give short introduction to some of the ideas in the two fields which will allow us to discuss relevant work.
+I will now give a short introduction to some of the ideas in the two fields, which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
 Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $\card$ possible labels (e.g., when classifying digits $\card=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^\nvars$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^\nvars \times \Re^q \to \Re^\card$. The output label for an input $\xx$ is given simply by
@@ -27,7 +27,7 @@ As an example, the input could be an image and the output the category of the ob
 %When learning classifiers it is natural to restrict our attention to a class of functions $f \in \mathcal{F}$ (e.g., all linear classifiers, or all neural nets with one hidden layer). During training, our
 %goal is to return a function in $\mathcal{F}$ that performs well on the training data. Formally, consider a loss function $\ell(f(\xx),y)$ that measures how well 
 
-To define the learning problem, one first define a loss function $\ell(f(\xx,\ww),y)$ which measures the error incurred when using a classifier with parameters $\ww$ to label an object $\xx$ in the case where the true label is $y$.
+To define the learning problem, one first must define a loss function $\ell(f(\xx,\ww),y)$ which measures the error incurred when using a classifier with parameters $\ww$ to label an object $\xx$ in the case where the true label is $y$.
 One loss of interest is the zero-one loss of the classifier in \eqref{eq:argmax_classify}. Namely:
 \be
 \ell_{zo}(f(\xx,\ww),y) \equiv \deltaF{\arg\max_r{f_r(\xx,\ww)} \neq y} \equiv \begin{cases}
@@ -46,7 +46,7 @@ find $\ww$ such that:
 \expect{(\xx,y) \sim P}{\ell(f(\xx, \ww) ,y)}
 \label{eq:true_risk}
 \ee
-is minimized. Of course we do not know $P$, but assume we have IID samples from it (as in ML. See \secref{sec:max_likelihood}).
+is minimized. Of course, we do not know $P$, but assume we have IID samples from it (as in ML. See \secref{sec:max_likelihood}).
 
 
 %Learning such a function mean to learn its parameters: we want to find parameters  $\ww$ that minimize $\expect{(\xx,y) \sim P}{l(f,\xx, \ww ,y)}$ where $l : \mathcal{F} \times\Re^p\times \Re^q \times \cL \to \Re^{+}$ is the loss function - the cost of returning a label $f(\xx,\ww)$ where the true label is $y$.
@@ -95,14 +95,14 @@ One of its most exciting implications is that we can replace the original featur
 features $\phiv(\xx)$, as long as we can efficiently calculate dot products $\phiv(\xx)\cdot\phiv(\xx')$ for any two vectors $\xx$ and $\xx'$. The converse implication is that if we have a kernel function $K(\xx,\xx')$ that can be written as $K(\xx,\xx')=\phiv(\xx)\cdot\phiv(\xx')$ for some $\phiv(\xx)$, then $K$ can be used in both learning and inference as above. Our focus will be on the case where $\phiv$ is given. 
 
 \subsubsection{Extending Hypothesis Classes}
-Consider a binary classifier of the form $\sign\left(f(\xx;\ww)\right)$ where $f$ is a function of $\xx$  parameterized by $\ww$.  Given some function of $\alpha(\ww)$ from $\ww$ to the reals, we can 
+Consider a binary classifier of the form $\sign\left(f(\xx;\ww)\right)$, where $f$ is a function of $\xx$  parameterized by $\ww$.  Given some function of $\alpha(\ww)$ from $\ww$ to the reals, we can 
 use $\alpha$ to define a new classifier:
 \be
 \sign\left(\int f(\xx;\ww)\alpha(\ww) d\ww \right)
 \ee
-It's clear that these classifiers are a superset of those defined via $f$, since we can always choose $\alpha(\bar{\ww}) = \delta(\bar{\ww}-\ww)$  and recover the classifier $f(\xx;\ww)$. 
+It is clear that these classifiers are a superset of those defined via $f$, since we can always choose $\alpha(\bar{\ww}) = \delta(\bar{\ww}-\ww)$  and recover the classifier $f(\xx;\ww)$. 
 
-The advantage of the above formulation is that it is linear in $\alpha(\ww)$ and we can thus employ the powerful machinery and generlization theory of linear classifiers. This idea was explored in the past, and in particular in \cite{NIPS2008_3495}. In \cite{heinemann2016improper} we use this as a starting point for learning extensions of neural network models.   
+The advantage of the above formulation is that it is linear in $\alpha(\ww)$, and we can thus employ the powerful machinery and generlization theory of linear classifiers. This idea was explored in the past, and in particular in \cite{NIPS2008_3495}. In \cite{heinemann2016improper} we use this as a starting point for learning extensions of neural network models.   
 
 \ignore{
 \subsubsection{Kernels}
@@ -200,7 +200,7 @@ A natural and intriguing question is whether these two approaches can be combine
 
 One nice observation made by several researchers \cite{le2007continuous,cho2009kernel} is that networks with a continuum of hidden units can be translated into a kernel based learning problem. Our paper  \cite{heinemann2016improper} uses some technical insights from these papers, but considers finite networks. Another relevant line of work is Bayesian neural networks \cite{neal1995bayesian} which also integrate over a continuum of neural net models.
 
-Another line of work linking deep learning and kernels considers random features, or equivalently random initializations of neural net models. Several authors have shown relations between this setup and kernels\cite{rahimi2007random,giryes2015deep,daniely2016toward}.
+Another line of work linking deep learning and kernels considers random features, or equivalently random initializations of neural net models. Several authors have shown relations between this setup and kernels \cite{rahimi2007random,giryes2015deep,daniely2016toward}.
 
 Finally, we note that kernels can be used to capture certain invariants of the input space, a goal shared by neural architectures. For such approaches see \cite{bruna2013invariant}.\atodo{cite Chris Bishop, scattering network and  other kernel work by Bruna - I am not sure what you mean}.
 

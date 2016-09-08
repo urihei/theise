@@ -2,8 +2,25 @@
 \chapter{Conclusion and Discussion } % Main chapter title
 \label{con} % For referencing the chapter elsewhere, use \ref{con}
 \red{
-  Learning usually try to find the exact model.
-  This translate for finding the model that minimize some empirical loss out of some hypothesis class.
+  Learning is usually achieved by selecting a group of models - selecting an hypothesis class and then finding the best model in this class.
+  In some cases this paradigm is sub-optimal.
+  For example in GM, the common way the learn parameters is to use gradient descent for optimizing the ML.
+  This, however, ignores the fact that approximate inference is used to find the gradient - the marginals.
+  In the first paper, we show the implications of using BP as the approximate inference.
+  Another weak point of this scheme is the definition of the ``best'' model.
+  The most likely model (the model that optimizes ML) is the usual choice in GM.
+ However, in many cases we are not interested in the model itself, but rather in its use for inference.
+  Hence, the definition of ``best'' must take this into account, being the motivation for the second paper.
+  Selecting a correct hypothesis class is a crucial step in the learning process.
+  A good hypothesis class is one that has enough expressive power to model complex functions - but not too much as to reach over-fitting.
+  Another quality, that is sometimes overlooked, is that it could be learned efficiently.
+  In the third paper, the deep networks hypothesis class, that has been found to possess the first quality, is extended to allow efficient learning.
+  I will now give a short summery for each of these papers. 
+}
+
+\ignore{
+  Learning usually attempts to find the exact model.
+  This translates into finding the model that minimizes some empirical loss out of some hypothesis class.
   In this thesis I was trying to understand the implication diverting from this scheme.
   The first paper goal is to understand the implication of changing the loss from the exact likelihood to the Bethe likelihood.
   Models are learned for use, hence the objective should optimize the quality of the use.
@@ -15,12 +32,10 @@
   Another quality, that sometimes set aside, is that it could be learned efficiently.
   In the third paper, the deep networks  hypothesis class, that proved to have the first quality, is extend to allow efficient learning.
   I will now give a short summery for each of the papers.
-  }
-\ignore{
 The title of this thesis ``Learning Using Approximate Inference'',\atodo{Is this the title?}  addresses two practical aspects of using complex graphical models. First, parameter learning in these models typically involves approximations (due to intractability of partition functions and marginals). Second, after learning, when the models are used to answer new queries, approximate inference is typically used. It is thus natural to study the manner in which these two steps interact, and this is indeed the goal of the first two chapters of this thesis. 
 }
 
-The first paper we present in \secref{sec:lwbethe} clarifies the implication of using loopy belief propagation (BP) as the approximate inference method during the learning process. We focus on the task of moment matching, and show that it is closely related to maximizing the Bethe likelihood (an approximation to the true likelihood). Our surprising finding is that even though Bethe likelihood is concave, its maximization does not necessarily result in moment matching. In fact, a more radical conclusion arises. Namely, that some moments can simply not be attained using belief propagation.  
+The first paper, presented in \secref{sec:lwbethe}, clarifies the implication of using loopy belief propagation (BP) as the approximate inference method during the learning process. We focus on the task of moment matching, and show that it is closely related to maximizing the Bethe likelihood (an approximation to the true likelihood). Our surprising finding is that even though Bethe likelihood is concave, its maximization does not necessarily result in moment matching. In fact, a more radical conclusion arises. Namely, that some moments can simply not be attained using belief propagation.  
 
 Following the above insight, we characterize marginals where moment matching is and is not possible when learning with BP.  Specifically, we provide outer and inner bounds on these for some cases. It is an interesting theoretical challenge to provide further characterizations of this type, which will help understand when BP is likely to work well in the context of learning and inference.
 
@@ -33,7 +48,7 @@ We give an inner and outer bound for this set.
 The existence of outer bounds to this set, which cross the marginal polytope, prove the existence of marginals that will never be a sole fix point of BP, or even a stable fix point at all.
 }
 
-Our second paper in \secref{sec:lg} addresses the ``inferning'' setup where loopy belief propagation is used as an inference algorithm for answering queries after learning.  
+Our second paper in \secref{sec:lg} addresses the ``inferning'' setup, where loopy belief propagation is used as an inference algorithm for answering queries after learning.  
 %Remembering the fact that the quality of the learning process is asses by the quality of the results of the approximate inference and not by how close the model is to the real one.
 %In cases where the model will be used for inference after learning the quality of the learning process should be measured by the quality of the result of the approximate inference algorithm.
 %In such cases, the quality of the learning process will be measured by the quality of the results of the approximate algorithm. 
@@ -41,18 +56,18 @@ Our second paper in \secref{sec:lg} addresses the ``inferning'' setup where loop
 To show theoretical guarantees in this case, we focus on a regime where BP is known to perform well, 
 namely the family of High Girth Correlation Decay (HGCD) models. HGCD models are graphical models where the marginals of each variable are determined mostly by their tree shaped neighborhood, rather than  by longer cycles. 
 
-In the paper we present an algorithm to learn the structure and parameters of such models model.
+In the paper we present an algorithm to learn the structure and parameters of such models.
 The structure learning algorithm is a natural extension to \cite{chowLiu}, where we replace the tree constraint with the constraint on the girth.
-Parameter learning is also similar to Chow Liu, but with a subtle clamping procedure require to keep the HGCD property\footnote{The procedure we provide is specific to the binary pairwise case. Generalization to more complex cases is non-trivial, as it requires a notion of interaction strength for the non-binary case.}.
+Parameter learning is also similar to Chow Liu, but with a subtle clamping procedure required to keep the HGCD property\footnote{The procedure we provide is specific to the binary pairwise case. Generalization to more complex cases is non-trivial, as it requires a notion of interaction strength for the non-binary case.}.
 We provide several sample complexity results. 
 For structure learning, we show that if training samples are generated from an HGCD model, then under certain conditions, the model can be exactly reconstructed.
 More importantly, we show that if the number of samples is large enough, then the error of the inference algorithm can be bounded, when averaged over queries.
 
-The third paper \secref{sec:impnet} turns to the topic of integrating deep learning and kernels.
+The third paper, \secref{sec:impnet}, turns to the topic of integrating deep learning and kernels.
 In it, we show that extending the class of deep learning models results in a kernel based method.
 The relevant kernel can be calculated in closed form for some architectures and we provide a detailed analysis for such a case.
-We provide sample complexity results, highlight the fact that ease of optimization comes at the cost of exponentially more training samples.
-Empirical results show that method outperforms other kernel based method, and is competitive with some non kernel based ones.  
+We provide sample complexity results, and highlight the fact that ease of optimization comes at the cost of exponentially more training samples.
+Empirical results show that our method outperforms other kernel based methods, and is competitive with some non kernel based ones.  
 
 %In the third paper \secref{sec:impnet} we present a kernel the hypothesis class of which is a combination of deep networks with a given network structure. This work follows the work of \cite{cho2009kernel}, although while their kernel relates to infinite networks, ours relates to a finite number of nodes.
 
@@ -72,9 +87,9 @@ This can naturally be turned into a Bethe based approximation by replacing the l
 \be
 \tau_i^{\thetav}(x_i)= \frac{\exp{A_B(x_i;\thetav)}}{\sum_{\hat{x}_i}\exp{A_B(\hat{x}_i;\thetav)}} .~
 \ee
-There are several interesting theoretical and algorithmic issues with this proposal. First, it requires a different partition function estimate for each variable $X_i$ and assignment $x_i$, and this translates to many different BP runs. However, it's conceivable that these BP runs will have similar computation trees, and thus computation may be saved. A second question is how good this approximation can be in theory. For example, if $A_B(\thetav)$ corresponds to the exact minimum of the Bethe partition function\footnote{Note that we do not have the $\arg\min$ problem of marginal estimation.}, what can be said about the quality of approximation for different models. Third, what is the best way to learn parameters $\thetav$ if this is the inference method.
+There are several interesting theoretical and algorithmic issues with this proposal. First, it requires a different partition function estimate for each variable $X_i$ and assignment $x_i$, and this translates to many different BP runs. However, it is conceivable that these BP runs will have similar computation trees, and thus computation may be saved. A second question is how good this approximation can be in theory. For example, if $A_B(\thetav)$ corresponds to the exact minimum of the Bethe partition function\footnote{Note that we do not have the $\arg\min$ problem of marginal estimation.}, what can be said about the quality of approximation for different models. Third, what is the best way to learn parameters $\thetav$ if this is the inference method.
 
-Our HGCD results show that in some cases, the BP computation tree should be truncated to a tree shaped neighbourhood. An generalization of this approach is to assume that each probabilistic query corresponds to a truncated computation tree. A moment matching objective for such a process may be devised, and again there are many interesting algorithmic and theoretical questions.  
+Our HGCD results show that in some cases, the BP computation tree should be truncated to a tree shaped neighbourhood. A generalization of this approach is to assume that each probabilistic query corresponds to a truncated computation tree. A moment matching objective for such a process may be devised, and again there are many interesting algorithmic and theoretical questions.  
 
 \ignore{
 The hardness results of learning and infernce of GM imply that maybe a more direct approach is in order.
