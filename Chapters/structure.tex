@@ -6,7 +6,7 @@ the structure learning problem is to find the exact edge set $\exact{E}$, given 
 I will start by presenting the sample and time complexity of the problem stated above. 
 If the graph is known to be {\em some} tree, the exact structure can be found by maximum spanning tree, where the weights are the empirical mutual information between any two vertices. This is the classic algorithm of Chow and Liu (see \cite{chowLiu}). Later, \cite{tan2011large} proved that sample complexity for this method is $\Omega(\log({\nvars}))$%%U
 %\todo{Explain in footnote what sample complexity is in this case}
-\footnote{\red{The definition of sample complexity in structure learning is as follow. Let $\nvars$ be the number of variables, $E$ be the result of the algorithm for a data-set of size $\nsamples$, and $\exact{E}$ be the true edge set. The algorithm has sample complexity of $g$, if it guarantees to return $E^*$ with high probability when the number of samples $\nvars$ is bigger that $g$}.}.
+\footnote{The definition of sample complexity in structure learning is as follows. Let $\nvars$ be the number of variables, $E$ be the output of the algorithm for a data-set of size $\nsamples$, and $\exact{E}$ be the true edge set. The algorithm has sample complexity of $g$, if it is guaranteed to return $\exact{E}$ with high probability when the number of samples $\nvars$ is bigger that $g$.}
 %%
 In the general case, there seem to be four parameters governing the complexity of structure learning.
 The first is the number of vertices $\nvars$.
@@ -16,17 +16,15 @@ The third and the fourth parameters quantify the strength of the interaction bet
 In the Ising model\footnote{The Ising model is a pairwise binary model where $\cX = \{-1,1\}$ and $P(\xx;\thetav) = \frac{1}{Z(\thetav)} \exp{\sum_{i \in V}\theta_i + \sum_{ij}\theta_{ij}x_ix_j}$}, these last two parameters are easily expressed; for example, in \cite{santhanam2012information} the authors define $\lambda =
 \min_{ij} |\theta_{ij}|$ and $\omega = \max_i \sum_{j \in \nei{i}} |\theta_{ij}|$.
 %%U
-\red{
-However, in other models (where the cardinality of each variable is greater than two, or for non pairwise models), it is unknown how to express these quantities - the strength of the interaction between the variables as a function of the model parameters.
-Hence bounds on non-binary models include parameters that restrict the difference between probabilities instead of model parameters.
-}%\todo{I don't understand this last sentence. Rephrase.}
+%\red{
+However, in non binary models (or non pairwise models), the interaction between the variables is harder to quantify in terms of simple functions of the model parameters. In these cases the bounds involves constraints on model probabilities rather than model parameters.\footnote{These do of course translate back 
+to complex constraints on the model parameters.}
+%}%\todo{I don't understand this last sentence. Rephrase.}
 %%
-Given the above parameters, the sample complexity lower bounds are $\nsamples > \Omega(\dmax \log \nvars)$\cite{bresler2008reconstruction} in the general case, and for the Ising model $\nsamples > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log \nvars)$\cite{santhanam2012information}\footnote{Note that the bound is looser in the general case. This is a result of dropping some model dependent factors - these factors may depend on $d$. See \cite{bresler2008reconstruction} for details}.
+Given the above parameters, the sample complexity lower bounds are $\nsamples > \Omega(\dmax \log \nvars)$ \cite{bresler2008reconstruction} in the general case, and for the Ising model $\nsamples > \Omega(\max\{\dmax^2, \lambda^{-2}\}\log \nvars)$ \cite{santhanam2012information}\footnote{Note that the bound is looser in the general case. This is a result of dropping some model dependent factors - these factors may depend on $d$. See \cite{bresler2008reconstruction} for details}.
 %%U
 %\todo{Also, this looks like a lower bound, but it’s actually an upper bound so clarify.}
-\red{
-  Lower bound in this context means, that any algorithm given less samples than the bound cannot insure success with high probability.
-  }
+Lower bound in this context means, that any algorithm given less samples than the bound cannot ensure structure recovery with high probability.
 %%
 Lower bound on time complexity of $\Omega(\nvars^{\frac{\dmax}{2}})$ were given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}\footnote{Algorithms using an oracle that returns the expectation of any function with no direct access to the data.}.
 
@@ -52,7 +50,7 @@ There are several definitions of this property, and we focus on the one in \cite
 Let $B_{\tau}(i)$ denote all the vertices that are within distance (for which a formal definition will be given later) $\tau$ from vertex $i$, and denote by $\partial B_{\tau}(i)$ the boundary of that group.
 The assignment of $\partial B_{\tau}(i)$ is required to have negligible effect on the probability of variable $x_i$ for all $i \in V$.
 It is now clear, that if the learned model has this characteristic, when deciding what the neighbors of vertex $i$ are, only a subset of vertices need to be considered.
-By adding this condition on the true model, \cite{bresler2008reconstruction} improved its time complexity to $O(\dmax^{a\dmax}\nvars+\dmax\nvars^2\log\nvars)$\atodo{what is its here?} .
+By adding this condition on the true model, \cite{bresler2008reconstruction} improved its time complexity to $O(\dmax^{a\dmax}\nvars+\dmax\nvars^2\log\nvars)$\atodo{what does ``its'' in the previous sentence mean?} .
 If it is further assumed that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree), then greedy algorithms such as \cite{netrapalli2010greedy, anandkumar2013learning} may be applied.
 In \cite{anandkumar2013learning}, the authors preform a greedy algorithm with time complexity of $O(\dmax^{2\dmax}{\nvars})$ and sample complexity of $O(\dmax^2\log \nvars)$, but focus only on the pairwise case.  
 
@@ -64,27 +62,28 @@ The algorithm is also very practical.
 Its main drawback, is that the conditions (or parameters) that guarantee its success are not directly related to the model parameters, and hence it is very hard to compare it to other such algorithms. Another problem is the assumption of pairwise interaction.     
 
 %%U
-\red{
-Focusing on Ising models,  \cite{bresler2015efficiently} give a time-efficient algorithm with time complexity of $O(p^2\log p)$ but sample complexity of $O( f(a,\dmax) \log p)$, where $f(a,\dmax)$ is a function which involves the interaction strength and it depends doubly-exponentially in $\dmax$.
+%\red{
+Focusing on Ising models,  \cite{bresler2015efficiently} give a time-efficient algorithm with time complexity of $O(p^2\log p)$ but sample complexity of $O( f(a,\dmax) \log p)$, where $f(a,\dmax)$ is a function which involves the interaction strength and depends doubly-exponentially on $\dmax$.
 %As previous algorithms, it assume a parameter, which lower bound the interaction strength, is given to the algorithm.
 Since, in order to ensure correct results, all the samples must be used, the time complexity is the maximum between the time and sample complexity, as in all learning algorithms. 
 % of the when a threshold (the minimum difference of the probability when one of its neighbors changes its assignment)
-It is interesting that by a greedy algorithm, structure reconstruction could be ensured.
+%It is interesting that by a greedy algorithm, structure reconstruction could be ensured.
 Their algorithm has two stages: First it collects a pseudo-neighborhood for a specific vertex - a set that includes the correct neighborhood.
 Then by iterating over all this set, it removes vertices that do not change the conditional probability.
-Note that this algorithm cannot be extended to non-pairwise models, which may imply that only in Ising models could greedy algorithm work.
-}
+Note that it isn't clear how to extend this method to non-pairwise models.
+%, which may imply that only in Ising models could greedy algorithm work.
+%}
 %\todo{The definition in brackets is completely unclear, and also unclear how it relates to previous methods you discussed}
 %%
 
 To summarize: in most of the above approaches, the maximum degree must be provided as input, and plays a key role in sample and algorithmic complexity.
 In most such cases, the sample and time complexity are very close to the known lower bounds.
 %%U
-\red{
+%\red{
 %Hence, the next challenge is to define the necessary assumptions in order to allow efficient structure learning.
 %\todo{Not sure what this last sentence means in this context. - i delete it}
-The following question is in order: what are the necessary conditions to allow time-efficient (not exponential in $\dmax$) learning?
-Correlation decay was considered as an option of such a condition in \cite{montanari2009graphical}, but \cite{bresler2014structure} shows that it, in fact, is not a necessary one.}
+The following question is of key interest: what are the necessary conditions to allow time-efficient (not exponential in $\dmax$) learning?
+Correlation decay was considered as an option of such a condition in \cite{montanari2009graphical}, but \cite{bresler2014structure} shows that it, in fact, not a necessary.
 %%
 Another problem (which is sometimes ignored) is the additional step-up in difficulty when the factor size is not bounded (or is as large as $\dmax$). 
 I believe that the conditions under which a model with a bounded factor size and an unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}, may constitute a very interesting research direction.

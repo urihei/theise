@@ -63,27 +63,25 @@ as a constraint on the learned distribution being able to re-generate the empiri
 
 The ML method has other desirable qualities:\footnote{These hold under fairly general regularity conditions.}
 \begin{itemize}
-\item \red{Consistency: namely when $\nsamples \to \infty$, the learned parameters $\thetav^\nsamples$ satisfy $P(\xx;\theta^M) =  P(\xx;\exact{\thetav})$}
+\item Consistency: When $\nsamples \to \infty$, the learned parameters $\thetav^\nsamples$ satisfy $P(\xx;\theta^M) =  P(\xx;\exact{\thetav})$
   %the exact parameters $\lim_{\nsamples \to \infty} \arg \max_{\thetav} p(X^\nsamples;\theta) =  \exact{\thetav}$ will be recovered
   %%U
 %  \footnote{This does not contradict the above discussion - part of the conditions is uniqueness $\exact{\thetav}$. But this condition mat be dropped. Denote the maximum likelihood parameter by $\thetabv(\nsamples)$. Consistency could be define by $\lim_{\nsamples \to \infty} \expect{\exact{\thetav}}{\frac{P(\xx;\thetabv(M))}{P(\xx;\exact{\thetav})}} = 0$ with no uniqueness condition}.\todo{You can express consistency in terms of distribution and then there's no issue of uniqueness.}
   %%
-\item Efficiency: \cite{cramer2016mathematical} At the limit, no other consistent estimator has a lower mean squared error than ML. 
-\item Asymptotic Normality: Given sufficient data, the ML estimator will have a Gaussian distribution.
+\item Efficiency \cite{cramer2016mathematical}: At the limit  $\nsamples \to \infty$, no other consistent estimator has a lower mean squared error than ML. 
+\item Asymptotic Normality: At the limit  $\nsamples \to \infty$, the ML estimator will have a Gaussian distribution.
 \end{itemize}
 
 Despite these desirable facts, it should be noted that ML does not dominate all other estimators for finite data.
 For estimating MRFs, ML suffers from several \ignore{additional} drawbacks. The first and most important is that finding the ML estimator is computationally hard. This is intuitively sensible since the ML objective and gradient involve partition functions and marginals, both of which are hard. This fact on its own does not rule out the existence of an efficient algorithm that sidesteps partitions and marginals.
 However, the intuition of hardness is indeed confirmed by recent results from \cite{bresler2014hardness} and \cite{montanari2015computational}.
 %%U
-\red{
-They show that by using only the empirical marginals (with cardinality as the model factors) and not the whole data, no algorithm can efficiently learn the model parameters unless  $NP = RP$\footnote{RP - randomized polynomial, an polynomial algorithm that use randomness}.
+They show that by using only the pairwise empirical marginals corresponding to the MRF (and not the whole data) no algorithm can efficiently learn the model parameters unless  $NP = RP$.\footnote{RP - randomized polynomial, an polynomial algorithm that use randomness}
 %if $NP \neq RP$ then no algorithm using only the model marginals (marginals corresponding to the model parameters) can learn the model parameters.
-\todo{Not clear what the result is.} 
 Hence, if a time- efficient algorithm that finds the ML parameter is to be found, it must use marginals with higher cardinality.
 For example, PL uses marginals with cardinalities that are higher than the model factors.
 %\todo{Also not clear.}
-}%%
+%}%%
 Thus, exact ML estimation is impossible for general MRFs.
 It is natural to turn to approximate inference methods to obtain an approximate ML estimator.
 In the next section we describe such an approach, focusing on BP as the approximate inference method.
@@ -108,8 +106,8 @@ The resulting objective, which we call the Bethe likelihood, is:
 \bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
 \ee
 The function $\bethelikelihood{X;\thetav}$ is a convex function in $\thetav$, since $A_B(\thetav)$ is a convex function of $\thetav$ (note that it is indeed convex, but not smooth). 
-Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.\atodo{cite Stephen Bach who shows this - did not find this citation can you be more specific.(I proved it in the past)} % (see \appref{})
-
+Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.\atodo{cite Stephen Bach who shows this - did not find this citation can you be more specific.(I proved it in the past).} % (see \appref{})
+\gtodo{If Bach shows it, give a citation to him.}
 
 When the graph is a tree, the Bethe likelihood is exact, and in fact the optimal parameters can be found in closed form.
 These are sometimes known as canonical parameters, and are a simple function of the empirical marginals:
@@ -133,10 +131,10 @@ This is indeed a common heuristic, but not much can be guaranteed about its resu
 
 The Bethe ML approximation is also implicit in other approximate learning methods.
 In \cite{ganapathi2012constrained}, for example, ML is optimized via its dual - maximizing the entropy with moment matching constraints.
-Since this problem is hard, the problem is relaxed in the same way as the Bethe - using the local marginal polytope instead of the marginal polytope, and using the Bethe entropy instead of the exact one\footnote{Note that if no other constraints are found, the moment matching condition in the Bethe entropy maximization fully specifies the solution}.
+Since this problem is hard, the problem is relaxed in the same way as the Bethe - using the local marginal polytope instead of the marginal polytope, and using the Bethe entropy instead of the exact one.\footnote{Note that if no other constraints are found, the moment matching condition in the Bethe entropy maximization fully specifies the solution}
 %so, in fact, trying to optimize an objective that is similar to the Bethe likelihood 
-Then, to optimize the relaxed objective, the Bethe marginals must be found - which is achieved by \cite{yuille2002cccp}.
-\todo{Not sure what this means in the current context. Is this what Ganapathi does? - Yes this is how he calculates the Bethe marginals}
+Then, to optimize the relaxed objective, the Bethe marginals must be found - which is done using the CCCP method of \cite{yuille2002cccp}.
+
 
 In \cite{heinemann2012cannot} we ask a basic question regarding the above approximation. Assume that BP marginals {\em can} be calculated exactly. What can one deduce about the resulting ML estimate? We provide a set of rather surprising results that specify when such a procedure will succeed and when it will not.
 
@@ -212,11 +210,10 @@ This gives intuition to why PL is less sample-efficient. Namely, it needs to app
 %Unfortunately, for each derivative we not only need to a approximate the pairwise marginals but the marginals of the whole neighborhood.
 If one considers the result by \cite{bresler2014hardness} and \cite{montanari2015computational}, this is not surprising - any efficient estimation algorithm, is bound to use higher order marginals.
 
-\red{ Note that as ML, PL is consistent.}
 \ignore{
-The most important property of PL is that it is consistent. Namely, if data is generated by $P(\xx;\thetav^*)$ for an MRF with the same structure as the learned one, then as $N\to\infty$ PL will find parameters that correspond to the distribution $P(\xx;\thetav^*)$.}
-\atodo{You didn't say anything about consistency, unless I missed something and we now have it twice. Please check.}
-Other characteristics of PL, such as $\thetav$ being asymptotically normally distributed, can be derived from the more general family of composite likelihood, see \cite{varin2011overview}.
+The most important property of PL is that it is consistent \cite{besag1975statistical}. Namely, if data is generated by $P(\xx;\thetav^*)$ for an MRF with the same structure as the learned one, then as $N\to\infty$ PL will find parameters that correspond to the distribution $P(\xx;\thetav^*)$.}
+
+The most important property of PL is that it is in fact consistent. In other words, assuming the true underlyling model is a pairwise MRF with the correct structure, PL will find its true parameters (up to reparameterizatoin) given enough training data. Other characteristics of PL, such as $\thetav$ being asymptotically normally distributed, can be derived from the more general family of composite likelihood, see \cite{varin2011overview}.
 \ignore{
 Another view point of PL is, that instead of approximating the likelihood, it just preforming ML on the conditional marginals. 
 We are looking for the parameters that maximize the conditional probability for each vertex separately.
@@ -241,20 +238,19 @@ Contrastive Divergance (CD) \cite{hinton2002training} was designed for models wh
 One way to approximate these marginals is by MCMC (see \secref{sec:sampling}).
 Preforming only a small number of steps - usually one - to evaluate $p(x_i,x_j;\thetav)$, results in CD. Justification to this method was given by \cite{bengio2009justifying} and \cite{carreira2005contrastive}, but its success in learning Restricted Boltzmann Machine (RBM) in highlights its importance.
 
-\red{
-  In contrast to the previous methods,  \cite{abbeel2006learning} give a closed form equation for parameter estimation.
-Using the ideas from the proof of the Hammersley Clifford theorem,  they estimate the canonical factors, hence learning the graph parameters.
+In contrast to the previous methods,  \cite{abbeel2006learning} give a closed form equation for parameter estimation.
+Using the ideas from the proof of the Hammersley Clifford theorem,  they estimate the canonical factors, which can be translsated to model parameters.
 %%U
-More specifically, to simplify presentation I will focus on the pairwise case. Set a fix assignment $\tilde{\xx}$, the pairwise canonical factor is :
+More specifically, to simplify presentation I will focus on the pairwise case. Considering a fixed assignment $\tilde{\xx}$, the pairwise canonical factor is :
 \bean
 \label{eq:HC_param}
 \theta^{\dagger}_{ij}(x_i,x_j) &=& \log P(x_i,x_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}}) -\log P(x_i,\tilde{x}_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}})\nonumber\\
 && - \log P(\tilde{x}_i,x_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}})+ \log P(\tilde{x}_i,\tilde{x}_j| \tilde{\xx}_{\nei{i}}\tilde{\xx}_{\nei{j}})
 \eean
-while $\theta^{\dagger}_i(x_i)$ follows in the same way. 
-Similarly to Hammersley-Clifford theorem, it can be proven that any positive Gibbs distribution with pairwise interaction can be expressed as $P(\xx;\thetav) = P(\tilde{\xx}) \exp{\sum_{ij} \theta^{\dagger}_{ij}(x_i,x_j) + \sum_{i}\theta^{\dagger}_i(x_i)}$.
+while $\theta^{\dagger}_i(x_i)$ is defined in the same way. 
+As in the Hammersley-Clifford theorem, it can be shown that any positive Gibbs distribution with pairwise interaction can be expressed as $P(\xx;\thetav) = P(\tilde{\xx}) \exp{\sum_{ij} \theta^{\dagger}_{ij}(x_i,x_j) + \sum_{i}\theta^{\dagger}_i(x_i)}$.
 Using this fact for learning, the parameters can be estimated by using the empirical distribution in \eqref{eq:HC_param}.
-Note the resemblance of  \eqref{eq:HC_param} to the PL equation.
+Note the resemblance of  \eqref{eq:HC_param} to the PL equation\gtodo{Which? Give reference.}.
 \ignore{
 More specifically, they consider non pairwise MRFs of the form:
 \atodo{Not clear what $p(\tilde{x})$ is below. All this part needs to be explained more clearly.} 
@@ -278,9 +274,9 @@ Therefore, to estimate the parameters, one needs to simply change $P(f(b,\xx_c,\
 In a later paper, \cite{roy2009learning} further simplifies the above equation, but with no implication to parameter learning.
 Note the resemblance of  \eqref{eq:abbeel} to the PL equation.
 }
-Indeed, in \cite{bradley2012sample} it is proven that the two methods give the same results;
-they include a compression of the sample complexity of this method, PL (more accurately, composite likelihoods) and ML.
-}
+Indeed, in \cite{bradley2012sample} it is proven that the two methods\gtodo{Which two methods} give the same result.
+\cite{bradley2012sample} also provide a comparison of the sample complexity of this method, composite likelihood, and ML.
+
 
 In another approach to avoiding partition function estimation, \cite{hyvarinen2007some} use the ratio between the probability of two assignments, which eliminates the partition function.
 Note that using the ratio is basically similar to using the conditional probability, and indeed \cite{marlin2010inductive} and \cite{marlin2012asymptotic} compare the ratio-based  methods to pseudo-likelihood and explain the differences.

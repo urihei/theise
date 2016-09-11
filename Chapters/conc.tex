@@ -1,22 +1,18 @@
 % !TEX root =../main.tex
 \chapter{Conclusion and Discussion } % Main chapter title
 \label{con} % For referencing the chapter elsewhere, use \ref{con}
-\red{
   Learning is usually achieved by selecting a group of models - selecting an hypothesis class and then finding the best model in this class.
   In some cases this paradigm is sub-optimal.
-  For example in GM, the common way the learn parameters is to use gradient descent for optimizing the ML.
-  This, however, ignores the fact that approximate inference is used to find the gradient - the marginals.
-  In the first paper, we show the implications of using BP as the approximate inference.
-  Another weak point of this scheme is the definition of the ``best'' model.
-  The most likely model (the model that optimizes ML) is the usual choice in GM.
- However, in many cases we are not interested in the model itself, but rather in its use for inference.
-  Hence, the definition of ``best'' must take this into account, being the motivation for the second paper.
-  Selecting a correct hypothesis class is a crucial step in the learning process.
-  A good hypothesis class is one that has enough expressive power to model complex functions - but not too much as to reach over-fitting.
-  Another quality, that is sometimes overlooked, is that it could be learned efficiently.
-  In the third paper, the deep networks hypothesis class, that has been found to possess the first quality, is extended to allow efficient learning.
-  I will now give a short summery for each of these papers. 
-}
+  For example in graphical models, the common approach to learning parameters is to use gradient descent for maximizing the likelihood.
+  This, however, ignores the fact that approximate inference is used to find the gradient, which are the model marginals in this case.
+  In the first paper, we show the implications of using BP as the approximate inference engine. Another weak point of this scheme is the definition of the ``best'' model. The most likely model (the model that optimizes ML) is the usual choice in graphical models. However, in many cases we are not interested in the model itself, but rather in its use for inference. Hence, the definition of ``best'' must take this into account, being the motivation for the second paper.
+
+Selecting a correct hypothesis class is a crucial step in the learning
+process.  A good hypothesis class is one that has sufficient expressive
+power to model complex functions - but not too much as to suffer from
+over-fitting. Another desirable property, is of course that learning can be done efficiently.  In the third paper, I consider the hypothesis class of deep networks, and explore an approach for making learning efficient in this case.
+
+I will next provide a brief summary for each of these papers.
 
 \ignore{
   Learning usually attempts to find the exact model.
