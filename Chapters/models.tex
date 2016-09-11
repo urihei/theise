@@ -128,17 +128,15 @@ algorithm must be used. Approximation algorithms will be further discussed in
 \secref{sec:approx}.
 
 \subsubsection{Why use Graphical Models?}
-\atodo{Not sure if this is the right place for this section but I've reorganized it in any case}
- 
 Given the apparent hardness of inference in graphical models (even ``simple'' ones like MRFs as presented above), why should
 one study them at all? There are several compelling reasons, as we outline below.
 
 First, despite the theoretical hardness of inference, there are many approximation algorithms which work very well in practice (we survey some below). It is, of course, interesting to understand why these algorithms work in practice, and there is ongoing research in this direction.
 %%U
-\red{For example, in \cite{richardson2001design} a code which approaches capacity is suggested,where the decoding is achieved by Belief Propagation - an approximate algorithm.
- In \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model, to achieve an optimal algorithm in cases where the detection is feasible.}
+For example, \cite{richardson2001design} were among the first to show that belief propagation, an efficient approximate inference algorithm to be discussed in detail later \atodo{add link to section}, 
+ is optimal in the sense of building capacity achieving error correcting codes. In \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model, and achieved optimal recovery rates for cases where detection is possible.
 %%
-But \red{the}\ignore{this} empirical success on its own merits the use of these models. Furthermore, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
+ There are many other cases where belief propagation or similar algorithms work well in practice \atodo{provide some references}. Indeed, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
 
 Second, graphical models have certain key representational advantages:
 \begin{itemize}

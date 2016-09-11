@@ -176,12 +176,14 @@ The relation between the Bethe partition function \eqref{eq:bethe_approximation}
 Later \cite{RuozziNips2012} proved a stronger result, showing that if the pairwise interactions are log sub-modular, then the Bethe partition function lower bounds the exact partition function (the case of attractive binary Ising models is an instance of this class).
 In their proof, they used the important work of  \cite{vontobel2013counting}, in which the Bethe entropy was given a combinatorial interpretation.
 
-To conclude, the connection between BP and Bethe contributes to the understanding of BP and can result in practical improvements.
-The biggest shortcoming of this connection is that it says nothing with respect to BP messages before conversion.\atodo{What does that mean?}
+To conclude, the connection between BP and the Bethe variational formulation contributes to the understanding of BP and can result in practical improvements.
+The biggest shortcoming of this connection is that it says nothing with respect to BP messages before convergence. Specifically, when BP does not converge,
+ the resulting pairwise beliefs are not in the local polytope and thus cannot be directly related to the Bethe free energy. Thus, the Bethe interpretation applies only
+ at convergence. This has prompted researchers to develop algorithm that directly minimize the Bethe free energy. See \atodo{cite Welling and Teh}.
 %%U
-\red{
-So, if BP does not converge, the result is not in the local polytope, and hence cannot be related to the Bethe free energy.
-In other words, BP does not minimize the Bethe free energy, but rather seeks after another objective, one that when reached, minimizes the Bethe free energy.}
+%\red{
+%So, if BP does not converge, the result is not in the local polytope, and hence cannot be related to the Bethe free energy.
+%In other words, BP does not minimize the Bethe free energy, but rather seeks after another objective, one that when reached, minimizes the Bethe free energy.}
 %%
 Finally, we mention another interpretation as a re-parametrization algorithm. In this view, BP changes the parametrization of the MRF parameters $\thetav$ in order to optimize a bound on the partition function. For more details please refer to  \citet{wainwright2001tree,wainwright2002stochastic}.
 \ignore{

@@ -21,7 +21,7 @@ In what follows we will denote by $\muv$ the vector constructed from concatenati
 The variational approach proceeds by defining some function $g(\muv)$ of the marginals, and maximizing this function, subject to some constraints, to obtain the approximate marginals. A first step to realizing such an approach is to understand which values of $\muv$ are possible. In other words, which vectors $\muv$ are marginals of some model $P(\xx;\thetav)$. Clearly we need not consider vectors $\muv$ that cannot be marginals of any model.
 
 The above point leads to the definition of the ``Marginal Polytope''  \cite{wainwright2008graphical}. The Marginal Polytope, which we denote by $\margpoly^G$,  is a set of $\muv$ vector, which are the marginals of
-``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:\todo{The definition here should not include $\thetav$ but instead a general distribution on $\xx$} 
+``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:
 \be
 \label{eq:margpoly}
 \margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
@@ -79,7 +79,8 @@ Mean field methods have a long history, starting from statistical physics, and l
 %\atodo{It's incorrect ot say mean field uses $\margpoly^{G_I}$ since that contains only singleton marginals}
 We begin by considering all distributions $P(\xx)$ corresponding to a set of $\nvars$ independent variables, as in \eqref{eq:independent}. The pairwise marginals of such distributions will also be independent, namely given by $\mu_{ij}(x_i,x_j) = \mu_i(x_i)\mu_j(x_j)$.
 Such distributions are therefore always in $\margpoly^G$.
-This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (namely $\margpoly^{I} \subseteq \margpoly^{G}$)\footnote{\red{If $G$ include edges,  $\margpoly^{I} \subset \margpoly^{G}$. Since both sets share the same extreme point $\margpoly^{I}$ is a non-convex set.}}:
+This implies that the following set $\margpoly^I$ is a subset of $\margpoly^G$ (namely $\margpoly^{I} \subseteq \margpoly^{G}$):
+%\footnote{ \red{If $G$ include edges,  $\margpoly^{I} \subset \margpoly^{G}$. Since both sets share the same extreme point $\margpoly^{I}$ is a non-convex set.}}:
 %\atodo{Strictly speaking this is not a marginal polytope...}
 %More specifically, it replaces the marginal polytope (of the true dependencies graph) and the true entropy, with the marginal polytope and entropy of a simpler dependencies graph.
 %I will illustrate this technique by choosing the simplest graph - the independent graph denoted by $G_I$.
@@ -106,7 +107,8 @@ Putting all of the above together we have the mean field approximation of the pa
 \be
 A_{I}(\thetav) = \sup_{\muv \in \margpoly^{I}}\left \{ \muv \cdot \thetav + H_{I}(\muv))) \right\} \label{eq:naive_mean_field}~,
 \ee
-Note that $A(\thetav) \geq A_{I}(\thetav)$ since by restricting the marginal polytope the result can only decrease, and $A^*(\muv)$ is exact.
+Note that $A(\thetav) \geq A_{I}(\thetav)$ since by restricting the marginal polytope the result can only decrease, and $A^*(\muv)$ is exact. However, the  function maximized in \eqref{eq:naive_mean_field} is non-convex, so we cannot generally find the above maximum efficiently.\footnote{Note that for any feasible $\muv$ the right hand side is still a lower
+bound on the $A(\thetav)$.}
 
 A nice property of the above approximation is that it leads to a simple coordinate descent algorithm. Fix all $\mu_j(x_j)$ except for $\mu_i(x_i)$ then one can show the following setting for $\mu_i(x_i)$ will maximize the objective \eqref{eq:naive_mean_field}:
 \be
