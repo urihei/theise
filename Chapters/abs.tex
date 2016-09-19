@@ -1,15 +1,41 @@
 The learning process can be described as follows: First select an hypothesis class than select a loss function  and finally find a model within  the hypothesis class that minimize the loss function.
-In this thesis we look at the implication of the fact that time complexity is a factor on the learning process.
+Having the model, it can now be used to answer queries. 
+In this thesis we look at the implication of the time complexity of minimizing the loss function and the inference, on the choices of the hypothesis class and loss function.
+\ignore{
 More accurately, the time complexity of the optimization part in many situations drive us to use approximate algorithm - the optimization is inexact.
 Usually this approximation algorithm do not come with guarantee on the quality of the results.
 If we want to be sure that we always return a good result, the decisions in the learning process should be effected by the implication of these choices on the algorithm that is used in the optimization.
 
+
 Choosing the hypothesis class is a crucial step, a good hypothesis class is one that integrate prior knowledge of the problem,  it is complex enough to express the richness of the data while not too complex such it will easily over fit.
-The above is usually the main factors in choosing an hypothesis class.
-Indeed, lately deep networks proved to be a good hypothesis class.
-Deep networks cooperate prior knowledge ( for example convolution and pooling \cite{lecun1995convolutional}) its a very expressive and several techniques are used to avoid over fitting (such as dropout \cite{srivastava2014dropout}).
+%The above is usually the main factors in choosing an hypothesis class.
+Lately deep networks proved to be a good hypothesis class.
+It is easy cooperate prior knowledge in deep networks  (for example convolution and pooling \cite{lecun1995convolutional}), its a very expressive and several techniques are used to avoid over fitting (such as dropout \cite{srivastava2014dropout}).
 A crucial problem remain, the optimization problem is non-convex, hence the quality of the result can vary.
 In this work we address this difficulty by turning to ``improper'' learning of deep networks.
 We extend the deep networks hypothesis class with a result of a kernel based method.
 This allow convex optimization with a price of increase in sample complexity.
+
+Another interesting hypothesis class is graphical models (GM).
+For this hypothesis class the natural loss function is minus maximum likelihood.
+Optimization of ML is usually done by gradient decent which involve calculating the derivative - the model marginals.
+Inferring the marginals in the general case is hard hence  an approximation algorithm is used.
+Belief propagation (BP) is an approximate inference algorithm that proved to give good results \cite{murphy1999loopy}.
+In this work we show that using BP as the inference algorithm imply optimizing different objective the Bethe maximum likelihood.
+As a result, we show that there are empirical marginals that can not be learned by this objective.
+More accurately, learning these marginals result in a model that can not reconstruct these marginals - no moment matching.
+On the the other hand, for marginals that can be learned we prove the optimally of a closed form equation.
+we give inner and outer bounds to these sets.
+Another interesting result of this work is the fact that there are marginals that are \textit{never} the result of BP.
+
+In many scenarios learning is preformed in order to use the learned model for answering queries.
+In GM answering queries - inference is in general hard, hence approximate inference is used.
+%When ML is the optimization objective, the use of the approximate algorithm that will be used to answer queries is not taken into consideration.
+The quality of the learning process is measured by the quality of the quarry's result,.
+since approximate inference is used to answer the quarries, even if the exact model was learned no guarantee on the quality of the result can be made.
+In this work we present an algorithm that return a model that belong to a group where the quality of the result of BP is guaranteed.
+If the data is sampled from a model in this group we derive finite sample results guaranteeing that beyond a certain sample size, the resulting models will answer probabilistic queries with a high level of accuracy.
+
+In summary, this thesis we start to explore the implication of the time complexity of the algorithms that are used in the learning process.
+We show that in GM choosing the approximate inference both for learning and answering queries effect the result and in deep networks we present a kernel that extend the deep network hypothesis class. 
 
