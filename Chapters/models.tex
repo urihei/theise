@@ -133,10 +133,11 @@ one study them at all? There are several compelling reasons, as we outline below
 
 First, despite the theoretical hardness of inference, there are many approximation algorithms which work very well in practice (we survey some below). It is, of course, interesting to understand why these algorithms work in practice, and there is ongoing research in this direction.
 %%U
-For example, \cite{richardson2001design} were among the first to show that belief propagation, an efficient approximate inference algorithm to be discussed in detail later \atodo{add link to section}, 
- is optimal in the sense of building capacity achieving error correcting codes. In \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model, and achieved optimal recovery rates for cases where detection is possible.
+For example, \cite{richardson2001design} were among the first to show that belief propagation, an efficient approximate inference algorithm to be discussed in detail later see \secref{sec:belief}, is optimal in the sense of building capacity achieving error correcting codes.
+In \cite{decelle2011inference} the same algorithm was used for community detection in the stochastic block model, and achieved optimal recovery rates for cases where detection is possible.
 %%
- There are many other cases where belief propagation or similar algorithms work well in practice \atodo{provide some references}. Indeed, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
+There are many other cases where belief propagation or similar algorithms work well in practice \cite{murphy1999loopy,willsky2002multiresolution,matthew2015}.
+Indeed, as mentioned in the introduction, it is often the case in machine learning that there is a gap between our theoretical understanding of a method, and its performance in practice.
 
 Second, graphical models have certain key representational advantages:
 \begin{itemize}

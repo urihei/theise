@@ -106,8 +106,7 @@ The resulting objective, which we call the Bethe likelihood, is:
 \bethelikelihood{X;\thetav}  = \sup_{\thetav \in \Omega^G} \left\{\mubv \cdot \thetav - \sup_{\tauv \in \lclmargpoly} \left\{\tauv \cdot \thetav + H_B(\tauv)\right\}\right\}
 \ee
 The function $\bethelikelihood{X;\thetav}$ is a convex function in $\thetav$, since $A_B(\thetav)$ is a convex function of $\thetav$ (note that it is indeed convex, but not smooth). 
-Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.\atodo{cite Stephen Bach who shows this - did not find this citation can you be more specific.(I proved it in the past).} % (see \appref{})
-\gtodo{If Bach shows it, give a citation to him.}
+Moreover, it can be shown that $\bethelikelihood{X; \thetav}$ is \textbf{strictly} convex.
 
 When the graph is a tree, the Bethe likelihood is exact, and in fact the optimal parameters can be found in closed form.
 These are sometimes known as canonical parameters, and are a simple function of the empirical marginals:
@@ -250,32 +249,11 @@ More specifically, to simplify presentation I will focus on the pairwise case. C
 while $\theta^{\dagger}_i(x_i)$ is defined in the same way. 
 As in the Hammersley-Clifford theorem, it can be shown that any positive Gibbs distribution with pairwise interaction can be expressed as $P(\xx;\thetav) = P(\tilde{\xx}) \exp{\sum_{ij} \theta^{\dagger}_{ij}(x_i,x_j) + \sum_{i}\theta^{\dagger}_i(x_i)}$.
 Using this fact for learning, the parameters can be estimated by using the empirical distribution in \eqref{eq:HC_param}.
-Note the resemblance of  \eqref{eq:HC_param} to the PL equation\gtodo{Which? Give reference.}.
 \ignore{
-More specifically, they consider non pairwise MRFs of the form:
-\atodo{Not clear what $p(\tilde{x})$ is below. All this part needs to be explained more clearly.} 
-\be
-P(\xx;\exact{\thetav}) = \frac{1}{Z(\thetav)} \exp{\sum_{c \in \cC}\thetav_c(\xx_c)} = P(\tilde{\xx})\exp{\sum_{c\in\cC} \thetav^{\dagger}_c(\xx_c)}
-\ee
-Where $\tilde{\xx}$ is some fix assignment.
-Now the canonical factors $\thetav^{\dagger}$ are defined by
-\be
-\thetav^{\dagger}_{c}(\xx_c) = \sum_{b \subseteq c} -1^{|c \setminus b|} \log{P(f(b,\xx_c,\tilde{\xx}))}
-\ee
-\atodo{Below avoid the use of $\cX$ since it no longer means the cardinality of a single variable (it was used to define several things in the previous version, so I eliminated it)}
-where  $f(b,\xx_c,\tilde{\xx}) : \cI \times \cX_c \times \cX_d\to \cX_d$ such that $b \subseteq c\subseteq d$, and for all $i \in d$ - if $i \in b$ then $x_i = [\xx_c]_i$, otherwise $x_i = \tilde{\xx_i}$ for the fixed assignment $\tilde{\xx}$.
-This can be further simplified by using independence 
-\be
-\label{eq:abbeel}
-\thetav^{\dagger}_{c}(\xx_c) = \sum_{b \subseteq c} -1^{|c \setminus b|} \log{p(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})}
-\ee
-So a factor involves only the clique and the clique's neighbors.
-Therefore, to estimate the parameters, one needs to simply change $P(f(b,\xx_c,\tilde{\xx}_c) |\tilde{\xx}_{\nei{c}})$ to the corresponding empirical marginals.
-In a later paper, \cite{roy2009learning} further simplifies the above equation, but with no implication to parameter learning.
-Note the resemblance of  \eqref{eq:abbeel} to the PL equation.
-}
+Note the resemblance of  \eqref{eq:HC_param} to the PL equation\gtodo{Which? Give reference.}.
 Indeed, in \cite{bradley2012sample} it is proven that the two methods\gtodo{Which two methods} give the same result.
-\cite{bradley2012sample} also provide a comparison of the sample complexity of this method, composite likelihood, and ML.
+}
+\cite{bradley2012sample} provide a comparison of the sample complexity of this method, composite likelihood, and ML.
 
 
 In another approach to avoiding partition function estimation, \cite{hyvarinen2007some} use the ratio between the probability of two assignments, which eliminates the partition function.

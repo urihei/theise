@@ -50,7 +50,7 @@ There are several definitions of this property, and we focus on the one in \cite
 Let $B_{\tau}(i)$ denote all the vertices that are within distance (for which a formal definition will be given later) $\tau$ from vertex $i$, and denote by $\partial B_{\tau}(i)$ the boundary of that group.
 The assignment of $\partial B_{\tau}(i)$ is required to have negligible effect on the probability of variable $x_i$ for all $i \in V$.
 It is now clear, that if the learned model has this characteristic, when deciding what the neighbors of vertex $i$ are, only a subset of vertices need to be considered.
-By adding this condition on the true model, \cite{bresler2008reconstruction} improved its time complexity to $O(\dmax^{a\dmax}\nvars+\dmax\nvars^2\log\nvars)$\atodo{what does ``its'' in the previous sentence mean?} .
+By adding this condition on the true model, \cite{bresler2008reconstruction} improved the time complexity first presented to $O(\dmax^{a\dmax}\nvars+\dmax\nvars^2\log\nvars)$.
 If it is further assumed that $B_{\tau}(i)$ is a tree (note, the whole graph is not necessarily a tree), then greedy algorithms such as \cite{netrapalli2010greedy, anandkumar2013learning} may be applied.
 In \cite{anandkumar2013learning}, the authors preform a greedy algorithm with time complexity of $O(\dmax^{2\dmax}{\nvars})$ and sample complexity of $O(\dmax^2\log \nvars)$, but focus only on the pairwise case.  
 

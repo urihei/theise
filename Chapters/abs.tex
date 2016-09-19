@@ -1,0 +1,15 @@
+The learning process can be described as follows: First select an hypothesis class than select a loss function  and finally find a model within  the hypothesis class that minimize the loss function.
+In this thesis we look at the implication of the fact that time complexity is a factor on the learning process.
+More accurately, the time complexity of the optimization part in many situations drive us to use approximate algorithm - the optimization is inexact.
+Usually this approximation algorithm do not come with guarantee on the quality of the results.
+If we want to be sure that we always return a good result, the decisions in the learning process should be effected by the implication of these choices on the algorithm that is used in the optimization.
+
+Choosing the hypothesis class is a crucial step, a good hypothesis class is one that integrate prior knowledge of the problem,  it is complex enough to express the richness of the data while not too complex such it will easily over fit.
+The above is usually the main factors in choosing an hypothesis class.
+Indeed, lately deep networks proved to be a good hypothesis class.
+Deep networks cooperate prior knowledge ( for example convolution and pooling \cite{lecun1995convolutional}) its a very expressive and several techniques are used to avoid over fitting (such as dropout \cite{srivastava2014dropout}).
+A crucial problem remain, the optimization problem is non-convex, hence the quality of the result can vary.
+In this work we address this difficulty by turning to ``improper'' learning of deep networks.
+We extend the deep networks hypothesis class with a result of a kernel based method.
+This allow convex optimization with a price of increase in sample complexity.
+
