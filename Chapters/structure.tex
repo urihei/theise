@@ -3,7 +3,7 @@
 Given a distribution $P(\xx;\exact{\thetav})$ as in \eqref{eq:basic_model},
 the structure learning problem is to find the exact edge set $\exact{E}$, given a data set of $\nsamples$ IID samples from $P(\xx;\exact{\thetav})$.
 
-I will start by presenting the sample and time complexity of the problem stated above. 
+We will start by presenting the sample and time complexity of the problem stated above. 
 If the graph is known to be {\em some} tree, the exact structure can be found by a maximum spanning tree, where the weights are the empirical mutual information between any two vertices. This is the classic algorithm of Chow and Liu (see \cite{chowLiu}). Later, \cite{tan2011large} proved that the sample complexity of this method is $\Omega(\log({\nvars}))$.%%U
 %\todo{Explain in footnote what sample complexity is in this case}
 \footnote{The definition of sample complexity in structure learning is as follows. Let $\nvars$ be the number of variables, $E$ be the output of the algorithm for a data-set of size $\nsamples$, and $\exact{E}$ be the true edge set. The algorithm has sample complexity of $g$, if it is guaranteed to return $\exact{E}$ with high probability when the number of samples $\nvars$ is bigger that $g$.}
@@ -28,7 +28,7 @@ A lower bound in this context means, that any algorithm given less samples than 
 %%
 A lower bound on the time complexity of $\Omega(\nvars^{\frac{\dmax}{2}})$ was given by \cite{bresler2014structure} for statistical algorithms \cite{feldman2013statistical}.\footnote{Algorithms using an oracle that returns the expectation of any function with no direct access to the data.}
 
-There are many variants of structure learning algorithms, and I will give only a partial list.
+There are many variants of structure learning algorithms, and we will give only a partial list.
 The algorithms differ in what is assumed to be given as input, what is the underlying model, and other assumptions, so direct comparison is not always possible.
 In the following, $a$ will denote parameters (other than $\nvars$, $\dmax$) that depend on the model, usually expressing bounds on interaction strength.
 
@@ -91,4 +91,4 @@ The following question is of key interest: what are the necessary conditions to 
 Correlation decay was considered as an option of such a condition in \cite{montanari2009graphical}, but \cite{bresler2014structure} show that it is not , in fact, a necessary one.
 %%
 Another problem (which is sometimes ignored) is the additional step-up in difficulty when the factor size is not bounded (or is as large as $\dmax$). 
-I believe that the conditions under which a model with a bounded factor size and an unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}, may constitute a very interesting research direction.
+We believe that the conditions under which a model with a bounded factor size and an unbounded degree $\dmax$ can be learned efficiently\footnote{Not exponential in $\dmax$}, may constitute a very interesting research direction.
