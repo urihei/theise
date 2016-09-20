@@ -14,7 +14,7 @@ One of the key goals of machine learning is to design algorithms that learn mode
 
 In some cases, algorithmic efficiency is guaranteed. For example, most ``deep-learning'' can be evaluated very efficiently. However, in many other cases efficiency is a serious problem. These cases have the following high level structure: we want to use algorithm $A$ for a certain machine learning problem. We know that $A$ has some desirable modeling properties (e.g., it can generalize well to new instances). However, $A$ can take too long to run, and thus we use an approximation $\hat{A}$. Which of the guarantees we had about $A$ can be preserved in such a case? Should other parts of our system be modified as a result (e.g., the way the model is used) etc. 
 
-This thesis focuses on above efficiency-accuracy questions in the context of two key machine learning problems. The first is graphical models, a key probabilistic modeling framework in machine learning. The second is deep learning, which has recently attracted tremendous attention in the field, especially due to its empirical success on problems like machine vision \cite{krizhevsky2012imagenet} and speech recognition \cite{hinton2012deep}.
+This thesis focuses on above efficiency-accuracy questions in the context of two key machine learning paradigms. The first is graphical models, a key probabilistic modeling framework in machine learning. The second is deep learning, which has recently attracted tremendous attention in the field, especially due to its empirical success on problems like machine vision \cite{krizhevsky2012imagenet} and speech recognition \cite{hinton2012deep}.
 
 %Over the years, the field of machine learning has devised multiple algorithmic and theoretical frameworks, which address different aspects of the learning problem. In this work we will focus mostly on one such key framework, namely the field of graphical models. In addition, the final chapter of the thesis will study deep learning, 
 
@@ -42,8 +42,8 @@ This method is exact when the graph corresponding to the model is a tree. Howeve
 Inference is only useful if one has a good model.
 A natural way to acquire good models is to learn them from data. Indeed, ``learning'' and ``inference'' algorithms are the two fundamental objects of study in the field of graphical models.
 It is clear that these two tasks are closely related.
-The key reason for learning a model is so that it can
-be used to make useful inferences. However, much of the literature on learning and inference does not address this coupling directly.
+The key reason for learning a model is that it can be used to make useful inferences.
+However, much of the literature on learning and inference does not address this coupling directly.
 In recent years, more attention has been directed towards the learning-inference coupling, which is sometimes referred to as ``inferning'' \cite{inferning_cite}.
 The work described in this thesis makes several contributions to this effort.
 Specifically, we focus on the case where BP is used for inference, and study the implications this has on the learning procedure.
@@ -51,7 +51,13 @@ Specifically, we focus on the case where BP is used for inference, and study the
 When estimating the parameters of a model, the classical method of Maximum Likelihood (ML) is a typical first choice \cite{degroot1986probability}.
 It enjoys a wide range of attractive properties, such as consistency and asymptotically efficiency, and often works well in practice. However, a textbook implementation of ML for graphical models is not a good idea for several reasons. First, the likelihood function itself is usually intractable to calculate and optimize for most GMs of interest. Second, since approximate inference is to be used, this should somehow be incorporated into the learning objective. This view was first put forth in  \cite{wainwright2006estimating}, where it was advocated that learning and approximate inference should be studied jointly.  
  
-Given the effectiveness of BP as an approximate inference algorithm, it is natural to ask how ML should be changed when BP is used for inference on the learned model. Our first paper  \cite{heinemann2012cannot} deals precisely with this problem, and its theoretical and practical consequences. Our analysis provides several surprising results. We show that depending on the true distribution, one of two scenarios is possible. In the first, good scenario, the learned model will be good in the sense that running BP on it will result in correct results. In the second, bad scenario, the learned model will result in incorrect results. Our analysis provides some characterizations of these good and bad regimes. Another exciting implication of these results is that certain sets of probabilities can never be the outcome of running BP. They thus characterize an inherent limitation of the BP algorithm, and suggest practical consequences on the settings in which it should be used.  
+Given the effectiveness of BP as an approximate inference algorithm, it is natural to ask how ML should be changed when BP is used for inference on the learned model.
+Our first paper  \cite{heinemann2012cannot} deals precisely with this problem, and its theoretical and practical consequences.
+Our analysis provides several surprising results.
+We show that depending on the true distribution, one of two scenarios is possible.
+In the first, good scenario, the learned model will be good in the sense that running BP on it will lead to correct results.
+In the second, bad scenario, the learned model will lead to incorrect results.
+Our analysis provides some characterizations of these good and bad regimes. Another exciting implication of these results is that certain sets of probabilities can never be the outcome of running BP. They thus characterize an inherent limitation of the BP algorithm, and suggest practical consequences on the settings in which it should be used.  
 
 In our second paper  \cite{heinemann2014inferning} we focus on an important subclass of graphical models, known as high girth graphs. These have cycles, and thus BP does not provide exact inference. A natural question is then how should high girth models be learned, if BP is to be used for inference. In   \cite{heinemann2014inferning} we study this ``inferning'' setup and provide a learning algorithm whose combination with BP inference results in strong theoretical guarantees. The resulting algorithm is shown to empirically outperform other methods for learning coupled with inference.
 
@@ -81,8 +87,11 @@ techniques are still more an art than solid science.
 }
 %This, however, is not yet backed up by a theoretical understanding of their success.
 %Moreover, the optimization process requires fine-tuning, with only a collection of rules of thumb of how to set the parameters,  given a new problem.
-On the other hand, support vector machine - the former machine learning community trend, is a well-understood technique.
-Using kernels, the non-linear classifier may be learned by quadratic programming \cite{scholkopf2002learning}.
+%%U
+%On the other hand,
+%%EU
+Support vector machines - the former machine learning community trend, is a well-understood technique.
+Using kernels, a non-linear classifier may be learned by quadratic programming \cite{scholkopf2002learning}.
 Hence, a kernel that will induce the deep networks hypothesis class may enjoy both worlds.
 
 In  \cite{cho2009kernel} the authors present a kernel that is related to infinite networks.
@@ -91,7 +100,7 @@ While the \textit{arc-cosine} is related to the zero-one activation function, th
 Using a nice trick, the infinite networks could be stacked one on top of the other, with the result of deep infinite networks.
 
 In our work  \cite{heinemann2016improper} we present a finite network kernel.
-By using the natural dot product between functions, the kernel is defined as the dot product between the result of a network for the two inputs.
+By using the natural dot product between functions, the kernel is defined as the dot product between the result of a network for two inputs.
 For one layer networks our kernel is similar to that of  \cite{cho2009kernel}.
 For multi-layer networks, however, a new kernel is defined for a finite number of nodes in each layer.
 

@@ -1,24 +1,23 @@
 % !TEX root =../main.tex
 \section{Deep Learning and Kernels}
-This section attempts to use two facts.
+This section relies on two facts.
 The first is that kernels allow SVM to produce non-linear classifiers in the input space.
 In other words, the use of kernels changes the hypothesis class from linear in the input space to linear in the kernel reproduced Hilbert space.
 The second fact is that, the success of deep learning drives to the belief that deep networks describe a good hypothesis class.
-Combining the two seems the logical next step.
-Can a kernel be found such that the reproduced Hilbert space define a hypothesis class that is the same as the hypothesis class deep networks induce.
+Combining the two seems like the logical next step.
+Can a kernel be found such that the reproduced Hilbert space defines a hypothesis class that is the same as the hypothesis class deep networks induce?
 I will now give a short introduction to some of the ideas in the two fields, which will allow us to discuss relevant work.
 \subsection{Support Vector Machine}
 \subsubsection{Notations and Definitions}
-Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $\card$ possible labels (e.g., when classifying digits $\card=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^\nvars$ , and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^\nvars \times \Re^q \to \Re^\card$. The output label for an input $\xx$ is given simply by
+Classification is one of the most fundamental machine learning problems. The goal of a classifier is simply to assign a label to an object. Assume there are $\card$ possible labels (e.g., when classifying digits $\card=10$). We will consider classifiers specified as follows. Given an input object $\xx \in \Re^\nvars$ and a set of parameters $\ww\in\Re^q$, the classifier is a function $f: \Re^\nvars \times \Re^q \to \Re^\card$. The output label for an input $\xx$ is given simply by:\footnote{Without loss of generality we assume that the labels are $y \in 1,\ldots,\card$}
 %%U
-\footnote{Without loss of generality we assume that the labels are $y \in 1,\ldots,\card$}:
 %%
 \be
 y = \arg\max_{r\in 1,\ldots, \card} f_r(\xx,\ww)
 \label{eq:argmax_classify}
 \ee
 Thus $f$ assigns a score $f_r(\xx,\ww)$ to each candidate label $i$, and the highest scoring label is returned.
-As an example, the input could be an image and the output the category of the object in the image (e.g., a dog, a cat, a mouse etc). 
+As an example, the input could be an image and the output the category of the object in the image (e.g., a dog, a cat, a mouse). 
 
 %When $f$ is a linear classifier 	 
 % function (more accurately class of functions $f \in \mathcal{F}$) is defined by $f: \Re^p \times \Re^q \to \cL$ where $|\cL|=o,q \in \naturalNumbers$  

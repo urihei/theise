@@ -21,9 +21,9 @@ P(\xx) = \prod_i q_i(x_i)
 \ee
 where each of the $q_i(x_i)$ is a distribution over the variable $x_i$ alone. The advantage is that $P$ can now be described via a small set of parameters.\footnote{Namely $\sum_i R_i$ parameters required for specifying all $q_i(x_i)$ values.} However for any such $P$ the random variables $X_1,\ldots,X_n$ will be independent, which is typically not the case.
 
-A much more useful graphical model is the Pairwise Markov Random Field (MRF) model\footnote{The pairwise MRF is used in vision \cite{yao2010modeling}, computational-biology \cite{hopf2015quantification}, medical \cite{goodwin2015predictive} and security (anomaly detection) \cite{wang2015ddos}}, which we will focus on in this thesis.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
+A much more useful graphical model is the Pairwise Markov Random Field (MRF) model,\footnote{The pairwise MRF is used in vision \cite{yao2010modeling} computational-biology \cite{hopf2015quantification}, medical \cite{goodwin2015predictive} and security (anomaly detection) \cite{wang2015ddos}}, which we will focus on in this thesis.\footnote{We abuse notation by using MRF to refer to a pairwise model, where in some manuscripts MRF refers to a more general model.} An MRF is specified by:
 \begin{itemize}
-\item An undirected graph $G=(V,E)$ with $\nvars$ nodes and edges $E$. We will denote the neighbors of $i$ in $G$ by $\nei{i}$.
+\item An undirected graph $G=(V,E)$ with $\nvars$ nodes and edges $E$. We will denote the neighbors of $i$ in $G$ by $\nei{i}$ and $d_i = |\nei{i}|$ the degree of $i$.
 \item For each edge $(i,j)\in E$ and assignment $x_i,x_j$ a parameter $\theta_{ij}(x_i,x_j)$. Similarly for each $i\in V$ and assignment $x_i$ a parameter $\theta_i(x_i)$. 
 \end{itemize}  
 
@@ -38,7 +38,7 @@ where $Z(\thetav)$ is a normalization constant, also known as the partition func
 Z(\thetav) = \sum_{\xx \in\cX}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)}
 \ee
 
-From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independencies in such models are a result of the one specified above, and also known as the local Markov property. See e.g.,  \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic  \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks, can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
+From a modeling perspective the MRF has the following elegant property: every variable $X_i$ is conditionally independent from the rest of the variables given its neighbors $X_{\nei{i}}$. Thus the graph $G$ offers a representation of the conditional independencies in the probabilistic model.\footnote{It can be shown that all other conditional independencies in such models are a result of the one specified above, and also known as the local Markov property. See e.g.,  \cite{koller2009probabilistic}.} There is a wealth of results relating the structure of the graph $G$ and properties of the MRF $G$, including of course the celebrated Hammersley Clifford theorem. More details can be found in textbooks on the topic  \cite{koller2009probabilistic}. We remark that other models such as non-pairwise Markov random fields and Bayesian networks can be converted to a pairwise Markov random field (albeit at a potential increase in the domain of the variables). Thus, our work pertains to these models as well.
 
 \ignore{
 In many real-world situations, each variable is directly dependent on a small subset of other variables only. To formalize this notion, consider a random variable $X_i$, and the dependent set of variables by $X_{\cI}$, where $\cI \subset \{1,\ldots,n\}$. Then direct dependence of $X_i$ on $X_{\cI}$ can be captured by requiring that $X_i$ is conditionally independent of the rest of the variables given $X_{\cI}$. This is equivalent to requiring $P(x_i |\xx_{\cI}) = P(x_i|\xx_{\{1,\ldots,i-1,i+1,\ldots, \nvars\}})$ for all assignments $\xx$.
@@ -78,8 +78,8 @@ In what follows, the log of the partition function will be of key importance, an
 \bean
 \label{eq:pratition_derivative}
 \frac{ \partial A(\thetav)}{\partial \theta_{k}(x_k)} &=& \sum_{\substack{\xx \in \cX\nonumber\\
-s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = P(x_i;\thetav)  \equiv \mu^{\thetav}_i(x_i)\nonumber\\
-\frac{ \partial A(\thetav)}{\partial \theta_{ij}(x_i,x_j)} &=& P(x_i,x_j;\thetav) \equiv \mu^{\thetav}_{ij}(x_i, x_j)
+s.t.\ \xx_k = x_k}} \frac{1}{Z(\thetav)}\exp{\sum_{ij \in E} \theta_{ij}(x_i,x_j) + \sum_{i \in V} \theta_i(x_i)} = P(x_k;\thetav)  \equiv \mu^{\thetav}_k(x_k)\nonumber\\
+\frac{ \partial A(\thetav)}{\partial \theta_{kl}(x_k,x_l)} &=& P(x_k,x_l;\thetav) \equiv \mu^{\thetav}_{kl}(x_k, x_l)
 \eean
 Note that when clear, the dependence on $\thetav$ will be dropped. The set of all marginals (singleton and pairwise)
 has the same dimensionality as $\thetav$. We will use $\muv^{\thetav}$ to denote this vector.
@@ -175,4 +175,5 @@ Queries on several variables are possible and will take into account the relatio
 
 %To conclude, graphical models is a very powerful tool.
 %This power comes with a price, inferring and learning (as we will be shown in \secref{sec:learning}) are hard, and approximation algorithms must be used in most cases.
-These advantages have motivated researchers to tackle the hardness of learning and inference in graphical models. We next discuss present some standard approximate inference algorithms, followed by methods for learning graphical models.
+These advantages have motivated researchers to tackle the hardness of learning and inference in graphical models.
+We next present some standard approximate inference algorithms, followed by methods for learning graphical models.

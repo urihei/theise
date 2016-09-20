@@ -2,16 +2,16 @@
 \subsection{Learning Graphical Models}
 \label{sec:learning}
 Learning graphical models involves two key tasks: structure learning and parameter learning.
- The goal of structure learning is to recover the dependency structure of the distribution, namely the graph $G$. In parameter learning, the goal is to estimate the values of the parameters $\thetav$, assuming the graph $G$ is known.\footnote{Structure learning can be viewed as a sub-task of parameters learning, since one can always consider a complete graph $G$, and set edges to zero if their corresponding parameters
- are estimated to be zero (e.g., see \cite{ravikumar2010high}). However, it often makes sense to separate these two tasks.}.
- 
- 
-There is also a difference in the evaluation of the two tasks.  In structure learning the goal is simple - reconstruction of the dependency graph. However, estimating the actual values of the parameters $\exact{\theta}_{ij}(x_i,x_j)$ is usually not a well-defined task, since in the standard MRF parametrization, multiple 
-parameter values can correspond to the same distribution \footnote{Formally, two parameters $\thetav \neq \tilde{\thetav}$, while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$}.
+The goal of structure learning is to recover the dependency structure of the distribution, namely the graph $G$.
+In parameter learning, the goal is to estimate the values of the parameters $\thetav$, assuming the graph $G$ is known.\footnote{Structure learning can be viewed as a sub-task of parameters learning, since one can always consider a complete graph $G$, and set edges to zero if their corresponding parameters are estimated to be zero (e.g., see \cite{ravikumar2010high}). However, it often makes sense to separate these two tasks.}
+
+There is also a difference in the evaluation of the two tasks.
+In structure learning the goal is simple - reconstruction of the dependency graph.
+However, estimating the actual values of the parameters $\exact{\theta}_{ij}(x_i,x_j)$ is usually not a well-defined task, since in the standard MRF parametrization, multiple 
+parameter values can correspond to the same distribution. \footnote{Formally, two parameters $\thetav \neq \tilde{\thetav}$, while $P(\xx; \thetav) = P(\xx; \tilde{\thetav}), \forall \xx$}
 This property is known as re-parameterization, and it plays an important role in Belief Propagation (see \secref{sec:belief}). Considering this point, a reasonable goal for parameters learning is finding parameters such that $P(\xx;\thetav)$ will be as close as possible to $P(\xx;\exact{\thetav})$. 
 
-The notion of consistency plays a key role in statistical learning. A learning algorithm is called consistent if it is guaranteed to learn the correct underlying model given a sufficient number of 
-training samples. 
+The notion of consistency plays a key role in statistical learning. A learning algorithm is called consistent if it is guaranteed to learn the correct underlying model given a sufficient number of training samples. 
 %An objective is called consistent, if given an infinite number of samples (and the correct structure), the maximizer of the objective $\thetav$ satisfies $P(\xx;\thetav) = P(\xx;\exact{\thetav})$.
 %  This leads to the importance of consistency in choosing objectives for parameter learning.
 
@@ -31,12 +31,12 @@ Another goal for learning models %\blue{We turn to one of the main goals of lear
 is answering probabilistic queries.
 When querying a model, one would like the answer to be as similar as possible to the answer under the true underlying distribution.
 For example, if one learns a model of diseases and symptomps, we would like the probability of a disease given a set of symptoms to be similar in real life and under the model.
-Note that from this perspective, we don't care whether the graph structure or parameters are {\em close} to the real model. 
+Note that from this perspective, we don't care whether the graph structure or parameters are {\em close} to the ``real'' model. 
 
 %%U
 
-In a world with no computation limitations and infinite data the two objectives of learning the exact model and learning for answering queries coincide
-\footnote{In this case, the exact model can be re-construct and by using exact inference the exact answers could be returned.}.
+In a world with no computation limitations and infinite data the two objectives of learning the exact model and learning for answering queries coincide.
+\footnote{In this case, the exact model can be re-construct and by using exact inference the exact answers could be returned.}
 %%
 Unfortunately, exact inference is NP-hard in the general case, and one is forced to use approximate inference (see \secref{sec:approx}).
 When our goal is to correctly answer queries, any learning procedure must take into account the approximate inference to be used on the learned model.

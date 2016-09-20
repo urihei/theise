@@ -21,7 +21,7 @@ In what follows we will denote by $\muv$ the vector constructed from concatenati
 The variational approach proceeds by defining some function $g(\muv)$ of the marginals, and maximizing this function, subject to some constraints, to obtain the approximate marginals. A first step to realizing such an approach is to understand which values of $\muv$ are possible. In other words, which vectors $\muv$ are marginals of some model $P(\xx;\thetav)$. Clearly we need not consider vectors $\muv$ that cannot be marginals of any model.
 
 The above point leads to the definition of the ``Marginal Polytope''  \cite{wainwright2008graphical}. The Marginal Polytope, which we denote by $\margpoly^G$,  is a set of $\muv$ vector, which are the marginals of
-``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:
+``some'' distribution. The definition does not require this distribution to be an MRF. However, as shown in  \cite{wainwright2008graphical}, any $\muv$ in the interior of $\margpoly^G$ is in fact also the marginals vector of an MRF $P(\xx;\thetav)$, for some $\thetav$. The formal definition of $\margpoly^G$ is:
 \be
 \label{eq:margpoly}
 \margpoly^G = \left\{ \muv \in [0,1]^d\ \left| 
@@ -66,7 +66,9 @@ variational approximations.
 
 Not surprisingly, solving the above optimization problem is hard, for two reasons. First,  optimizing over the marginal-polytope $\margpoly^G$ is hard in general (even if the objective is linear). Describing $\margpoly^G$ requires a number of inequalities that is exponential in $d$.  Second, both calculating $\muv^{\thetav}$ is hard, as is calculating the entropy of the resulting MRF.
 
-The advantage of the above representation lies in the simplicity of approximating its constraints and objectives, to obtain a more ``managable'' optimization problem.\footnote{We use the loose term managable, since not all approximations correspond to polynomial time solvable optimization problem. For example mean field attempts to solve a non-convex problem and may obtain sub-optimal solutions}  
+The advantage of the above representation lies in the simplicity of approximating its constraints and objectives, to obtain a more ``managable'' optimization problem.\footnote{We use the loose term managable, since not all approximations correspond to polynomial time solvable optimization problem. For example mean field attempts to solve a non-convex problem and may obtain sub-optimal solutions}
+
+\red{We will now present two famous approximations mean-field and belief propagation}
 %% Two methods of approximation will next be presented. The first is the mean-field method \cite{peterson1987mean} where both the marginal-polytope and the entropy are restricted to a sub-graph of $G$ such that both are easy to calculate.
 %% The second method gives different approximations to the entropy and to the marginal polytope.
 %% For example, the local polytope (defined in \eqref{eq:local_polytope}) will approximate the marginal-polytope, while the entropy is approximated by the Bethe-entropy. 
