@@ -2,11 +2,11 @@ As more and more digital information becomes available, there is a growing need 
 of the field of machine learning, which has seen rapid growth in recent years. 
 Most machine learning methods can be viewed as fitting a model to data, and then using this model to make predictions. However, both these steps (learning and prediction) often
 involve computationally hard problems, leading to use of approximate methods. In this thesis we study several such forms of computational hardness, propose methods
-for approximations, and analyze the resulting tradeoff.
+for approximations, and analyze the resulting trade-off.
 
 We first consider the problem of learning probabilistic models for large sets of variables, and using these models to make predictions. Graphical models are one of the most powerful approaches
 to this problem, and have been used successfully in a wide range of domains. However, most graphical models of interest are in fact both hard to learn and to perform inference with. As a result
-researchers resort to approximating both the learning and inference components. This leads to heuristics whose performance is hard to analyse.
+researchers resort to approximating both the learning and inference components. This leads to heuristics whose performance is hard to analyze.
 
 In the first part of the thesis we study learning in graphical models where belief propagation (BP) is the algorithm used for approximate inference. The learning approach we study uses
 an approximate maximum likelihood objective that is motivated by the BP approximation. Our analysis of this approach highlights the cases in which it is expected to succeed or fail. Moreover,
@@ -17,7 +17,7 @@ In the second part of the thesis we study learning and inference in graphical mo
 In the third part we turn to the problem of learning neural net models. Despite the striking success of deep learning models, the learning problem is non-convex and thus may get stuck in local minima. It is thus a challenge to understand how this optimization hurdle is avoided in practice, and develop methods that can be optimized globally provably. Here we propose an approach that
 extends the class of neural nets, and results in a convex optimization problem that can be globally optimized. Our approach is to integrate over all possible network models, which turns out to be equivalent to learning linear classifiers with a certain kernel, which we calculate in closed form for some architectures. 
 
-In summary, the thesis studies hardness of learning and inference in several machine learning problems, with an empahsis on graphical models and deep learning. Our results demonstrate that appropriate relaxations of the learning and inference steps, coupled with assumptions on the underlying model, can result in methods that are empirically effective and enjoy theoretical guarantees.
+In summary, the thesis studies hardness of learning and inference in several machine learning problems, with an emphasis on graphical models and deep learning. Our results demonstrate that appropriate relaxations of the learning and inference steps, coupled with assumptions on the underlying model, can result in methods that are empirically effective and enjoy theoretical guarantees.
 
 
 
