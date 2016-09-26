@@ -48,9 +48,9 @@ at \eqref{eq:variation_A} and approximates both the marginal polytope and entrop
 %This result not only gave meaning to BP fix points, it also allowed theoretical analysis of BP. 
 %I will now present this result; prior to this, some definitions are necessary.
 
-\red{
-Consider an outer bound on the marginal polytope.
-Note that any set of marginals in $\margpoly^G$ needs to be consistent, in the sense that $\mu_{ij}(x_i,x_j)$ needs to marginalize to $\mu_i(x_i)$.
+{
+We begin by considering an outer bound on the marginal polytope, which will be used to approximate
+the marginal polytope in the BP variational approach. Note that any set of marginals in $\margpoly^G$ needs to be consistent, in the sense that $\mu_{ij}(x_i,x_j)$ needs to marginalize to $\mu_i(x_i)$.
 This implies that requiring a set of pseudo-marginals to be pairwise consistent yield a set $\lclmargpoly$ such that $\lclmargpoly \supseteq \margpoly^G$.
 The formal definition of $\lclmargpoly$ (also known as the {\em local marginal polytope}) is as follows:
 %\atodo{Should add $G$ to $\lclmargpoly$, or remove it from $\margpoly^G$.} 
@@ -66,9 +66,9 @@ The formal definition of $\lclmargpoly$ (also known as the {\em local marginal p
 When $G$ is a tree we in fact have $\margpoly^G = \lclmargpoly$.
 }
 
-\red{
+{
 %As mentioned earlier, the approximation of \eqref{eq:variation_A} includes two parts.
-Next define the Bethe entropy, a function of given singleton and pairwise pseudo-marginals $\tauv \in \lclmargpoly$:
+Next we define the Bethe entropy, which will approximate the entropy term in \eqref{eq:variation_A}. The Bethe entropy $H_B(\tauv) $ is a function of given singleton and pairwise pseudo-marginals $\tauv \in \lclmargpoly$ defined as follows:
 \bean
 H_B(\tauv) &=& -\sum_{i} (1-d_i)\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\tau_{ij}(x_i,x_j)\label{eq:bethe_entropy}\\
 &=&-\sum_{i}\sum_{x_i}\tau_i(x_i)\log\tau_i(x_i) -\sum_{ij}\sum_{x_i,x_j}\tau_{ij}(x_i,x_j)\log\frac{\tau_{ij}(x_i,x_j)}{\tau_i(x_i)\tau_j(x_j)} \label{eq:bethe_entorpy_information}
@@ -215,7 +215,5 @@ s.t. \hat{\xx}_{\nei{k}} = \xx_{\nei{k}}}}  e^{\sum_{i \in V \setminus k}\theta_
  &\approx& e^{\theta_k(x_k)}  \prod_{j \in \nei{k}} \sum_{ x_j } e^{\theta_{k,j}(x_k,x_j)} \muv_{j}(x_j; \thetav^{\setminus k})\\
 \eea
 }
+In the next section, we describe a different approximate inference approach, based on sampling.
 
-\red{
-Next we will present a different approach for inference - sampling.
-}
