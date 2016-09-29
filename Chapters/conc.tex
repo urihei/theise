@@ -85,10 +85,10 @@ This can naturally be turned into a Bethe based approximation by replacing the l
 \ee
 There are several interesting theoretical and algorithmic issues with this proposal. First, it requires a different partition function estimate for each variable $X_i$ and assignment $x_i$, and this translates to many different BP runs. However, it is conceivable that these BP runs will have similar computation trees, and thus computation may be saved. A second question is how good this approximation can be in theory. For example, if $A_B(\thetav)$ corresponds to the exact minimum of the Bethe partition function,\footnote{Note that we do not have the $\arg\min$ problem of marginal estimation.} what can be said about the quality of approximation for different models. Third, what is the best way to learn parameters $\thetav$ if this is the inference method.
 
-Our HGCD results show that in some cases, the BP computation tree should be truncated to a tree shaped neighbourhood. A generalization of this approach is to assume that each probabilistic query corresponds to a truncated computation tree. A moment matching objective for such a process may be devised, and again there are many interesting algorithmic and theoretical questions.  
+Our HGCD results show that in some cases, the BP computation tree should be truncated to a tree shaped neighborhood. A generalization of this approach is to assume that each probabilistic query corresponds to a truncated computation tree. A moment matching objective for such a process may be devised, and again there are many interesting algorithmic and theoretical questions.  
 
 \ignore{
-The hardness results of learning and infernce of GM imply that maybe a more direct approach is in order.
+The hardness results of learning and inference of GM imply that maybe a more direct approach is in order.
 The desired model should be able to answer different queries, for structure output.
 The richness of models with correlation decay suggests, that even when only a small number of variables effect each other, rich models can still be designed.
 Another related fact is that in many cases, running BP for only a small number of iterations results in good approximation to the marginals;
